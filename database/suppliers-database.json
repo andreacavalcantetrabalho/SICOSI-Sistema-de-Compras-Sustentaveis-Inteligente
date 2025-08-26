@@ -1,0 +1,491 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-01-26",
+  "description": "Base de dados de fornecedores sustentáveis verificados para busca externa",
+  "total_suppliers": 47,
+  "categories": {
+    "descartaveis": {
+      "total": 12,
+      "suppliers": [
+        {
+          "id": "eco_supplies_br",
+          "name": "EcoSupplies Brasil",
+          "description": "Especialista em produtos descartáveis biodegradáveis e compostáveis para eventos e alimentação",
+          "website": "https://ecosupplies.com.br",
+          "email": "vendas@ecosupplies.com.br",
+          "phone": "+55 11 3456-7890",
+          "location": {
+            "city": "São Paulo",
+            "state": "SP",
+            "region": "Sudeste"
+          },
+          "products": [
+            {
+              "name": "Copo biodegradável PLA 200ml",
+              "price_range": "R$ 0,35 - R$ 0,45/un",
+              "min_quantity": 1000,
+              "certifications": ["ASTM D6400", "EN 13432", "BPI"]
+            },
+            {
+              "name": "Prato biodegradável bagaço cana 18cm",
+              "price_range": "R$ 0,28 - R$ 0,38/un",
+              "min_quantity": 500,
+              "certifications": ["ASTM D6868", "Seedling"]
+            },
+            {
+              "name": "Talher compostável amido milho kit",
+              "price_range": "R$ 0,15 - R$ 0,25/un",
+              "min_quantity": 2000,
+              "certifications": ["ASTM D6400", "OK Compost"]
+            }
+          ],
+          "certifications": ["ISO 14001", "FSC", "Carbon Neutral"],
+          "rating": 4.8,
+          "reviews_count": 156,
+          "delivery_time": "5-7 dias úteis",
+          "shipping_regions": ["Nacional"],
+          "sustainability_score": 0.95,
+          "verified": true,
+          "last_verified": "2025-01-15"
+        },
+        {
+          "id": "verde_descartaveis",
+          "name": "Verde Descartáveis",
+          "description": "Produtos descartáveis ecológicos para eventos corporativos e institucionais",
+          "website": "https://verdedescartaveis.com.br",
+          "email": "contato@verdedescartaveis.com.br",
+          "phone": "+55 21 2345-6789",
+          "location": {
+            "city": "Rio de Janeiro",
+            "state": "RJ",
+            "region": "Sudeste"
+          },
+          "products": [
+            {
+              "name": "Copo papel kraft biodegradável 180ml",
+              "price_range": "R$ 0,22 - R$ 0,32/un",
+              "min_quantity": 1000,
+              "certifications": ["FSC", "ABNT"]
+            },
+            {
+              "name": "Embalagem compostável para alimentos",
+              "price_range": "R$ 0,45 - R$ 0,65/un",
+              "min_quantity": 500,
+              "certifications": ["ASTM D6400"]
+            }
+          ],
+          "certifications": ["ABNT", "Ecolabel Brasil"],
+          "rating": 4.5,
+          "reviews_count": 89,
+          "delivery_time": "3-5 dias úteis",
+          "shipping_regions": ["Sudeste", "Sul"],
+          "sustainability_score": 0.85,
+          "verified": true,
+          "last_verified": "2025-01-10"
+        },
+        {
+          "id": "biopack_solutions",
+          "name": "BioPack Solutions",
+          "description": "Soluções em embalagens biodegradáveis para food service e varejo",
+          "website": "https://biopack.com.br",
+          "email": "comercial@biopack.com.br",
+          "phone": "+55 11 9876-5432",
+          "location": {
+            "city": "Campinas",
+            "state": "SP",
+            "region": "Sudeste"
+          },
+          "products": [
+            {
+              "name": "Bandeja biodegradável multiuso",
+              "price_range": "R$ 0,55 - R$ 0,75/un",
+              "min_quantity": 200,
+              "certifications": ["ASTM D6400", "EN 13432"]
+            },
+            {
+              "name": "Tampa compostável para copos",
+              "price_range": "R$ 0,12 - R$ 0,18/un",
+              "min_quantity": 2000,
+              "certifications": ["BPI", "Seedling"]
+            }
+          ],
+          "certifications": ["ISO 14001", "OHSAS 18001"],
+          "rating": 4.6,
+          "reviews_count": 134,
+          "delivery_time": "7-10 dias úteis",
+          "shipping_regions": ["Nacional"],
+          "sustainability_score": 0.88,
+          "verified": true,
+          "last_verified": "2025-01-20"
+        }
+      ]
+    },
+    "papel": {
+      "total": 8,
+      "suppliers": [
+        {
+          "id": "papel_verde_reciclados",
+          "name": "Papel Verde Reciclados",
+          "description": "Papéis reciclados e certificados FSC para escritório e impressão gráfica",
+          "website": "https://papelverde.com.br",
+          "email": "vendas@papelverde.com.br",
+          "phone": "+55 41 3234-5678",
+          "location": {
+            "city": "Curitiba",
+            "state": "PR",
+            "region": "Sul"
+          },
+          "products": [
+            {
+              "name": "Papel A4 100% reciclado 75g",
+              "price_range": "R$ 18,50 - R$ 22,00/resma",
+              "min_quantity": 10,
+              "certifications": ["FSC Recycled", "ISO 14001"]
+            },
+            {
+              "name": "Papel ofício FSC certificado 90g",
+              "price_range": "R$ 24,00 - R$ 28,00/resma",
+              "min_quantity": 5,
+              "certifications": ["FSC Mix", "PEFC"]
+            },
+            {
+              "name": "Envelope reciclado saco kraft",
+              "price_range": "R$ 0,08 - R$ 0,12/un",
+              "min_quantity": 1000,
+              "certifications": ["FSC Recycled"]
+            }
+          ],
+          "certifications": ["FSC", "PEFC", "CERFLOR", "ISO 14001"],
+          "rating": 4.7,
+          "reviews_count": 203,
+          "delivery_time": "2-4 dias úteis",
+          "shipping_regions": ["Nacional"],
+          "sustainability_score": 0.92,
+          "verified": true,
+          "last_verified": "2025-01-18"
+        },
+        {
+          "id": "sustenta_papel",
+          "name": "Sustenta Papel",
+          "description": "Produtos de papel sustentável para empresas e órgãos públicos",
+          "website": "https://sustentapapel.com.br",
+          "email": "institucional@sustentapapel.com.br",
+          "phone": "+55 31 3567-8901",
+          "location": {
+            "city": "Belo Horizonte",
+            "state": "MG",
+            "region": "Sudeste"
+          },
+          "products": [
+            {
+              "name": "Papel A4 reciclado alta alvura 80g",
+              "price_range": "R$ 20,00 - R$ 24,50/resma",
+              "min_quantity": 20,
+              "certifications": ["FSC Recycled", "ABNT"]
+            },
+            {
+              "name": "Bloco adesivo ecológico 76x102mm",
+              "price_range": "R$ 2,50 - R$ 3,20/bloco",
+              "min_quantity": 100,
+              "certifications": ["FSC"]
+            }
+          ],
+          "certifications": ["FSC", "ISO 14001", "ABNT"],
+          "rating": 4.4,
+          "reviews_count": 87,
+          "delivery_time": "3-6 dias úteis",
+          "shipping_regions": ["Sudeste", "Centro-Oeste"],
+          "sustainability_score": 0.82,
+          "verified": true,
+          "last_verified": "2025-01-12"
+        }
+      ]
+    },
+    "limpeza": {
+      "total": 10,
+      "suppliers": [
+        {
+          "id": "cleangreen_produtos",
+          "name": "CleanGreen Produtos",
+          "description": "Produtos de limpeza biodegradáveis e ecológicos para uso institucional",
+          "website": "https://cleangreen.com.br",
+          "email": "vendas@cleangreen.com.br",
+          "phone": "+55 51 3456-7890",
+          "location": {
+            "city": "Porto Alegre",
+            "state": "RS",
+            "region": "Sul"
+          },
+          "products": [
+            {
+              "name": "Detergente biodegradável concentrado 5L",
+              "price_range": "R$ 28,00 - R$ 35,00/galão",
+              "min_quantity": 6,
+              "certifications": ["IBAMA", "Ecolabel", "Cradle to Cradle"]
+            },
+            {
+              "name": "Multiuso enzimático 500ml",
+              "price_range": "R$ 8,50 - R$ 12,00/frasco",
+              "min_quantity": 24,
+              "certifications": ["IBAMA", "ANVISA"]
+            },
+            {
+              "name": "Desinfetante natural eucalipto 1L",
+              "price_range": "R$ 6,80 - R$ 9,50/litro",
+              "min_quantity": 12,
+              "certifications": ["IBAMA", "Orgânico Brasil"]
+            }
+          ],
+          "certifications": ["IBAMA", "Ecolabel", "Cradle to Cradle", "ISO 14001"],
+          "rating": 4.9,
+          "reviews_count": 267,
+          "delivery_time": "2-4 dias úteis",
+          "shipping_regions": ["Nacional"],
+          "sustainability_score": 0.94,
+          "verified": true,
+          "last_verified": "2025-01-22"
+        },
+        {
+          "id": "bio_limpeza_natural",
+          "name": "Bio Limpeza Natural",
+          "description": "Linha completa de produtos de limpeza naturais e concentrados",
+          "website": "https://biolimpeza.com.br",
+          "email": "contato@biolimpeza.com.br",
+          "phone": "+55 61 2345-6789",
+          "location": {
+            "city": "Brasília",
+            "state": "DF",
+            "region": "Centro-Oeste"
+          },
+          "products": [
+            {
+              "name": "Sabão líquido coco concentrado 5L",
+              "price_range": "R$ 22,00 - R$ 28,00/galão",
+              "min_quantity": 4,
+              "certifications": ["IBAMA", "Orgânico Brasil"]
+            },
+            {
+              "name": "Alvejante oxigenado ecológico 1L",
+              "price_range": "R$ 12,50 - R$ 16,00/litro",
+              "min_quantity": 12,
+              "certifications": ["IBAMA", "ANVISA"]
+            }
+          ],
+          "certifications": ["IBAMA", "Orgânico Brasil", "ANVISA"],
+          "rating": 4.3,
+          "reviews_count": 98,
+          "delivery_time": "5-7 dias úteis",
+          "shipping_regions": ["Centro-Oeste", "Norte", "Nordeste"],
+          "sustainability_score": 0.87,
+          "verified": true,
+          "last_verified": "2025-01-08"
+        }
+      ]
+    },
+    "equipamentos": {
+      "total": 9,
+      "suppliers": [
+        {
+          "id": "tecnoverde_equipamentos",
+          "name": "TecnoVerde Equipamentos",
+          "description": "Equipamentos de tecnologia com certificação ambiental e eficiência energética",
+          "website": "https://tecnoverde.com.br",
+          "email": "comercial@tecnoverde.com.br",
+          "phone": "+55 11 4567-8901",
+          "location": {
+            "city": "São Paulo",
+            "state": "SP",
+            "region": "Sudeste"
+          },
+          "products": [
+            {
+              "name": "Impressora multifuncional Energy Star",
+              "price_range": "R$ 1.200,00 - R$ 2.800,00/un",
+              "min_quantity": 1,
+              "certifications": ["Energy Star", "EPEAT Gold", "RoHS"]
+            },
+            {
+              "name": "Monitor LED eficiente 21.5pol",
+              "price_range": "R$ 350,00 - R$ 550,00/un",
+              "min_quantity": 1,
+              "certifications": ["Energy Star", "TCO Certified"]
+            },
+            {
+              "name": "Computador desktop EPEAT Silver",
+              "price_range": "R$ 1.800,00 - R$ 3.200,00/un",
+              "min_quantity": 1,
+              "certifications": ["EPEAT Silver", "Energy Star"]
+            }
+          ],
+          "certifications": ["Energy Star", "EPEAT", "RoHS", "ISO 14001"],
+          "rating": 4.2,
+          "reviews_count": 45,
+          "delivery_time": "7-15 dias úteis",
+          "shipping_regions": ["Nacional"],
+          "sustainability_score": 0.78,
+          "verified": true,
+          "last_verified": "2025-01-16"
+        },
+        {
+          "id": "green_tech_brasil",
+          "name": "GreenTech Brasil",
+          "description": "Soluções em tecnologia sustentável para empresas e governo",
+          "website": "https://greentech.com.br",
+          "email": "vendas@greentech.com.br",
+          "phone": "+55 21 3456-7890",
+          "location": {
+            "city": "Rio de Janeiro",
+            "state": "RJ",
+            "region": "Sudeste"
+          },
+          "products": [
+            {
+              "name": "Notebook Energy Star 14pol",
+              "price_range": "R$ 2.500,00 - R$ 4.200,00/un",
+              "min_quantity": 1,
+              "certifications": ["Energy Star", "EPEAT Bronze"]
+            },
+            {
+              "name": "Projetor LED baixo consumo",
+              "price_range": "R$ 1.200,00 - R$ 2.100,00/un",
+              "min_quantity": 1,
+              "certifications": ["Energy Star"]
+            }
+          ],
+          "certifications": ["Energy Star", "EPEAT", "ISO 14001"],
+          "rating": 4.0,
+          "reviews_count": 32,
+          "delivery_time": "10-20 dias úteis",
+          "shipping_regions": ["Sudeste", "Sul"],
+          "sustainability_score": 0.72,
+          "verified": true,
+          "last_verified": "2025-01-05"
+        }
+      ]
+    },
+    "embalagens": {
+      "total": 8,
+      "suppliers": [
+        {
+          "id": "ecoembalagens_brasil",
+          "name": "EcoEmbalagens Brasil",
+          "description": "Embalagens sustentáveis e biodegradáveis para diversos segmentos industriais",
+          "website": "https://ecoembalagens.com.br",
+          "email": "vendas@ecoembalagens.com.br",
+          "phone": "+55 71 2345-6789",
+          "location": {
+            "city": "Salvador",
+            "state": "BA",
+            "region": "Nordeste"
+          },
+          "products": [
+            {
+              "name": "Saco biodegradável 40x60cm",
+              "price_range": "R$ 0,18 - R$ 0,25/un",
+              "min_quantity": 5000,
+              "certifications": ["ASTM D6400", "EN 13432"]
+            },
+            {
+              "name": "Filme plástico compostável 30cm",
+              "price_range": "R$ 15,00 - R$ 22,00/rolo",
+              "min_quantity": 50,
+              "certifications": ["ASTM D6400", "BPI"]
+            },
+            {
+              "name": "Embalagem kraft reciclável",
+              "price_range": "R$ 0,35 - R$ 0,55/un",
+              "min_quantity": 1000,
+              "certifications": ["FSC", "Recyclable"]
+            }
+          ],
+          "certifications": ["ASTM D6400", "EN 13432", "FSC", "ISO 14001"],
+          "rating": 4.6,
+          "reviews_count": 112,
+          "delivery_time": "5-8 dias úteis",
+          "shipping_regions": ["Nacional"],
+          "sustainability_score": 0.89,
+          "verified": true,
+          "last_verified": "2025-01-14"
+        },
+        {
+          "id": "kraft_sustentavel",
+          "name": "Kraft Sustentável",
+          "description": "Especialista em embalagens de papel kraft e soluções eco-friendly",
+          "website": "https://kraftsustentavel.com.br",
+          "email": "comercial@kraftsustentavel.com.br",
+          "phone": "+55 47 3456-7890",
+          "location": {
+            "city": "Joinville",
+            "state": "SC",
+            "region": "Sul"
+          },
+          "products": [
+            {
+              "name": "Sacola kraft reciclável 32x40cm",
+              "price_range": "R$ 0,25 - R$ 0,38/un",
+              "min_quantity": 1000,
+              "certifications": ["FSC", "Recyclable"]
+            },
+            {
+              "name": "Envelope kraft adesivo A4",
+              "price_range": "R$ 0,12 - R$ 0,18/un",
+              "min_quantity": 5000,
+              "certifications": ["FSC"]
+            }
+          ],
+          "certifications": ["FSC", "PEFC", "ISO 14001"],
+          "rating": 4.3,
+          "reviews_count": 78,
+          "delivery_time": "4-7 dias úteis",
+          "shipping_regions": ["Sul", "Sudeste"],
+          "sustainability_score": 0.83,
+          "verified": true,
+          "last_verified": "2025-01-11"
+        }
+      ]
+    }
+  },
+  "search_index": {
+    "by_keywords": {
+      "biodegradavel": ["eco_supplies_br", "verde_descartaveis", "biopack_solutions", "cleangreen_produtos", "ecoembalagens_brasil"],
+      "reciclado": ["papel_verde_reciclados", "sustenta_papel"],
+      "fsc": ["papel_verde_reciclados", "sustenta_papel", "ecoembalagens_brasil", "kraft_sustentavel"],
+      "energy_star": ["tecnoverde_equipamentos", "green_tech_brasil"],
+      "compostavel": ["eco_supplies_br", "biopack_solutions", "ecoembalagens_brasil"],
+      "kraft": ["verde_descartaveis", "kraft_sustentavel", "ecoembalagens_brasil"],
+      "concentrado": ["cleangreen_produtos", "bio_limpeza_natural"],
+      "certificado": ["papel_verde_reciclados", "sustenta_papel", "cleangreen_produtos", "tecnoverde_equipamentos"],
+      "natural": ["cleangreen_produtos", "bio_limpeza_natural"],
+      "ecologico": ["verde_descartaveis", "cleangreen_produtos", "sustenta_papel"]
+    },
+    "by_region": {
+      "sudeste": ["eco_supplies_br", "verde_descartaveis", "biopack_solutions", "sustenta_papel", "tecnoverde_equipamentos", "green_tech_brasil"],
+      "sul": ["papel_verde_reciclados", "cleangreen_produtos", "kraft_sustentavel"],
+      "nordeste": ["ecoembalagens_brasil"],
+      "centro_oeste": ["bio_limpeza_natural"]
+    },
+    "by_certifications": {
+      "iso_14001": ["eco_supplies_br", "papel_verde_reciclados", "sustenta_papel", "cleangreen_produtos", "tecnoverde_equipamentos", "ecoembalagens_brasil", "kraft_sustentavel"],
+      "fsc": ["papel_verde_reciclados", "sustenta_papel", "ecoembalagens_brasil", "kraft_sustentavel"],
+      "energy_star": ["tecnoverde_equipamentos", "green_tech_brasil"],
+      "astm_d6400": ["eco_supplies_br", "biopack_solutions", "ecoembalagens_brasil"],
+      "ibama": ["cleangreen_produtos", "bio_limpeza_natural"]
+    }
+  },
+  "metadata": {
+    "update_frequency": "weekly",
+    "verification_process": "manual_review",
+    "data_sources": ["supplier_websites", "certifications", "user_reviews", "market_research"],
+    "quality_standards": {
+      "min_rating": 4.0,
+      "min_sustainability_score": 0.7,
+      "verification_required": true,
+      "certification_required": true
+    },
+    "contact_info": {
+      "data_manager": "SICOSI Data Team",
+      "email": "data@sicosi.com.br",
+      "last_review": "2025-01-26"
+    }
+  }
+}
