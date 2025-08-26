@@ -1,0 +1,280 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-01-26",
+  "description": "Mapeamento inteligente de palavras-chave para detecção e sugestões sustentáveis",
+  "detection_patterns": {
+    "exact_match": {
+      "description": "Correspondência exata de termos",
+      "weight": 1.0,
+      "keywords": {
+        "copo descartável": {
+          "category": "descartaveis",
+          "confidence": 0.95,
+          "alternatives": ["copo biodegradável", "copo compostável", "copo reciclável"]
+        },
+        "prato descartável": {
+          "category": "descartaveis", 
+          "confidence": 0.95,
+          "alternatives": ["prato biodegradável", "prato bagaço cana", "prato compostável"]
+        },
+        "papel sulfite": {
+          "category": "papel",
+          "confidence": 0.90,
+          "alternatives": ["papel reciclado", "papel FSC", "papel certificado"]
+        }
+      }
+    },
+    "partial_match": {
+      "description": "Correspondência parcial com termos relacionados",
+      "weight": 0.8,
+      "keywords": {
+        "plástico": {
+          "triggers": ["copo plástico", "prato plástico", "talher plástico", "embalagem plástica"],
+          "category": "descartaveis",
+          "confidence": 0.85
+        },
+        "isopor": {
+          "triggers": ["bandeja isopor", "embalagem isopor", "caixa isopor"],
+          "category": "embalagens",
+          "confidence": 0.90
+        },
+        "detergente": {
+          "triggers": ["detergente líquido", "detergente neutro", "detergente comum"],
+          "category": "limpeza",
+          "confidence": 0.80
+        }
+      }
+    },
+    "contextual_match": {
+      "description": "Detecção baseada em contexto e combinação de termos",
+      "weight": 0.7,
+      "patterns": [
+        {
+          "pattern": ["papel", "branco", "a4"],
+          "category": "papel",
+          "confidence": 0.75,
+          "suggestion": "papel reciclado A4"
+        },
+        {
+          "pattern": ["impressora", "jato", "tinta"],
+          "category": "equipamentos",
+          "confidence": 0.70,
+          "suggestion": "impressora energy star"
+        },
+        {
+          "pattern": ["saco", "lixo", "plástico"],
+          "category": "embalagens",
+          "confidence": 0.85,
+          "suggestion": "saco biodegradável"
+        }
+      ]
+    }
+  },
+  "search_optimization": {
+    "sustainable_modifiers": {
+      "primary": [
+        "biodegradável",
+        "reciclável", 
+        "reciclado",
+        "sustentável",
+        "ecológico",
+        "verde",
+        "eco"
+      ],
+      "secondary": [
+        "compostável",
+        "renovável",
+        "certificado",
+        "FSC",
+        "energy star",
+        "eficiente",
+        "orgânico",
+        "natural"
+      ],
+      "material_specific": {
+        "papel": ["FSC", "reciclado", "certificado", "reflorestamento"],
+        "plástico": ["biodegradável", "compostável", "PLA", "bagaço", "bambu"],
+        "equipamentos": ["energy star", "epeat", "eficiente", "baixo consumo"],
+        "limpeza": ["biodegradável", "natural", "concentrado", "ecológico"]
+      }
+    },
+    "negative_keywords": [
+      "comum",
+      "tradicional", 
+      "convencional",
+      "barato",
+      "descartável",
+      "simples"
+    ],
+    "boost_terms": {
+      "certificação": 1.3,
+      "selo": 1.2,
+      "aprovado": 1.1,
+      "testado": 1.1,
+      "qualidade": 1.1
+    }
+  },
+  "category_mappings": {
+    "descartaveis": {
+      "primary_keywords": [
+        "copo", "prato", "talher", "garfo", "faca", "colher",
+        "guardanapo", "papel toalha", "lenço"
+      ],
+      "material_indicators": [
+        "plástico", "isopor", "poliestireno", "polipropileno",
+        "descartável", "uso único"
+      ],
+      "sustainable_alternatives": {
+        "materials": ["bambu", "bagaço de cana", "PLA", "papel kraft"],
+        "certifications": ["ASTM D6400", "EN 13432", "BPI"],
+        "search_terms": ["biodegradável", "compostável", "bambu", "bagaço"]
+      }
+    },
+    "papel": {
+      "primary_keywords": [
+        "papel", "sulfite", "a4", "ofício", "carta", "resma",
+        "bloco", "caderno", "envelope"
+      ],
+      "quality_indicators": [
+        "branco", "75g", "90g", "alta qualidade", "premium"
+      ],
+      "sustainable_alternatives": {
+        "materials": ["fibra reciclada", "eucalipto certificado"],
+        "certifications": ["FSC", "PEFC", "CERFLOR"],
+        "search_terms": ["reciclado", "FSC", "certificado", "sustentável"]
+      }
+    },
+    "limpeza": {
+      "primary_keywords": [
+        "detergente", "sabão", "desinfetante", "alvejante", 
+        "amaciante", "limpa vidros", "multiuso"
+      ],
+      "chemical_indicators": [
+        "neutro", "concentrado", "forte", "antibacteriano"
+      ],
+      "sustainable_alternatives": {
+        "materials": ["surfactantes vegetais", "enzimas naturais"],
+        "certifications": ["IBAMA", "Ecolabel", "Cradle to Cradle"],
+        "search_terms": ["biodegradável", "natural", "concentrado", "enzimas"]
+      }
+    },
+    "equipamentos": {
+      "primary_keywords": [
+        "impressora", "computador", "monitor", "notebook",
+        "scanner", "copiadora", "multifuncional"
+      ],
+      "efficiency_indicators": [
+        "laser", "jato de tinta", "led", "alto desempenho"
+      ],
+      "sustainable_alternatives": {
+        "materials": ["componentes recicláveis", "baixo consumo"],
+        "certifications": ["Energy Star", "EPEAT", "TCO"],
+        "search_terms": ["energy star", "eficiente", "baixo consumo", "epeat"]
+      }
+    },
+    "embalagens": {
+      "primary_keywords": [
+        "saco", "sacola", "embalagem", "envelope", "caixa",
+        "plástico bolha", "filme plástico"
+      ],
+      "material_indicators": [
+        "plástico", "polietileno", "transparente", "resistente"
+      ],
+      "sustainable_alternatives": {
+        "materials": ["papel kraft", "amido de milho", "fibra natural"],
+        "certifications": ["Biodegradável", "Compostável"],
+        "search_terms": ["papel kraft", "biodegradável", "amido milho"]
+      }
+    }
+  },
+  "regional_variations": {
+    "brasil": {
+      "synonyms": {
+        "copo": ["copinho", "copão"],
+        "prato": ["pratinho", "pratão"], 
+        "saco": ["sacola", "sacolinha"],
+        "papel": ["folha", "papel de escrever"]
+      },
+      "local_terms": {
+        "isopor": ["bandeja térmica", "caixa térmica"],
+        "guardanapo": ["papel higiênico mesa", "lenço papel"]
+      }
+    }
+  },
+  "fuzzy_matching": {
+    "enabled": true,
+    "similarity_threshold": 0.75,
+    "algorithms": {
+      "levenshtein": {
+        "weight": 0.6,
+        "max_distance": 2
+      },
+      "soundex": {
+        "weight": 0.4,
+        "enabled": true
+      }
+    },
+    "common_typos": {
+      "sustentavel": ["sustentável", "sustentavel"],
+      "biodegradavel": ["biodegradável", "biodegradavel"],
+      "ecologico": ["ecológico", "ecologico"],
+      "reciclavel": ["reciclável", "reciclavel"]
+    }
+  },
+  "contextual_analysis": {
+    "quantity_indicators": {
+      "bulk": ["caixa", "pacote", "fardo", "unidade", "cx", "pc", "un"],
+      "multipliers": {
+        "caixa": 50,
+        "pacote": 25,
+        "fardo": 100,
+        "resma": 500
+      }
+    },
+    "specification_patterns": {
+      "size": ["pequeno", "médio", "grande", "ml", "l", "cm", "mm"],
+      "color": ["branco", "transparente", "colorido", "azul", "verde"],
+      "grade": ["primeira", "segunda", "qualidade", "premium", "básico"]
+    },
+    "exclusion_rules": [
+      {
+        "rule": "already_sustainable",
+        "patterns": ["biodegradável", "reciclado", "sustentável", "ecológico"],
+        "action": "skip"
+      },
+      {
+        "rule": "medical_equipment", 
+        "patterns": ["médico", "hospitalar", "cirúrgico", "estéril"],
+        "action": "skip"
+      }
+    ]
+  },
+  "machine_learning": {
+    "enabled": false,
+    "training_data": {
+      "positive_examples": [],
+      "negative_examples": [],
+      "user_feedback": []
+    },
+    "model_version": "1.0.0",
+    "confidence_threshold": 0.7
+  },
+  "performance_optimization": {
+    "caching": {
+      "enabled": true,
+      "ttl": 3600000,
+      "max_entries": 1000
+    },
+    "indexing": {
+      "enabled": true,
+      "type": "inverted_index",
+      "rebuild_frequency": "weekly"
+    }
+  },
+  "analytics_tracking": {
+    "track_matches": true,
+    "track_misses": true,
+    "track_user_selections": true,
+    "privacy_compliant": true
+  }
+}
