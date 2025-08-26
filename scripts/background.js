@@ -12,8 +12,12 @@ chrome.runtime.onInstalled.addListener(handleInstallation);
 chrome.runtime.onStartup.addListener(handleStartup);
 chrome.runtime.onMessage.addListener(handleMessage);
 
-// Alarmes para tarefas periódicas
-chrome.alarms.onAlarm.addListener(handleAlarm);
+// Alarmes para tarefas periódicas - apenas se disponível
+if (chrome.alarms && chrome.alarms.onAlarm) {
+  chrome.alarms.onAlarm.addListener(handleAlarm);
+} else {
+  console.warn('SICOSI Background: chrome.alarms API não disponível');
+}
 
 /**
  * Manipula instalação/atualização da extensão
@@ -27,8 +31,12 @@ async function handleInstallation(details) {
     // Configurar dados iniciais
     await initializeExtensionData(details);
     
-    // Configurar alarmes periódicos
-    await setupPeriodicTasks();
+    // Configurar alarmes periódicos apenas se API disponível
+    if (chrome.alarms && chrome.alarms.create) {
+      await setupPeriodicTasks();
+    } else {
+      console.warn('SICOSI Background: Alarmes não disponíveis, pulando configuração');
+    }
     
     // Mostrar página de boas-vindas na primeira instalação
     if (details.reason === 'install') {
@@ -216,29 +224,40 @@ async function initializeExtensionData(details) {
  * Configura tarefas periódicas
  */
 async function setupPeriodicTasks() {
-  // Limpeza diária às 2:00 AM
-  await chrome.alarms.create('daily-cleanup', {
-    when: getNextScheduledTime(2, 0),
-    periodInMinutes: 24 * 60
-  });
-  
-  // Estatísticas semanais aos domingos às 8:00 AM
-  await chrome.alarms.create('weekly-stats', {
-    when: getNextWeeklyTime(0, 8, 0), // Domingo
-    periodInMinutes: 7 * 24 * 60
-  });
-  
-  // Verificação de atualização da base de dados diariamente
-  await chrome.alarms.create('database-update', {
-    delayInMinutes: 30,
-    periodInMinutes: 24 * 60
-  });
-  
-  // Limpeza de cache a cada 6 horas
-  await chrome.alarms.create('cache-cleanup', {
-    delayInMinutes: 60,
-    periodInMinutes: 6 * 60
-  });
+  if (!chrome.alarms || !chrome.alarms.create) {
+    console.warn('SICOSI Background: API de alarmes não disponível');
+    return;
+  }
+
+  try {
+    // Limpeza diária às 2:00 AM
+    await chrome.alarms.create('daily-cleanup', {
+      when: getNextScheduledTime(2, 0),
+      periodInMinutes: 24 * 60
+    });
+    
+    // Estatísticas semanais aos domingos às 8:00 AM
+    await chrome.alarms.create('weekly-stats', {
+      when: getNextWeeklyTime(0, 8, 0), // Domingo
+      periodInMinutes: 7 * 24 * 60
+    });
+    
+    // Verificação de atualização da base de dados diariamente
+    await chrome.alarms.create('database-update', {
+      delayInMinutes: 30,
+      periodInMinutes: 24 * 60
+    });
+    
+    // Limpeza de cache a cada 6 horas
+    await chrome.alarms.create('cache-cleanup', {
+      delayInMinutes: 60,
+      periodInMinutes: 6 * 60
+    });
+
+    console.log('SICOSI Background: Alarmes periódicos configurados');
+  } catch (error) {
+    console.error('SICOSI Background: Erro ao configurar alarmes:', error);
+  }
 }
 
 /**
@@ -250,7 +269,7 @@ async function handleExternalSearch(data) {
   try {
     // Verificar se busca externa está habilitada
     const settings = await getUserSettings();
-    if (!settings.advanced.externalSearch) {
+    if (!settings.advanced || !settings.advanced.externalSearch) {
       return {
         results: [],
         message: 'Busca externa desabilitada nas configurações'
@@ -382,113 +401,141 @@ function extractProductKeywords(product) {
 async function handleAnalyticsEvent(eventData) {
   const { event, details, metadata = {} } = eventData;
   
-  // Verificar se analytics está habilitado
-  const settings = await getUserSettings();
-  if (!settings.privacy.analytics) {
-    return;
-  }
-  
-  // Criar entrada de log
-  const logEntry = {
-    timestamp: Date.now(),
-    event,
-    details,
-    metadata: {
-      ...metadata,
-      version: chrome.runtime.getManifest().version,
-      userAgent: 'Chrome Extension' // Anonimizado
+  try {
+    // Verificar se analytics está habilitado
+    const settings = await getUserSettings();
+    if (settings.privacy && settings.privacy.analytics === false) {
+      return;
     }
-  };
-  
-  // Armazenar no storage local
-  await logEvent(event, logEntry);
-  
-  // Atualizar estatísticas agregadas
-  await updateAggregatedStats(event, details);
+    
+    // Criar entrada de log
+    const logEntry = {
+      timestamp: Date.now(),
+      event,
+      details,
+      metadata: {
+        ...metadata,
+        version: chrome.runtime.getManifest().version,
+        userAgent: 'Chrome Extension' // Anonimizado
+      }
+    };
+    
+    // Armazenar no storage local
+    await logEvent(event, logEntry);
+    
+    // Atualizar estatísticas agregadas
+    await updateAggregatedStats(event, details);
+  } catch (error) {
+    console.error('SICOSI Background: Erro no analytics:', error);
+  }
 }
 
 /**
  * Atualiza estatísticas agregadas
  */
 async function updateAggregatedStats(event, details) {
-  const result = await chrome.storage.local.get(['SICOSIStatistics']);
-  const stats = result.SICOSIStatistics || {};
-  
-  const updated = { ...stats, lastActive: Date.now() };
-  
-  switch (event) {
-    case 'modal_shown':
-      updated.totalModalShown = (updated.totalModalShown || 0) + 1;
-      break;
-      
-    case 'alternative_selected':
-      updated.totalAlternativesSelected = (updated.totalAlternativesSelected || 0) + 1;
-      updated.impactMetrics = updated.impactMetrics || {};
-      updated.impactMetrics.sustainableItemsAdopted = 
-        (updated.impactMetrics.sustainableItemsAdopted || 0) + 1;
-      break;
-      
-    case 'search_performed':
-      updated.totalSearches = (updated.totalSearches || 0) + 1;
-      break;
+  try {
+    const result = await chrome.storage.local.get(['SICOSIStatistics']);
+    const stats = result.SICOSIStatistics || {};
+    
+    const updated = { ...stats, lastActive: Date.now() };
+    
+    switch (event) {
+      case 'modal_shown':
+        updated.totalModalShown = (updated.totalModalShown || 0) + 1;
+        break;
+        
+      case 'alternative_selected':
+        updated.totalAlternativesSelected = (updated.totalAlternativesSelected || 0) + 1;
+        updated.impactMetrics = updated.impactMetrics || {};
+        updated.impactMetrics.sustainableItemsAdopted = 
+          (updated.impactMetrics.sustainableItemsAdopted || 0) + 1;
+        break;
+        
+      case 'search_performed':
+        updated.totalSearches = (updated.totalSearches || 0) + 1;
+        break;
+    }
+    
+    await chrome.storage.local.set({ SICOSIStatistics: updated });
+  } catch (error) {
+    console.error('SICOSI Background: Erro ao atualizar estatísticas:', error);
   }
-  
-  await chrome.storage.local.set({ SICOSIStatistics: updated });
 }
 
 /**
  * Obtém configurações do usuário
  */
 async function getUserSettings() {
-  const result = await chrome.storage.sync.get(['SICOSISettings']);
-  return result.SICOSISettings || {};
+  try {
+    const result = await chrome.storage.sync.get(['SICOSISettings']);
+    return result.SICOSISettings || {};
+  } catch (error) {
+    console.error('SICOSI Background: Erro ao obter configurações:', error);
+    return {};
+  }
 }
 
 /**
  * Atualiza configurações do usuário
  */
 async function updateUserSettings(newSettings) {
-  const current = await getUserSettings();
-  const updated = { ...current, ...newSettings, lastUpdated: Date.now() };
-  await chrome.storage.sync.set({ SICOSISettings: updated });
+  try {
+    const current = await getUserSettings();
+    const updated = { ...current, ...newSettings, lastUpdated: Date.now() };
+    await chrome.storage.sync.set({ SICOSISettings: updated });
+  } catch (error) {
+    console.error('SICOSI Background: Erro ao atualizar configurações:', error);
+    throw error;
+  }
 }
 
 /**
  * Obtém estatísticas da extensão
  */
 async function getExtensionStatistics() {
-  const [stats, settings] = await Promise.all([
-    chrome.storage.local.get(['SICOSIStatistics']),
-    chrome.storage.sync.get(['SICOSISettings'])
-  ]);
-  
-  const statistics = stats.SICOSIStatistics || {};
-  const userSettings = settings.SICOSISettings || {};
-  
-  return {
-    usage: statistics,
-    settings: userSettings,
-    version: chrome.runtime.getManifest().version,
-    installDate: userSettings.installDate,
-    lastActive: statistics.lastActive
-  };
+  try {
+    const [stats, settings] = await Promise.all([
+      chrome.storage.local.get(['SICOSIStatistics']),
+      chrome.storage.sync.get(['SICOSISettings'])
+    ]);
+    
+    const statistics = stats.SICOSIStatistics || {};
+    const userSettings = settings.SICOSISettings || {};
+    
+    return {
+      usage: statistics,
+      settings: userSettings,
+      version: chrome.runtime.getManifest().version,
+      installDate: userSettings.installDate,
+      lastActive: statistics.lastActive
+    };
+  } catch (error) {
+    console.error('SICOSI Background: Erro ao obter estatísticas:', error);
+    return { usage: {}, settings: {}, version: '1.0.0' };
+  }
 }
 
 /**
  * Exporta dados do usuário
  */
 async function exportUserData() {
-  const [syncData, localData] = await Promise.all([
-    chrome.storage.sync.get(null),
-    chrome.storage.local.get(null)
-  ]);
-  
-  return {
-    sync: syncData,
-    local: localData,
-    exportDate: Date.now(),
-    version: chrome.runtime.getManifest().version
-  };
+  try {
+    const [syncData, localData] = await Promise.all([
+      chrome.storage.sync.get(null),
+      chrome.storage.local.get(null)
+    ]);
+    
+    return {
+      sync: syncData,
+      local: localData,
+      exportDate: Date.now(),
+      version: chrome.runtime.getManifest().version
+    };
+  } catch (error) {
+    console.error('SICOSI Background: Erro ao exportar dados:', error);
+    throw error;
+  }
 }
 
 /**
@@ -520,22 +567,26 @@ async function performDailyCleanup() {
  * Limpa cache expirado
  */
 async function cleanupExpiredCache() {
-  const allData = await chrome.storage.local.get(null);
-  const keysToRemove = [];
-  const now = Date.now();
-  
-  Object.keys(allData).forEach(key => {
-    if (key.startsWith('alternatives_cache_') || key.startsWith('search_cache_')) {
-      const data = allData[key];
-      if (data && data.expires && data.expires < now) {
-        keysToRemove.push(key);
+  try {
+    const allData = await chrome.storage.local.get(null);
+    const keysToRemove = [];
+    const now = Date.now();
+    
+    Object.keys(allData).forEach(key => {
+      if (key.startsWith('alternatives_cache_') || key.startsWith('search_cache_')) {
+        const data = allData[key];
+        if (data && data.expires && data.expires < now) {
+          keysToRemove.push(key);
+        }
       }
+    });
+    
+    if (keysToRemove.length > 0) {
+      await chrome.storage.local.remove(keysToRemove);
+      console.log(`SICOSI Background: ${keysToRemove.length} itens de cache removidos`);
     }
-  });
-  
-  if (keysToRemove.length > 0) {
-    await chrome.storage.local.remove(keysToRemove);
-    console.log(`SICOSI Background: ${keysToRemove.length} itens de cache removidos`);
+  } catch (error) {
+    console.error('SICOSI Background: Erro ao limpar cache:', error);
   }
 }
 
@@ -543,15 +594,19 @@ async function cleanupExpiredCache() {
  * Limpa logs antigos
  */
 async function cleanupOldLogs() {
-  const result = await chrome.storage.local.get(['SICOSIAnalyticsLogs']);
-  const logs = result.SICOSIAnalyticsLogs || [];
-  
-  const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-  const recentLogs = logs.filter(log => log.timestamp > thirtyDaysAgo);
-  
-  if (recentLogs.length !== logs.length) {
-    await chrome.storage.local.set({ SICOSIAnalyticsLogs: recentLogs });
-    console.log(`SICOSI Background: ${logs.length - recentLogs.length} logs antigos removidos`);
+  try {
+    const result = await chrome.storage.local.get(['SICOSIAnalyticsLogs']);
+    const logs = result.SICOSIAnalyticsLogs || [];
+    
+    const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+    const recentLogs = logs.filter(log => log.timestamp > thirtyDaysAgo);
+    
+    if (recentLogs.length !== logs.length) {
+      await chrome.storage.local.set({ SICOSIAnalyticsLogs: recentLogs });
+      console.log(`SICOSI Background: ${logs.length - recentLogs.length} logs antigos removidos`);
+    }
+  } catch (error) {
+    console.error('SICOSI Background: Erro ao limpar logs:', error);
   }
 }
 
@@ -567,21 +622,25 @@ async function optimizeStorage() {
  * Log de evento genérico
  */
 async function logEvent(event, data) {
-  const result = await chrome.storage.local.get(['SICOSIAnalyticsLogs']);
-  const logs = result.SICOSIAnalyticsLogs || [];
-  
-  logs.push({
-    event,
-    data,
-    timestamp: Date.now()
-  });
-  
-  // Manter apenas últimos 500 logs
-  if (logs.length > 500) {
-    logs.splice(0, logs.length - 500);
+  try {
+    const result = await chrome.storage.local.get(['SICOSIAnalyticsLogs']);
+    const logs = result.SICOSIAnalyticsLogs || [];
+    
+    logs.push({
+      event,
+      data,
+      timestamp: Date.now()
+    });
+    
+    // Manter apenas últimos 500 logs
+    if (logs.length > 500) {
+      logs.splice(0, logs.length - 500);
+    }
+    
+    await chrome.storage.local.set({ SICOSIAnalyticsLogs: logs });
+  } catch (error) {
+    console.error('SICOSI Background: Erro ao fazer log:', error);
   }
-  
-  await chrome.storage.local.set({ SICOSIAnalyticsLogs: logs });
 }
 
 /**
@@ -627,16 +686,20 @@ async function cleanupExpiredData() {
  * Reseta estatísticas diárias se necessário
  */
 async function resetDailyStatsIfNeeded() {
-  const result = await chrome.storage.local.get(['dailyStatsDate']);
-  const today = new Date().toDateString();
-  
-  if (result.dailyStatsDate !== today) {
-    // Reset de estatísticas diárias
-    await chrome.storage.local.set({
-      dailyStatsDate: today,
-      dailyModalShown: 0,
-      dailyAlternativesSelected: 0
-    });
+  try {
+    const result = await chrome.storage.local.get(['dailyStatsDate']);
+    const today = new Date().toDateString();
+    
+    if (result.dailyStatsDate !== today) {
+      // Reset de estatísticas diárias
+      await chrome.storage.local.set({
+        dailyStatsDate: today,
+        dailyModalShown: 0,
+        dailyAlternativesSelected: 0
+      });
+    }
+  } catch (error) {
+    console.error('SICOSI Background: Erro ao resetar estatísticas diárias:', error);
   }
 }
 
@@ -654,12 +717,16 @@ async function checkDatabaseUpdates() {
 async function generateWeeklyStats() {
   console.log('SICOSI Background: Gerando estatísticas semanais');
   
-  const stats = await getExtensionStatistics();
-  
-  await logEvent('weekly_stats_generated', {
-    stats,
-    timestamp: Date.now()
-  });
+  try {
+    const stats = await getExtensionStatistics();
+    
+    await logEvent('weekly_stats_generated', {
+      stats,
+      timestamp: Date.now()
+    });
+  } catch (error) {
+    console.error('SICOSI Background: Erro ao gerar estatísticas semanais:', error);
+  }
 }
 
 /**
