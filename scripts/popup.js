@@ -1,5 +1,5 @@
 /**
- * Popup Script - Nudge Sustentável
+ * Popup Script - SICOSI
  * JavaScript para gerenciar a interface do popup da extensão
  */
 

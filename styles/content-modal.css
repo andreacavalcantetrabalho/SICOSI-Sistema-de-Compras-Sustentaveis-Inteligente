@@ -1,10 +1,10 @@
 /**
- * Styles for Nudge Sustentável Modal
+ * Styles for sicosi Sustentável Modal
  * Content script modal styling with modern design
  */
 
 /* Modal Overlay */
-.nudge-modal-overlay {
+.sicosi-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -21,18 +21,18 @@
   transition: all 0.3s ease;
 }
 
-.nudge-modal-overlay.nudge-modal-visible {
+.sicosi-modal-overlay.sicosi-modal-visible {
   opacity: 1;
   visibility: visible;
 }
 
-.nudge-modal-overlay.nudge-modal-closing {
+.sicosi-modal-overlay.sicosi-modal-closing {
   opacity: 0;
   visibility: hidden;
 }
 
 /* Modal Content */
-.nudge-modal-content {
+.sicosi-modal-content {
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
@@ -45,12 +45,12 @@
   position: relative;
 }
 
-.nudge-modal-visible .nudge-modal-content {
+.sicosi-modal-visible .sicosi-modal-content {
   transform: scale(1) translateY(0);
 }
 
 /* Modal Header */
-.nudge-modal-header {
+.sicosi-modal-header {
   background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
   color: white;
   padding: 24px;
@@ -60,26 +60,26 @@
   position: relative;
 }
 
-.nudge-modal-icon {
+.sicosi-modal-icon {
   font-size: 32px;
   line-height: 1;
 }
 
-.nudge-modal-title h3 {
+.sicosi-modal-title h3 {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
   line-height: 1.3;
 }
 
-.nudge-modal-subtitle {
+.sicosi-modal-subtitle {
   margin: 4px 0 0 0;
   font-size: 14px;
   opacity: 0.9;
   font-weight: 400;
 }
 
-.nudge-close-btn {
+.sicosi-close-btn {
   position: absolute;
   top: 16px;
   right: 16px;
@@ -97,19 +97,19 @@
   transition: background 0.2s ease;
 }
 
-.nudge-close-btn:hover {
+.sicosi-close-btn:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
 /* Modal Body */
-.nudge-modal-body {
+.sicosi-modal-body {
   padding: 24px;
   max-height: 60vh;
   overflow-y: auto;
 }
 
 /* Current Item Display */
-.nudge-current-item {
+.sicosi-current-item {
   background: #f5f5f5;
   padding: 16px;
   border-radius: 8px;
@@ -120,7 +120,7 @@
 }
 
 /* Suggestion Item */
-.nudge-suggestion-item {
+.sicosi-suggestion-item {
   border: 1px solid #e0e0e0;
   border-radius: 12px;
   padding: 20px;
@@ -129,21 +129,21 @@
   transition: all 0.2s ease;
 }
 
-.nudge-suggestion-item:hover {
+.sicosi-suggestion-item:hover {
   border-color: #4CAF50;
   background: #f8fff8;
   box-shadow: 0 2px 8px rgba(76, 175, 80, 0.1);
 }
 
 /* Suggestion Header with Badges */
-.nudge-suggestion-header {
+.sicosi-suggestion-header {
   display: flex;
   gap: 8px;
   margin-bottom: 16px;
   flex-wrap: wrap;
 }
 
-.nudge-category-badge {
+.sicosi-category-badge {
   background: #2196F3;
   color: white;
   padding: 4px 12px;
@@ -154,7 +154,7 @@
   letter-spacing: 0.5px;
 }
 
-.nudge-impact-badge {
+.sicosi-impact-badge {
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
@@ -163,40 +163,40 @@
   letter-spacing: 0.5px;
 }
 
-.nudge-impact-badge.impact-alto {
+.sicosi-impact-badge.impact-alto {
   background: #4CAF50;
   color: white;
 }
 
-.nudge-impact-badge.impact-médio {
+.sicosi-impact-badge.impact-médio {
   background: #FF9800;
   color: white;
 }
 
-.nudge-impact-badge.impact-baixo {
+.sicosi-impact-badge.impact-baixo {
   background: #9E9E9E;
   color: white;
 }
 
 /* Alternatives List */
-.nudge-alternatives-list {
+.sicosi-alternatives-list {
   margin-bottom: 16px;
 }
 
-.nudge-alternatives-list p {
+.sicosi-alternatives-list p {
   margin: 0 0 12px 0;
   font-weight: 600;
   color: #333;
   font-size: 14px;
 }
 
-.nudge-alternatives-grid {
+.sicosi-alternatives-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.nudge-alternative-btn {
+.sicosi-alternative-btn {
   background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
   color: white;
   border: none;
@@ -210,23 +210,23 @@
   min-width: 120px;
 }
 
-.nudge-alternative-btn:hover {
+.sicosi-alternative-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
   background: linear-gradient(135deg, #45a049 0%, #4CAF50 100%);
 }
 
-.nudge-alternative-btn:active {
+.sicosi-alternative-btn:active {
   transform: translateY(0);
 }
 
 /* Reason/Benefit */
-.nudge-reason {
+.sicosi-reason {
   padding-top: 16px;
   border-top: 1px solid #e0e0e0;
 }
 
-.nudge-benefit {
+.sicosi-benefit {
   margin: 0;
   color: #555;
   font-size: 14px;
@@ -234,7 +234,7 @@
 }
 
 /* Modal Actions */
-.nudge-modal-actions {
+.sicosi-modal-actions {
   display: flex;
   gap: 12px;
   margin-top: 24px;
@@ -242,7 +242,7 @@
   justify-content: center;
 }
 
-.nudge-btn {
+.sicosi-btn {
   padding: 12px 24px;
   border-radius: 8px;
   font-size: 14px;
@@ -258,30 +258,30 @@
   justify-content: center;
 }
 
-.nudge-btn-primary {
+.sicosi-btn-primary {
   background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
   color: white;
 }
 
-.nudge-btn-primary:hover {
+.sicosi-btn-primary:hover {
   background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
 }
 
-.nudge-btn-secondary {
+.sicosi-btn-secondary {
   background: #f5f5f5;
   color: #666;
   border: 1px solid #ddd;
 }
 
-.nudge-btn-secondary:hover {
+.sicosi-btn-secondary:hover {
   background: #e8e8e8;
   color: #333;
 }
 
 /* Modal Footer */
-.nudge-modal-footer {
+.sicosi-modal-footer {
   margin-top: 20px;
   padding-top: 16px;
   border-top: 1px solid #e0e0e0;
@@ -289,88 +289,88 @@
   color: #666;
 }
 
-.nudge-modal-footer small {
+.sicosi-modal-footer small {
   font-size: 12px;
   line-height: 1.4;
 }
 
 /* Scrollbar Styling for Modal Body */
-.nudge-modal-body::-webkit-scrollbar {
+.sicosi-modal-body::-webkit-scrollbar {
   width: 6px;
 }
 
-.nudge-modal-body::-webkit-scrollbar-track {
+.sicosi-modal-body::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 3px;
 }
 
-.nudge-modal-body::-webkit-scrollbar-thumb {
+.sicosi-modal-body::-webkit-scrollbar-thumb {
   background: #c1c1c1;
   border-radius: 3px;
 }
 
-.nudge-modal-body::-webkit-scrollbar-thumb:hover {
+.sicosi-modal-body::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .nudge-modal-content {
+  .sicosi-modal-content {
     width: 95%;
     max-height: 85vh;
     margin: 0 8px;
   }
   
-  .nudge-modal-header {
+  .sicosi-modal-header {
     padding: 20px 16px;
   }
   
-  .nudge-modal-body {
+  .sicosi-modal-body {
     padding: 20px 16px;
   }
   
-  .nudge-modal-actions {
+  .sicosi-modal-actions {
     flex-direction: column;
   }
   
-  .nudge-btn {
+  .sicosi-btn {
     width: 100%;
   }
   
-  .nudge-alternatives-grid {
+  .sicosi-alternatives-grid {
     flex-direction: column;
   }
   
-  .nudge-alternative-btn {
+  .sicosi-alternative-btn {
     width: 100%;
     min-width: auto;
   }
 }
 
 @media (max-width: 480px) {
-  .nudge-modal-header {
+  .sicosi-modal-header {
     padding: 16px;
   }
   
-  .nudge-modal-body {
+  .sicosi-modal-body {
     padding: 16px;
   }
   
-  .nudge-modal-title h3 {
+  .sicosi-modal-title h3 {
     font-size: 18px;
   }
   
-  .nudge-modal-subtitle {
+  .sicosi-modal-subtitle {
     font-size: 13px;
   }
   
-  .nudge-suggestion-item {
+  .sicosi-suggestion-item {
     padding: 16px;
   }
 }
 
 /* Animation for loading states */
-@keyframes nudge-pulse {
+@keyframes sicosi-pulse {
   0% {
     opacity: 1;
   }
@@ -382,39 +382,39 @@
   }
 }
 
-.nudge-loading {
-  animation: nudge-pulse 1.5s ease-in-out infinite;
+.sicosi-loading {
+  animation: sicosi-pulse 1.5s ease-in-out infinite;
 }
 
 /* Focus styles for accessibility */
-.nudge-alternative-btn:focus,
-.nudge-btn:focus,
-.nudge-close-btn:focus {
+.sicosi-alternative-btn:focus,
+.sicosi-btn:focus,
+.sicosi-close-btn:focus {
   outline: 2px solid #4CAF50;
   outline-offset: 2px;
 }
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-  .nudge-modal-content {
+  .sicosi-modal-content {
     border: 2px solid #000;
   }
   
-  .nudge-suggestion-item {
+  .sicosi-suggestion-item {
     border-width: 2px;
   }
 }
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  .nudge-modal-overlay,
-  .nudge-modal-content,
-  .nudge-alternative-btn,
-  .nudge-btn {
+  .sicosi-modal-overlay,
+  .sicosi-modal-content,
+  .sicosi-alternative-btn,
+  .sicosi-btn {
     transition: none;
   }
   
-  .nudge-alternative-btn:hover {
+  .sicosi-alternative-btn:hover {
     transform: none;
   }
 }
