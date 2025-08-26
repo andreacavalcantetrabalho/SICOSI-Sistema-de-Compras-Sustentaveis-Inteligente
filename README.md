@@ -123,25 +123,40 @@ cd SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente
 ### 📁 **Estrutura do Projeto**
 ```
 SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/
-├── 📄 manifest.json                 # Configuração da extensão
+├── 📄 manifest.json                     # Configuração da extensão
+├── 📄 .gitignore                        # Ignora arquivos no Git
+├── 📄 README.md                         # Documentação do projeto
+├── 📁 .qodo/                            # Configurações de ambiente (extensão/IDE)
+├── 📁 assets/                           # Recursos visuais e sons
+│   ├── 📁 icons/                        # Ícones da extensão
+│   ├── 📁 images/                       # Imagens usadas
+│   └── 📁 sounds/                       # Sons usados
 ├── 📁 scripts/
-│   ├── content-script.js           # Lógica principal
-│   ├── background.js               # Buscas e APIs
-│   └── popup.js                    # Interface do popup
+│   ├── background.js                    # Buscas e APIs
+│   ├── content-script.js                # Lógica principal
+│   ├── popup.js                         # Interface do popup
+│   ├── options.js                       # Script da página de opções
+│   └── welcome.js                       # Script da página de boas-vindas
 ├── 📁 styles/
-│   ├── content-modal.css           # Visual do modal
-│   ├── popup.css                   # Estilos do popup
-│   └── common.css                  # Estilos compartilhados
+│   ├── common.css                       # Estilos compartilhados
+│   ├── content-modal.css                # Visual do modal
+│   ├── options.css                      # Estilos da página de opções
+│   └── popup.css                        # Estilos do popup
 ├── 📁 pages/
-│   ├── popup.html                  # Popup da extensão
-│   └── options.html                # Página de configurações
+│   ├── options.html                     # Página de configurações
+│   ├── popup.html                       # Popup da extensão
+│   └── welcome.html                     # Página de boas-vindas
 ├── 📁 database/
-│   ├── sustainable-alternatives.json  # Alternativas mapeadas
-│   └── keywords-mapping.json          # Palavras-chave
+│   ├── keywords-mapping.json            # Palavras-chave
+│   ├── suppliers-database.json          # Base de fornecedores
+│   └── sustainable-alternatives.json    # Alternativas sustentáveis
 └── 📁 utils/
-    ├── catalog-analyzer.js         # Análise do catálogo
-    ├── web-search.js              # Buscas externas
-    └── storage-manager.js         # Gerenciamento de dados
+    ├── api-client.js                    # Cliente de APIs externas
+    ├── catalog-analyzer.js              # Análise do catálogo
+    ├── dom-helper.js                    # Funções auxiliares de DOM
+    ├── storage-manager.js               # Gerenciamento de dados
+    └── web-search.js                    # Buscas externas
+
 ```
 
 ### 🔧 **Tecnologias**
