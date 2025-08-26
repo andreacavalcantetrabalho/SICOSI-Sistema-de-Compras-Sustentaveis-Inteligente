@@ -1,0 +1,301 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-01-26",
+  "description": "Base de dados de alternativas sustentáveis para produtos não-ecológicos",
+  "categories": {
+    "descartaveis": {
+      "copo_descartavel": {
+        "keywords": ["copo descartável", "copo plástico", "copo polietileno", "copo polipropileno"],
+        "alternatives": [
+          {
+            "name": "Copo biodegradável",
+            "material": "PLA (Ácido Polilático)",
+            "search_terms": ["copo biodegradável", "copo PLA", "copo compostável"],
+            "benefits": ["Decompõe em 90-180 dias", "Feito de fontes renováveis", "Compostável industrialmente"],
+            "certifications": ["ASTM D6400", "EN 13432"],
+            "estimated_cost": "15-30% mais caro"
+          },
+          {
+            "name": "Copo de papel reciclado",
+            "material": "Papel reciclado com revestimento vegetal",
+            "search_terms": ["copo papel reciclado", "copo kraft", "copo papel certificado"],
+            "benefits": ["100% reciclável", "Menor pegada de carbono", "Fonte renovável"],
+            "certifications": ["FSC", "PEFC"],
+            "estimated_cost": "Neutro a 10% mais caro"
+          },
+          {
+            "name": "Copo de bagaço de cana",
+            "material": "Fibra de bagaço de cana-de-açúcar",
+            "search_terms": ["copo bagaço", "copo fibra natural", "copo cana"],
+            "benefits": ["Resíduo agrícola aproveitado", "Biodegradável", "Resistente"],
+            "certifications": ["BPI", "ASTM D6868"],
+            "estimated_cost": "10-20% mais caro"
+          }
+        ],
+        "category": "Descartáveis",
+        "impact_level": "Alto",
+        "reason": "Substitui plástico não-biodegradável que pode levar centenas de anos para decompor"
+      },
+      "prato_descartavel": {
+        "keywords": ["prato descartável", "prato plástico", "prato isopor", "prato poliestireno"],
+        "alternatives": [
+          {
+            "name": "Prato de papel reciclado",
+            "material": "Papel reciclado prensado",
+            "search_terms": ["prato papel reciclado", "prato cartão", "prato biodegradável"],
+            "benefits": ["Totalmente reciclável", "Biodegradável", "Resistente a líquidos"],
+            "certifications": ["FSC"],
+            "estimated_cost": "Neutro"
+          },
+          {
+            "name": "Prato de folha de palmeira",
+            "material": "Folhas naturais prensadas",
+            "search_terms": ["prato folha palmeira", "prato natural", "prato ecológico"],
+            "benefits": ["100% natural", "Compostável em casa", "Resistente"],
+            "certifications": ["Orgânico"],
+            "estimated_cost": "20-40% mais caro"
+          }
+        ],
+        "category": "Descartáveis",
+        "impact_level": "Alto",
+        "reason": "Evita plásticos que se fragmentam em microplásticos"
+      },
+      "talher_descartavel": {
+        "keywords": ["talher descartável", "talher plástico", "garfo descartável", "colher descartável"],
+        "alternatives": [
+          {
+            "name": "Talher de bambu",
+            "material": "Bambu natural",
+            "search_terms": ["talher bambu", "garfo bambu", "colher bambu"],
+            "benefits": ["Renovável", "Biodegradável", "Reutilizável"],
+            "certifications": ["FSC"],
+            "estimated_cost": "50-80% mais caro"
+          },
+          {
+            "name": "Talher compostável",
+            "material": "Amido de milho",
+            "search_terms": ["talher compostável", "talher PLA", "talher biodegradável"],
+            "benefits": ["Compostável", "Resistente", "Aparência similar ao plástico"],
+            "certifications": ["ASTM D6400"],
+            "estimated_cost": "30-50% mais caro"
+          }
+        ],
+        "category": "Descartáveis",
+        "impact_level": "Alto",
+        "reason": "Bambu cresce rapidamente e é totalmente biodegradável"
+      }
+    },
+    "papel": {
+      "papel_sulfite": {
+        "keywords": ["papel sulfite", "papel a4", "papel branco", "papel ofício"],
+        "alternatives": [
+          {
+            "name": "Papel reciclado",
+            "material": "Fibras recicladas pós-consumo",
+            "search_terms": ["papel reciclado", "papel ecológico", "papel sustentável"],
+            "benefits": ["Reduz desmatamento", "Menor gasto de água", "Menor energia na produção"],
+            "certifications": ["FSC Recycled"],
+            "estimated_cost": "Neutro a 5% mais barato"
+          },
+          {
+            "name": "Papel FSC",
+            "material": "Fibras de florestas certificadas",
+            "search_terms": ["papel FSC", "papel certificado", "papel floresta responsável"],
+            "benefits": ["Manejo florestal responsável", "Rastreabilidade", "Qualidade superior"],
+            "certifications": ["FSC Mix", "FSC 100%"],
+            "estimated_cost": "5-15% mais caro"
+          }
+        ],
+        "category": "Papel",
+        "impact_level": "Médio",
+        "reason": "Certificação garante origem sustentável e manejo florestal responsável"
+      },
+      "papel_toalha": {
+        "keywords": ["papel toalha", "toalha papel", "papel absorvente"],
+        "alternatives": [
+          {
+            "name": "Papel toalha reciclado",
+            "material": "100% fibras recicladas",
+            "search_terms": ["papel toalha reciclado", "toalha ecológica"],
+            "benefits": ["Reduz resíduos", "Menor impacto ambiental", "Boa absorção"],
+            "certifications": ["FSC Recycled"],
+            "estimated_cost": "Neutro"
+          },
+          {
+            "name": "Pano reutilizável",
+            "material": "Microfibra ou algodão",
+            "search_terms": ["pano microfibra", "toalha reutilizável", "pano limpeza"],
+            "benefits": ["Reutilizável centenas de vezes", "Economia a longo prazo", "Maior eficiência"],
+            "certifications": ["OEKO-TEX"],
+            "estimated_cost": "Economia de 70% a longo prazo"
+          }
+        ],
+        "category": "Papel",
+        "impact_level": "Médio",
+        "reason": "Opções reutilizáveis reduzem drasticamente o consumo"
+      }
+    },
+    "limpeza": {
+      "detergente": {
+        "keywords": ["detergente", "sabão líquido", "detergente neutro"],
+        "alternatives": [
+          {
+            "name": "Detergente biodegradável",
+            "material": "Surfactantes vegetais",
+            "search_terms": ["detergente biodegradável", "detergente ecológico", "sabão verde"],
+            "benefits": ["Não contamina águas", "Ingredientes naturais", "Embalagem reciclável"],
+            "certifications": ["IBAMA", "Ecolabel"],
+            "estimated_cost": "10-25% mais caro"
+          },
+          {
+            "name": "Detergente concentrado",
+            "material": "Fórmula ultra concentrada",
+            "search_terms": ["detergente concentrado", "detergente ultra", "sabão concentrado"],
+            "benefits": ["Menos embalagem", "Menor transporte", "Maior rendimento"],
+            "certifications": ["Compact by Design"],
+            "estimated_cost": "15-30% economia no uso"
+          }
+        ],
+        "category": "Limpeza",
+        "impact_level": "Alto",
+        "reason": "Ingredientes biodegradáveis não acumulam no meio ambiente"
+      },
+      "desinfetante": {
+        "keywords": ["desinfetante", "álcool gel", "sanitizante"],
+        "alternatives": [
+          {
+            "name": "Desinfetante natural",
+            "material": "Óleos essenciais e álcool vegetal",
+            "search_terms": ["desinfetante natural", "sanitizante ecológico", "álcool vegetal"],
+            "benefits": ["Ingredientes naturais", "Menos químicos tóxicos", "Aromas naturais"],
+            "certifications": ["Ecocert", "IBAMA"],
+            "estimated_cost": "20-40% mais caro"
+          }
+        ],
+        "category": "Limpeza",
+        "impact_level": "Médio",
+        "reason": "Reduz exposição a químicos sintéticos agressivos"
+      }
+    },
+    "equipamentos": {
+      "impressora": {
+        "keywords": ["impressora", "multifuncional", "scanner"],
+        "alternatives": [
+          {
+            "name": "Impressora Energy Star",
+            "material": "Componentes eficientes energeticamente",
+            "search_terms": ["impressora energy star", "impressora eficiente", "impressora ecológica"],
+            "benefits": ["30-50% menos energia", "Modo hibernação", "Menor emissão de calor"],
+            "certifications": ["Energy Star", "EPEAT"],
+            "estimated_cost": "Neutro a 10% mais caro"
+          },
+          {
+            "name": "Impressora EPEAT Gold",
+            "material": "Materiais recicláveis",
+            "search_terms": ["impressora EPEAT", "impressora sustentável", "impressora reciclável"],
+            "benefits": ["95% dos materiais recicláveis", "Menor toxicidade", "Design duradouro"],
+            "certifications": ["EPEAT Gold"],
+            "estimated_cost": "5-15% mais caro"
+          }
+        ],
+        "category": "Equipamentos",
+        "impact_level": "Médio",
+        "reason": "Reduz consumo energético e facilita reciclagem no fim da vida útil"
+      },
+      "computador": {
+        "keywords": ["computador", "desktop", "pc", "workstation"],
+        "alternatives": [
+          {
+            "name": "Computador Energy Star",
+            "material": "Componentes de baixo consumo",
+            "search_terms": ["computador energy star", "pc eficiente", "desktop ecológico"],
+            "benefits": ["Menor consumo energético", "Menos calor gerado", "Vida útil maior"],
+            "certifications": ["Energy Star"],
+            "estimated_cost": "Neutro"
+          },
+          {
+            "name": "Computador renovado certificado",
+            "material": "Equipamento recondicionado",
+            "search_terms": ["computador renovado", "pc recertificado", "desktop usado"],
+            "benefits": ["Evita descarte", "Menor custo", "Performance adequada"],
+            "certifications": ["Microsoft Authorized Refurbisher"],
+            "estimated_cost": "30-50% mais barato"
+          }
+        ],
+        "category": "Equipamentos",
+        "impact_level": "Alto",
+        "reason": "Equipamentos renovados evitam descarte e nova produção"
+      }
+    },
+    "embalagens": {
+      "saco_plastico": {
+        "keywords": ["saco plástico", "sacola plástica", "embalagem plástica"],
+        "alternatives": [
+          {
+            "name": "Saco biodegradável",
+            "material": "Amido de mandioca ou milho",
+            "search_terms": ["saco biodegradável", "sacola compostável", "embalagem verde"],
+            "benefits": ["Decompõe em 180 dias", "Não tóxico", "Compostável"],
+            "certifications": ["ASTM D6400"],
+            "estimated_cost": "40-60% mais caro"
+          },
+          {
+            "name": "Saco de papel kraft",
+            "material": "Papel kraft reciclado",
+            "search_terms": ["saco papel", "sacola kraft", "embalagem papel"],
+            "benefits": ["Totalmente reciclável", "Biodegradável", "Resistente"],
+            "certifications": ["FSC"],
+            "estimated_cost": "20-30% mais caro"
+          }
+        ],
+        "category": "Embalagens",
+        "impact_level": "Alto",
+        "reason": "Evita acúmulo de plástico no meio ambiente"
+      }
+    }
+  },
+  "search_strategies": {
+    "catalog_terms": {
+      "biodegradavel": ["biodegradável", "compostável", "eco"],
+      "reciclado": ["reciclado", "reciclável", "sustentável"],
+      "certificado": ["FSC", "Energy Star", "EPEAT", "certificado"],
+      "natural": ["bambu", "papel", "natural", "vegetal"]
+    },
+    "exclusion_terms": ["convencional", "comum", "barato", "tradicional"],
+    "priority_order": ["biodegradável", "reciclado", "certificado", "eficiente", "natural"]
+  },
+  "impact_calculator": {
+    "plastic_cups": {
+      "annual_usage_estimate": 10000,
+      "co2_saved_per_unit": 0.05,
+      "waste_reduction_grams": 8
+    },
+    "paper": {
+      "annual_usage_estimate": 500000,
+      "co2_saved_per_unit": 0.001,
+      "water_saved_liters": 0.01
+    }
+  },
+  "supplier_database": {
+    "verified_suppliers": [
+      {
+        "name": "EcoSupplies Brasil",
+        "specialty": "Descartáveis biodegradáveis",
+        "certifications": ["ISO 14001", "FSC"],
+        "website": "https://ecosupplies.com.br"
+      },
+      {
+        "name": "GreenOffice",
+        "specialty": "Produtos de escritório sustentáveis",
+        "certifications": ["ABNT", "FSC"],
+        "website": "https://greenoffice.com.br"
+      },
+      {
+        "name": "CleanGreen",
+        "specialty": "Produtos de limpeza ecológicos",
+        "certifications": ["IBAMA", "Ecolabel"],
+        "website": "https://cleangreen.com.br"
+      }
+    ]
+  }
+}
