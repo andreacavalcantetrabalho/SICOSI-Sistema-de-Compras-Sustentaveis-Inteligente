@@ -1,0 +1,322 @@
+{
+  "version": "1.0.0",
+  "schemaVersion": "1.0",
+  "lastUpdated": "2025-01-26",
+  "description": "Configurações padrão do SICOSI - Sistema de Compras Sustentáveis Inteligente",
+  
+  "extension": {
+    "enabled": true,
+    "firstRun": true,
+    "installDate": null,
+    "version": "1.0.0"
+  },
+  
+  "categories": {
+    "descartaveis": {
+      "enabled": true,
+      "priority": "high",
+      "detectionSensitivity": 0.8,
+      "autoSuggest": true,
+      "keywords": [
+        "copo descartável", "prato descartável", "talher descartável",
+        "copo plástico", "prato plástico", "talher plástico"
+      ]
+    },
+    "papel": {
+      "enabled": true,
+      "priority": "medium",
+      "detectionSensitivity": 0.7,
+      "autoSuggest": true,
+      "keywords": [
+        "papel sulfite", "papel a4", "papel ofício",
+        "resma papel", "bloco papel"
+      ]
+    },
+    "limpeza": {
+      "enabled": true,
+      "priority": "high",
+      "detectionSensitivity": 0.8,
+      "autoSuggest": true,
+      "keywords": [
+        "detergente", "sabão líquido", "desinfetante",
+        "alvejante", "amaciante", "multiuso"
+      ]
+    },
+    "equipamentos": {
+      "enabled": true,
+      "priority": "medium",
+      "detectionSensitivity": 0.6,
+      "autoSuggest": true,
+      "keywords": [
+        "impressora", "computador", "monitor",
+        "notebook", "scanner", "multifuncional"
+      ]
+    },
+    "embalagens": {
+      "enabled": true,
+      "priority": "high",
+      "detectionSensitivity": 0.8,
+      "autoSuggest": true,
+      "keywords": [
+        "saco plástico", "sacola plástica", "embalagem plástica",
+        "filme plástico", "envelope"
+      ]
+    }
+  },
+  
+  "notifications": {
+    "modal": {
+      "enabled": true,
+      "position": "center",
+      "animation": "fade",
+      "autoClose": true,
+      "autoCloseDelay": 15000,
+      "showOnce": false,
+      "rememberDismissed": false
+    },
+    "sound": {
+      "enabled": false,
+      "volume": 0.5,
+      "soundFile": "notification.mp3"
+    },
+    "browser": {
+      "enabled": false,
+      "requirePermission": true,
+      "icon": "assets/icons/icon48.png"
+    },
+    "frequency": {
+      "maxPerSession": 10,
+      "maxPerPage": 3,
+      "cooldownPeriod": 30000
+    }
+  },
+  
+  "behavior": {
+    "detection": {
+      "debounceDelay": 800,
+      "minimumConfidence": 0.6,
+      "contextAnalysis": true,
+      "fuzzyMatching": true
+    },
+    "suggestions": {
+      "maxAlternatives": 5,
+      "prioritizeLocal": true,
+      "includeExternal": true,
+      "showPricing": true,
+      "showCertifications": true
+    },
+    "interaction": {
+      "modalShowDelay": 500,
+      "clickToSearch": true,
+      "autoFillSearch": false,
+      "trackUserChoices": true
+    }
+  },
+  
+  "search": {
+    "internal": {
+      "enabled": true,
+      "priority": 1,
+      "timeout": 3000,
+      "maxResults": 10
+    },
+    "external": {
+      "enabled": true,
+      "priority": 2,
+      "timeout": 5000,
+      "maxResults": 5,
+      "sources": {
+        "mercadolivre": {
+          "enabled": true,
+          "weight": 0.4
+        },
+        "google_shopping": {
+          "enabled": true,
+          "weight": 0.3
+        },
+        "supplier_directories": {
+          "enabled": true,
+          "weight": 0.3
+        }
+      }
+    },
+    "caching": {
+      "enabled": true,
+      "duration": 3600000,
+      "maxEntries": 500,
+      "clearOnUpdate": true
+    }
+  },
+  
+  "privacy": {
+    "analytics": {
+      "enabled": true,
+      "anonymized": true,
+      "localOnly": false,
+      "includePerformance": true
+    },
+    "logging": {
+      "enabled": true,
+      "level": "info",
+      "maxEntries": 100,
+      "includeErrors": true,
+      "includeTiming": false
+    },
+    "dataCollection": {
+      "userInteractions": true,
+      "searchQueries": false,
+      "pageUrls": false,
+      "personalInfo": false
+    }
+  },
+  
+  "performance": {
+    "optimization": {
+      "lazyLoading": true,
+      "preloadData": false,
+      "cacheImages": true,
+      "compressData": false
+    },
+    "limits": {
+      "maxConcurrentRequests": 3,
+      "requestTimeout": 5000,
+      "retryAttempts": 2,
+      "rateLimitDelay": 1000
+    }
+  },
+  
+  "ui": {
+    "theme": {
+      "mode": "auto",
+      "primaryColor": "#4CAF50",
+      "accentColor": "#45a049",
+      "followSystemTheme": true
+    },
+    "modal": {
+      "width": "600px",
+      "maxHeight": "80vh",
+      "borderRadius": "16px",
+      "backdrop": "blur",
+      "closeOnBackdrop": true,
+      "showCloseButton": true
+    },
+    "accessibility": {
+      "highContrast": false,
+      "reducedMotion": false,
+      "keyboardNavigation": true,
+      "screenReaderSupport": true
+    }
+  },
+  
+  "advanced": {
+    "debug": {
+      "enabled": false,
+      "verboseLogging": false,
+      "showTiming": false,
+      "trackMemory": false
+    },
+    "experimental": {
+      "enabled": false,
+      "features": {
+        "aiSuggestions": false,
+        "predictiveSearch": false,
+        "batchProcessing": false
+      }
+    },
+    "developer": {
+      "apiMocking": true,
+      "testMode": false,
+      "bypassCache": false,
+      "simulateErrors": false
+    }
+  },
+  
+  "compliance": {
+    "accessibility": {
+      "wcag": "AA",
+      "colorContrast": 4.5,
+      "focusIndicators": true,
+      "altText": true
+    },
+    "privacy": {
+      "gdprCompliant": true,
+      "lgpdCompliant": true,
+      "dataRetention": 365,
+      "userConsent": true
+    }
+  },
+  
+  "integrations": {
+    "comprasnet": {
+      "selectors": {
+        "searchInput": [
+          "body > app-root > div > main > app-busca input",
+          ".p-autocomplete-input",
+          "input[placeholder*='Digite aqui o material']"
+        ],
+        "selectButtons": [
+          "button:contains('Selecionar')",
+          ".btn:contains('Selecionar')"
+        ],
+        "itemDetails": [
+          "[class*='pdm']",
+          ".item-details",
+          ".product-info"
+        ]
+      },
+      "timing": {
+        "pageLoadWait": 1000,
+        "elementWait": 2000,
+        "searchDelay": 500
+      }
+    }
+  },
+  
+  "localization": {
+    "language": "pt-BR",
+    "region": "Brasil",
+    "currency": "BRL",
+    "dateFormat": "DD/MM/YYYY",
+    "numberFormat": "pt-BR",
+    "timezone": "America/Sao_Paulo"
+  },
+  
+  "updates": {
+    "checkForUpdates": true,
+    "updateInterval": 86400000,
+    "autoUpdate": false,
+    "notifyUpdates": true,
+    "betaChannel": false
+  },
+  
+  "backup": {
+    "autoBackup": false,
+    "backupInterval": 604800000,
+    "maxBackups": 5,
+    "includeStatistics": true,
+    "cloudSync": false
+  },
+  
+  "statistics": {
+    "tracking": {
+      "modalShown": true,
+      "alternativesSelected": true,
+      "categoriesUsed": true,
+      "impactMetrics": true,
+      "performanceMetrics": false
+    },
+    "retention": {
+      "period": 365,
+      "aggregateOldData": true,
+      "deleteAfterPeriod": false
+    }
+  },
+  
+  "onboarding": {
+    "showWelcome": true,
+    "showTutorial": true,
+    "highlightFeatures": true,
+    "requestPermissions": true,
+    "setupCategories": true
+  }
+}
