@@ -1,0 +1,16 @@
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/settings.json
+.idea/
+
+# Chaves de API sensíveis
+config/api-keys.js
+
+# Logs
+*.log
+
+# Apenas se gerar pacote final
+*.zip

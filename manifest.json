@@ -1,0 +1,80 @@
+{
+  "manifest_version": 3,
+  "name": "Nudge Sustentável - ComprasNet",
+  "version": "1.0.0",
+  "description": "Extensão que sugere alternativas sustentáveis durante o cadastro de itens no ComprasNet para compras públicas",
+  
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  
+  "host_permissions": [
+    "*://compras.gov.br/*",
+    "*://*.compras.gov.br/*",
+    "*://catalogo.compras.gov.br/*"
+  ],
+  
+  "content_scripts": [
+    {
+      "matches": [
+        "*://compras.gov.br/*",
+        "*://*.compras.gov.br/*",
+        "*://catalogo.compras.gov.br/*"
+      ],
+      "js": [
+        "utils/constants.js",
+        "utils/storage-manager.js",
+        "utils/dom-helpers.js",
+        "utils/catalog-analyzer.js",
+        "scripts/content-script.js"
+      ],
+      "css": [
+        "styles/common.css",
+        "styles/content-modal.css"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  
+  "background": {
+    "service_worker": "scripts/background.js",
+    "type": "module"
+  },
+  
+  "action": {
+    "default_popup": "pages/popup.html",
+    "default_title": "Nudge Sustentável",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    }
+  },
+  
+  "options_page": "pages/options.html",
+  
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
+  
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/images/*",
+        "database/*",
+        "assets/sounds/*"
+      ],
+      "matches": [
+        "*://compras.gov.br/*",
+        "*://*.compras.gov.br/*"
+      ]
+    }
+  ],
+  
+  "author": "Projeto Nudge Sustentável",
+  "homepage_url": "https://github.com/toticavalcanti/nudge-sustentavel-comprasnet"
+}
