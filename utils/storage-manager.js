@@ -1,12 +1,12 @@
 /**
- * Storage Manager - Nudge Sustentável
+ * Storage Manager - SICOSI Sustentável
  * Gerencia armazenamento de dados da extensão usando Chrome Storage API
  */
 
 class StorageManager {
   constructor() {
-    this.storageKeys = window.NudgeConstants.CACHE_CONFIG.KEYS;
-    this.defaultExpiry = window.NudgeConstants.CACHE_CONFIG.DEFAULT_EXPIRY;
+    this.storageKeys = window.SICOSIConstants.CACHE_CONFIG.KEYS;
+    this.defaultExpiry = window.SICOSIConstants.CACHE_CONFIG.DEFAULT_EXPIRY;
   }
 
   /**
@@ -21,9 +21,9 @@ class StorageManager {
           timestamp: Date.now()
         }
       });
-      console.log('Nudge Storage: Configurações salvas:', settings);
+      console.log('SICOSI Storage: Configurações salvas:', settings);
     } catch (error) {
-      console.error('Nudge Storage: Erro ao salvar configurações:', error);
+      console.error('SICOSI Storage: Erro ao salvar configurações:', error);
       throw error;
     }
   }
@@ -40,15 +40,15 @@ class StorageManager {
       if (stored && stored.data) {
         // Mesclar com configurações padrão para garantir compatibilidade
         return {
-          ...window.NudgeConstants.DEFAULT_SETTINGS,
+          ...window.SICOSIConstants.DEFAULT_SETTINGS,
           ...stored.data
         };
       }
       
-      return window.NudgeConstants.DEFAULT_SETTINGS;
+      return window.SICOSIConstants.DEFAULT_SETTINGS;
     } catch (error) {
-      console.error('Nudge Storage: Erro ao carregar configurações:', error);
-      return window.NudgeConstants.DEFAULT_SETTINGS;
+      console.error('SICOSI Storage: Erro ao carregar configurações:', error);
+      return window.SICOSIConstants.DEFAULT_SETTINGS;
     }
   }
 
@@ -71,9 +71,9 @@ class StorageManager {
         [cacheKey]: cacheData
       });
 
-      console.log(`Nudge Storage: Cache salvo para "${keyword}":`, alternatives.length, 'alternativas');
+      console.log(`SICOSI Storage: Cache salvo para "${keyword}":`, alternatives.length, 'alternativas');
     } catch (error) {
-      console.error('Nudge Storage: Erro ao salvar cache:', error);
+      console.error('SICOSI Storage: Erro ao salvar cache:', error);
     }
   }
 
@@ -89,19 +89,19 @@ class StorageManager {
       const cached = result[cacheKey];
 
       if (cached && cached.expires > Date.now()) {
-        console.log(`Nudge Storage: Cache hit para "${keyword}"`);
+        console.log(`SICOSI Storage: Cache hit para "${keyword}"`);
         return cached.data;
       }
 
       if (cached) {
         // Cache expirado, remover
         await chrome.storage.local.remove([cacheKey]);
-        console.log(`Nudge Storage: Cache expirado removido para "${keyword}"`);
+        console.log(`SICOSI Storage: Cache expirado removido para "${keyword}"`);
       }
 
       return null;
     } catch (error) {
-      console.error('Nudge Storage: Erro ao recuperar cache:', error);
+      console.error('SICOSI Storage: Erro ao recuperar cache:', error);
       return null;
     }
   }
@@ -123,9 +123,9 @@ class StorageManager {
         [this.storageKeys.STATISTICS]: updated
       });
 
-      console.log('Nudge Storage: Estatísticas atualizadas:', updated);
+      console.log('SICOSI Storage: Estatísticas atualizadas:', updated);
     } catch (error) {
-      console.error('Nudge Storage: Erro ao salvar estatísticas:', error);
+      console.error('SICOSI Storage: Erro ao salvar estatísticas:', error);
     }
   }
 
@@ -150,7 +150,7 @@ class StorageManager {
         lastUpdated: Date.now()
       };
     } catch (error) {
-      console.error('Nudge Storage: Erro ao carregar estatísticas:', error);
+      console.error('SICOSI Storage: Erro ao carregar estatísticas:', error);
       return {};
     }
   }
@@ -173,29 +173,29 @@ class StorageManager {
       };
 
       // Carregar logs existentes
-      const result = await chrome.storage.local.get([window.NudgeConstants.ANALYTICS_CONFIG.STORAGE_KEY]);
-      const logs = result[window.NudgeConstants.ANALYTICS_CONFIG.STORAGE_KEY] || [];
+      const result = await chrome.storage.local.get([window.SICOSIConstants.ANALYTICS_CONFIG.STORAGE_KEY]);
+      const logs = result[window.SICOSIConstants.ANALYTICS_CONFIG.STORAGE_KEY] || [];
       
       // Adicionar novo log
       logs.push(logEntry);
 
       // Manter apenas os logs mais recentes
-      const maxLogs = window.NudgeConstants.ANALYTICS_CONFIG.MAX_LOGS;
+      const maxLogs = window.SICOSIConstants.ANALYTICS_CONFIG.MAX_LOGS;
       if (logs.length > maxLogs) {
         logs.splice(0, logs.length - maxLogs);
       }
 
       // Salvar logs atualizados
       await chrome.storage.local.set({
-        [window.NudgeConstants.ANALYTICS_CONFIG.STORAGE_KEY]: logs
+        [window.SICOSIConstants.ANALYTICS_CONFIG.STORAGE_KEY]: logs
       });
 
       // Atualizar estatísticas resumidas
       await this.updateStatisticsFromEvent(event, details, metadata);
 
-      console.log('Nudge Analytics:', logEntry);
+      console.log('SICOSI Analytics:', logEntry);
     } catch (error) {
-      console.error('Nudge Storage: Erro ao salvar analytics:', error);
+      console.error('SICOSI Storage: Erro ao salvar analytics:', error);
     }
   }
 
@@ -210,11 +210,11 @@ class StorageManager {
     const updated = { ...current };
 
     switch (event) {
-      case window.NudgeConstants.ANALYTICS_CONFIG.EVENTS.MODAL_SHOWN:
+      case window.SICOSIConstants.ANALYTICS_CONFIG.EVENTS.MODAL_SHOWN:
         updated.modalShown = (updated.modalShown || 0) + 1;
         break;
       
-      case window.NudgeConstants.ANALYTICS_CONFIG.EVENTS.ALTERNATIVE_SELECTED:
+      case window.SICOSIConstants.ANALYTICS_CONFIG.EVENTS.ALTERNATIVE_SELECTED:
         updated.alternativesSelected = (updated.alternativesSelected || 0) + 1;
         
         // Calcular impacto estimado
@@ -224,7 +224,7 @@ class StorageManager {
           updated.categoriesUsed[category] = (updated.categoriesUsed[category] || 0) + 1;
           
           // Estimar economia de CO2 e resíduos
-          const impactData = window.NudgeConstants.impact_calculator || {};
+          const impactData = window.SICOSIConstants.impact_calculator || {};
           if (impactData[category]) {
             updated.impactMetrics = updated.impactMetrics || {};
             updated.impactMetrics.estimatedCO2Saved = 
@@ -237,11 +237,11 @@ class StorageManager {
         }
         break;
       
-      case window.NudgeConstants.ANALYTICS_CONFIG.EVENTS.MODAL_DISMISSED:
+      case window.SICOSIConstants.ANALYTICS_CONFIG.EVENTS.MODAL_DISMISSED:
         updated.modalsDismissed = (updated.modalsDismissed || 0) + 1;
         break;
       
-      case window.NudgeConstants.ANALYTICS_CONFIG.EVENTS.SEARCH_PERFORMED:
+      case window.SICOSIConstants.ANALYTICS_CONFIG.EVENTS.SEARCH_PERFORMED:
         updated.searchesPerformed = (updated.searchesPerformed || 0) + 1;
         break;
     }
@@ -256,12 +256,12 @@ class StorageManager {
    */
   async getAnalyticsLogs(limit = 50) {
     try {
-      const result = await chrome.storage.local.get([window.NudgeConstants.ANALYTICS_CONFIG.STORAGE_KEY]);
-      const logs = result[window.NudgeConstants.ANALYTICS_CONFIG.STORAGE_KEY] || [];
+      const result = await chrome.storage.local.get([window.SICOSIConstants.ANALYTICS_CONFIG.STORAGE_KEY]);
+      const logs = result[window.SICOSIConstants.ANALYTICS_CONFIG.STORAGE_KEY] || [];
       
       return logs.slice(-limit).reverse(); // Últimos logs, mais recentes primeiro
     } catch (error) {
-      console.error('Nudge Storage: Erro ao recuperar logs:', error);
+      console.error('SICOSI Storage: Erro ao recuperar logs:', error);
       return [];
     }
   }
@@ -286,10 +286,10 @@ class StorageManager {
 
       if (keysToRemove.length > 0) {
         await chrome.storage.local.remove(keysToRemove);
-        console.log(`Nudge Storage: ${keysToRemove.length} caches expirados removidos`);
+        console.log(`SICOSI Storage: ${keysToRemove.length} caches expirados removidos`);
       }
     } catch (error) {
-      console.error('Nudge Storage: Erro ao limpar cache:', error);
+      console.error('SICOSI Storage: Erro ao limpar cache:', error);
     }
   }
 
@@ -311,7 +311,7 @@ class StorageManager {
         version: chrome.runtime.getManifest().version
       };
     } catch (error) {
-      console.error('Nudge Storage: Erro ao exportar dados:', error);
+      console.error('SICOSI Storage: Erro ao exportar dados:', error);
       throw error;
     }
   }
@@ -332,9 +332,9 @@ class StorageManager {
         await chrome.storage.local.set(backupData.local);
       }
 
-      console.log('Nudge Storage: Dados importados com sucesso');
+      console.log('SICOSI Storage: Dados importados com sucesso');
     } catch (error) {
-      console.error('Nudge Storage: Erro ao importar dados:', error);
+      console.error('SICOSI Storage: Erro ao importar dados:', error);
       throw error;
     }
   }
@@ -348,9 +348,9 @@ class StorageManager {
         chrome.storage.sync.clear(),
         chrome.storage.local.clear()
       ]);
-      console.log('Nudge Storage: Todos os dados foram limpos');
+      console.log('SICOSI Storage: Todos os dados foram limpos');
     } catch (error) {
-      console.error('Nudge Storage: Erro ao limpar dados:', error);
+      console.error('SICOSI Storage: Erro ao limpar dados:', error);
       throw error;
     }
   }
@@ -379,16 +379,16 @@ class StorageManager {
         }
       };
     } catch (error) {
-      console.error('Nudge Storage: Erro ao obter uso de storage:', error);
+      console.error('SICOSI Storage: Erro ao obter uso de storage:', error);
       return null;
     }
   }
 }
 
 // Tornar disponível globalmente
-window.NudgeStorage = new StorageManager();
+window.SICOSIStorage = new StorageManager();
 
 // Limpar cache expirado a cada hora
 setInterval(() => {
-  window.NudgeStorage.clearExpiredCache();
+  window.SICOSIStorage.clearExpiredCache();
 }, 60 * 60 * 1000);

@@ -1,5 +1,5 @@
 /**
- * Content Script - Nudge Sustentável
+ * Content Script - SICOSI
  * Script principal que monitora o ComprasNet e exibe sugestões sustentáveis
  */
 
@@ -7,10 +7,10 @@
   'use strict';
 
   // Verificar se já foi inicializado para evitar múltiplas execuções
-  if (window.nudgeSustentavelInitialized) {
+  if (window.SICOSISustentavelInitialized) {
     return;
   }
-  window.nudgeSustentavelInitialized = true;
+  window.SICOSISustentavelInitialized = true;
 
   // Variáveis globais do script
   let currentModal = null;
@@ -31,11 +31,11 @@
    */
   async function init() {
     try {
-      console.log('Nudge Sustentável: Inicializando extensão...');
+      console.log('SICOSI: Inicializando extensão...');
       
       // Verificar se estamos em uma página do ComprasNet
       if (!isComprasNetPage()) {
-        console.log('Nudge Sustentável: Não é uma página do ComprasNet');
+        console.log('SICOSI: Não é uma página do ComprasNet');
         return;
       }
 
@@ -48,9 +48,9 @@
       // Monitorar elementos existentes
       monitorExistingElements();
       
-      console.log('Nudge Sustentável: Extensão inicializada com sucesso');
+      console.log('SICOSI: Extensão inicializada com sucesso');
     } catch (error) {
-      console.error('Nudge Sustentável: Erro na inicialização:', error);
+      console.error('SICOSI: Erro na inicialização:', error);
       logAnalytics('error_occurred', 'initialization_failed');
     }
   }
@@ -62,7 +62,7 @@
     const currentUrl = window.location.href;
     const hostname = window.location.hostname;
     
-    return hostname.includes(window.NudgeConstants.COMPRASNET_URLS.MAIN_DOMAIN) ||
+    return hostname.includes(window.SICOSIConstants.COMPRASNET_URLS.MAIN_DOMAIN) ||
            currentUrl.includes('compras.gov.br');
   }
 
@@ -71,11 +71,11 @@
    */
   async function loadUserSettings() {
     try {
-      const result = await chrome.storage.sync.get(['nudgeSettings']);
-      userSettings = result.nudgeSettings || window.NudgeConstants.DEFAULT_SETTINGS;
+      const result = await chrome.storage.sync.get(['SICOSISettings']);
+      userSettings = result.SICOSISettings || window.SICOSIConstants.DEFAULT_SETTINGS;
     } catch (error) {
-      console.warn('Nudge Sustentável: Usando configurações padrão:', error);
-      userSettings = window.NudgeConstants.DEFAULT_SETTINGS;
+      console.warn('SICOSI: Usando configurações padrão:', error);
+      userSettings = window.SICOSIConstants.DEFAULT_SETTINGS;
     }
   }
 
@@ -134,11 +134,11 @@
    * Monitora botões "Selecionar" na lista de resultados
    */
   function monitorSelectButtons() {
-    const selectButtons = findElements(window.NudgeConstants.DOM_SELECTORS.SELECT_BUTTONS);
+    const selectButtons = findElements(window.SICOSIConstants.DOM_SELECTORS.SELECT_BUTTONS);
     
     selectButtons.forEach(button => {
-      if (!button.hasNudgeListener) {
-        button.hasNudgeListener = true;
+      if (!button.hasSICOSIListener) {
+        button.hasSICOSIListener = true;
         button.addEventListener('click', handleSelectButtonClick);
       }
     });
@@ -148,7 +148,7 @@
    * Monitora tela de configuração de item
    */
   function monitorItemConfigPage() {
-    const configElements = findElements(window.NudgeConstants.DOM_SELECTORS.ITEM_CONFIG_PAGE);
+    const configElements = findElements(window.SICOSIConstants.DOM_SELECTORS.ITEM_CONFIG_PAGE);
     
     if (configElements.length > 0) {
       // Aguardar a página carregar completamente
@@ -237,7 +237,7 @@
    */
   function isNonSustainableItem(description) {
     const lowerDesc = description.toLowerCase();
-    const keywords = window.NudgeConstants.NON_SUSTAINABLE_KEYWORDS;
+    const keywords = window.SICOSIConstants.NON_SUSTAINABLE_KEYWORDS;
     
     // Verificar todas as categorias de palavras-chave
     for (const category in keywords) {
@@ -257,7 +257,7 @@
    */
   function findSustainableAlternatives(description) {
     const lowerDesc = description.toLowerCase();
-    const alternatives = window.NudgeConstants.SUSTAINABLE_ALTERNATIVES;
+    const alternatives = window.SICOSIConstants.SUSTAINABLE_ALTERNATIVES;
     const matches = [];
     
     for (const keyword in alternatives) {
@@ -283,7 +283,7 @@
     const alternatives = findSustainableAlternatives(itemDescription);
     
     if (alternatives.length === 0) {
-      console.log('Nudge Sustentável: Nenhuma alternativa encontrada para:', itemDescription);
+      console.log('SICOSI: Nenhuma alternativa encontrada para:', itemDescription);
       return;
     }
 
@@ -293,7 +293,7 @@
 
     // Animar entrada do modal
     setTimeout(() => {
-      currentModal.classList.add('nudge-modal-visible');
+      currentModal.classList.add('SICOSI-modal-visible');
     }, 50);
 
     // Auto-fechar após tempo configurado
@@ -301,7 +301,7 @@
       if (currentModal) {
         closeModal();
       }
-    }, window.NudgeConstants.TIMING_CONFIG.AUTO_CLOSE_DELAY);
+    }, window.SICOSIConstants.TIMING_CONFIG.AUTO_CLOSE_DELAY);
   }
 
   /**
@@ -309,59 +309,59 @@
    */
   function createModal(alternatives, itemDescription, continueCallback) {
     const modal = document.createElement('div');
-    modal.id = window.NudgeConstants.MODAL_CONFIG.ID;
-    modal.className = 'nudge-modal-overlay';
+    modal.id = window.SICOSIConstants.MODAL_CONFIG.ID;
+    modal.className = 'SICOSI-modal-overlay';
 
     modal.innerHTML = `
-      <div class="nudge-modal-content">
-        <div class="nudge-modal-header">
-          <div class="nudge-modal-icon">🌱</div>
-          <div class="nudge-modal-title">
-            <h3>${window.NudgeConstants.UI_MESSAGES.MODAL_TITLE}</h3>
-            <p class="nudge-modal-subtitle">${window.NudgeConstants.UI_MESSAGES.MODAL_SUBTITLE}</p>
+      <div class="SICOSI-modal-content">
+        <div class="SICOSI-modal-header">
+          <div class="SICOSI-modal-icon">🌱</div>
+          <div class="SICOSI-modal-title">
+            <h3>${window.SICOSIConstants.UI_MESSAGES.MODAL_TITLE}</h3>
+            <p class="SICOSI-modal-subtitle">${window.SICOSIConstants.UI_MESSAGES.MODAL_SUBTITLE}</p>
           </div>
-          <button class="nudge-close-btn" onclick="window.closeNudgeModal()">&times;</button>
+          <button class="SICOSI-close-btn" onclick="window.closeSICOSIModal()">&times;</button>
         </div>
         
-        <div class="nudge-modal-body">
-          <div class="nudge-current-item">
+        <div class="SICOSI-modal-body">
+          <div class="SICOSI-current-item">
             <strong>Item selecionado:</strong> ${itemDescription}
           </div>
           
           ${alternatives.map(alternative => `
-            <div class="nudge-suggestion-item">
-              <div class="nudge-suggestion-header">
-                <span class="nudge-category-badge">${alternative.data.category}</span>
-                <span class="nudge-impact-badge impact-${alternative.data.impact.toLowerCase()}">${alternative.data.impact} Impacto</span>
+            <div class="SICOSI-suggestion-item">
+              <div class="SICOSI-suggestion-header">
+                <span class="SICOSI-category-badge">${alternative.data.category}</span>
+                <span class="SICOSI-impact-badge impact-${alternative.data.impact.toLowerCase()}">${alternative.data.impact} Impacto</span>
               </div>
               
-              <div class="nudge-alternatives-list">
+              <div class="SICOSI-alternatives-list">
                 <p><strong>Alternativas sustentáveis:</strong></p>
-                <div class="nudge-alternatives-grid">
+                <div class="SICOSI-alternatives-grid">
                   ${alternative.data.alternatives.map(alt => `
-                    <button class="nudge-alternative-btn" data-alternative="${alt}" data-search="${alternative.data.search_terms.join(' ')}">
+                    <button class="SICOSI-alternative-btn" data-alternative="${alt}" data-search="${alternative.data.search_terms.join(' ')}">
                       ${alt}
                     </button>
                   `).join('')}
                 </div>
               </div>
               
-              <div class="nudge-reason">
-                <p class="nudge-benefit"><strong>Benefício:</strong> ${alternative.data.reason}</p>
+              <div class="SICOSI-reason">
+                <p class="SICOSI-benefit"><strong>Benefício:</strong> ${alternative.data.reason}</p>
               </div>
             </div>
           `).join('')}
           
-          <div class="nudge-modal-actions">
-            <button class="nudge-btn nudge-btn-primary" onclick="window.searchForAlternatives()">
+          <div class="SICOSI-modal-actions">
+            <button class="SICOSI-btn SICOSI-btn-primary" onclick="window.searchForAlternatives()">
               🔍 Buscar Alternativas
             </button>
-            <button class="nudge-btn nudge-btn-secondary" onclick="window.continueWithOriginal()">
+            <button class="SICOSI-btn SICOSI-btn-secondary" onclick="window.continueWithOriginal()">
               Continuar com item original
             </button>
           </div>
           
-          <div class="nudge-modal-footer">
+          <div class="SICOSI-modal-footer">
             <small>💡 Esta sugestão visa promover compras públicas mais sustentáveis</small>
           </div>
         </div>
@@ -379,7 +379,7 @@
    */
   function setupModalEventListeners(modal, continueCallback) {
     // Botões de alternativas
-    modal.querySelectorAll('.nudge-alternative-btn').forEach(btn => {
+    modal.querySelectorAll('.SICOSI-alternative-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const alternative = this.dataset.alternative;
         const searchTerms = this.dataset.search;
@@ -398,7 +398,7 @@
     });
 
     // Funções globais para os botões
-    window.closeNudgeModal = closeModal;
+    window.closeSICOSIModal = closeModal;
     window.continueWithOriginal = () => {
       closeModal();
       if (continueCallback) {
@@ -420,7 +420,7 @@
     closeModal();
     
     // Encontrar campo de busca e preencher
-    const searchInput = findElements(window.NudgeConstants.DOM_SELECTORS.SEARCH_INPUT)[0];
+    const searchInput = findElements(window.SICOSIConstants.DOM_SELECTORS.SEARCH_INPUT)[0];
     
     if (searchInput) {
       searchInput.value = alternative;
@@ -438,7 +438,7 @@
    */
   function closeModal() {
     if (currentModal) {
-      currentModal.classList.add('nudge-modal-closing');
+      currentModal.classList.add('SICOSI-modal-closing');
       
       setTimeout(() => {
         if (currentModal && currentModal.parentNode) {
@@ -495,24 +495,24 @@
 
     try {
       // Armazenar no storage local
-      chrome.storage.local.get([window.NudgeConstants.ANALYTICS_CONFIG.STORAGE_KEY], (result) => {
-        const logs = result[window.NudgeConstants.ANALYTICS_CONFIG.STORAGE_KEY] || [];
+      chrome.storage.local.get([window.SICOSIConstants.ANALYTICS_CONFIG.STORAGE_KEY], (result) => {
+        const logs = result[window.SICOSIConstants.ANALYTICS_CONFIG.STORAGE_KEY] || [];
         logs.push(logEntry);
 
         // Manter apenas os últimos logs
-        const maxLogs = window.NudgeConstants.ANALYTICS_CONFIG.MAX_LOGS;
+        const maxLogs = window.SICOSIConstants.ANALYTICS_CONFIG.MAX_LOGS;
         if (logs.length > maxLogs) {
           logs.splice(0, logs.length - maxLogs);
         }
 
         chrome.storage.local.set({
-          [window.NudgeConstants.ANALYTICS_CONFIG.STORAGE_KEY]: logs
+          [window.SICOSIConstants.ANALYTICS_CONFIG.STORAGE_KEY]: logs
         });
       });
 
-      console.log('Nudge Sustentável Analytics:', logEntry);
+      console.log('SICOSI Analytics:', logEntry);
     } catch (error) {
-      console.warn('Nudge Sustentável: Erro no analytics:', error);
+      console.warn('SICOSI: Erro no analytics:', error);
     }
   }
 

@@ -1,5 +1,5 @@
 /**
- * Constantes da Extensão Nudge Sustentável
+ * Constantes da Extensão SICOSI
  * Arquivo centralizado com todas as configurações e constantes
  */
 
@@ -167,8 +167,8 @@ const SUSTAINABLE_ALTERNATIVES = {
 
 // Configurações do modal de sugestão
 const MODAL_CONFIG = {
-  ID: 'nudge-sustentavel-modal',
-  CLASS_PREFIX: 'nudge-',
+  ID: 'SICOSI-modal',
+  CLASS_PREFIX: 'SICOSI-',
   ANIMATION_DURATION: 300,
   AUTO_CLOSE_DELAY: 15000, // 15 segundos
   Z_INDEX: 999999,
@@ -210,16 +210,16 @@ const ANALYTICS_CONFIG = {
     SEARCH_PERFORMED: 'search_performed',
     ERROR_OCCURRED: 'error_occurred'
   },
-  STORAGE_KEY: 'nudge-sustentavel-logs',
+  STORAGE_KEY: 'SICOSI-logs',
   MAX_LOGS: 100
 };
 
 // Configurações de cache
 const CACHE_CONFIG = {
   KEYS: {
-    ALTERNATIVES: 'nudge-alternatives-cache',
-    SETTINGS: 'nudge-user-settings',
-    STATISTICS: 'nudge-statistics'
+    ALTERNATIVES: 'SICOSI-alternatives-cache',
+    SETTINGS: 'SICOSI-user-settings',
+    STATISTICS: 'SICOSI-statistics'
   },
   DEFAULT_EXPIRY: 24 * 60 * 60 * 1000 // 24 horas
 };
@@ -263,7 +263,7 @@ if (typeof module !== 'undefined' && module.exports) {
   };
 } else {
   // Browser environment - tornar disponível globalmente
-  window.NudgeConstants = {
+  window.SICOSIConstants = {
     COMPRASNET_URLS,
     DOM_SELECTORS,
     NON_SUSTAINABLE_KEYWORDS,

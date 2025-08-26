@@ -1,5 +1,5 @@
 /**
- * Background Script - Nudge Sustentável
+ * Background Script - SICOSI
  * Service Worker que gerencia operações em background da extensão
  */
 
@@ -19,7 +19,7 @@ chrome.alarms.onAlarm.addListener(handleAlarm);
  * Manipula instalação/atualização da extensão
  */
 async function handleInstallation(details) {
-  console.log('Nudge Background: Extensão instalada/atualizada', details);
+  console.log('SICOSI Background: Extensão instalada/atualizada', details);
   
   installationTimestamp = Date.now();
   
@@ -43,7 +43,7 @@ async function handleInstallation(details) {
     });
     
   } catch (error) {
-    console.error('Nudge Background: Erro na instalação:', error);
+    console.error('SICOSI Background: Erro na instalação:', error);
   }
 }
 
@@ -51,7 +51,7 @@ async function handleInstallation(details) {
  * Manipula inicialização da extensão
  */
 async function handleStartup() {
-  console.log('Nudge Background: Extensão iniciada');
+  console.log('SICOSI Background: Extensão iniciada');
   
   try {
     // Verificar e limpar dados expirados
@@ -64,7 +64,7 @@ async function handleStartup() {
     await checkDatabaseUpdates();
     
   } catch (error) {
-    console.error('Nudge Background: Erro na inicialização:', error);
+    console.error('SICOSI Background: Erro na inicialização:', error);
   }
 }
 
@@ -72,7 +72,7 @@ async function handleStartup() {
  * Manipula mensagens do content script
  */
 function handleMessage(message, sender, sendResponse) {
-  console.log('Nudge Background: Mensagem recebida:', message.type);
+  console.log('SICOSI Background: Mensagem recebida:', message.type);
   
   switch (message.type) {
     case 'SEARCH_EXTERNAL_ALTERNATIVES':
@@ -112,7 +112,7 @@ function handleMessage(message, sender, sendResponse) {
       return true;
       
     default:
-      console.warn('Nudge Background: Tipo de mensagem desconhecido:', message.type);
+      console.warn('SICOSI Background: Tipo de mensagem desconhecido:', message.type);
       sendResponse({ error: 'Unknown message type' });
   }
 }
@@ -121,7 +121,7 @@ function handleMessage(message, sender, sendResponse) {
  * Manipula alarmes periódicos
  */
 async function handleAlarm(alarm) {
-  console.log('Nudge Background: Alarme disparado:', alarm.name);
+  console.log('SICOSI Background: Alarme disparado:', alarm.name);
   
   try {
     switch (alarm.name) {
@@ -142,7 +142,7 @@ async function handleAlarm(alarm) {
         break;
     }
   } catch (error) {
-    console.error(`Nudge Background: Erro no alarme ${alarm.name}:`, error);
+    console.error(`SICOSI Background: Erro no alarme ${alarm.name}:`, error);
   }
 }
 
@@ -178,11 +178,11 @@ async function initializeExtensionData(details) {
   };
   
   // Verificar se já existem configurações
-  const existingSettings = await chrome.storage.sync.get(['nudgeSettings']);
+  const existingSettings = await chrome.storage.sync.get(['SICOSISettings']);
   
-  if (!existingSettings.nudgeSettings) {
+  if (!existingSettings.SICOSISettings) {
     await chrome.storage.sync.set({
-      nudgeSettings: {
+      SICOSISettings: {
         ...defaultSettings,
         installDate: Date.now(),
         version: chrome.runtime.getManifest().version
@@ -191,11 +191,11 @@ async function initializeExtensionData(details) {
   }
   
   // Inicializar estatísticas
-  const existingStats = await chrome.storage.local.get(['nudgeStatistics']);
+  const existingStats = await chrome.storage.local.get(['SICOSIStatistics']);
   
-  if (!existingStats.nudgeStatistics) {
+  if (!existingStats.SICOSIStatistics) {
     await chrome.storage.local.set({
-      nudgeStatistics: {
+      SICOSIStatistics: {
         totalModalShown: 0,
         totalAlternativesSelected: 0,
         totalSearches: 0,
@@ -283,7 +283,7 @@ async function handleExternalSearch(data) {
     };
     
   } catch (error) {
-    console.error('Nudge Background: Erro na busca externa:', error);
+    console.error('SICOSI Background: Erro na busca externa:', error);
     throw error;
   }
 }
@@ -411,8 +411,8 @@ async function handleAnalyticsEvent(eventData) {
  * Atualiza estatísticas agregadas
  */
 async function updateAggregatedStats(event, details) {
-  const result = await chrome.storage.local.get(['nudgeStatistics']);
-  const stats = result.nudgeStatistics || {};
+  const result = await chrome.storage.local.get(['SICOSIStatistics']);
+  const stats = result.SICOSIStatistics || {};
   
   const updated = { ...stats, lastActive: Date.now() };
   
@@ -433,15 +433,15 @@ async function updateAggregatedStats(event, details) {
       break;
   }
   
-  await chrome.storage.local.set({ nudgeStatistics: updated });
+  await chrome.storage.local.set({ SICOSIStatistics: updated });
 }
 
 /**
  * Obtém configurações do usuário
  */
 async function getUserSettings() {
-  const result = await chrome.storage.sync.get(['nudgeSettings']);
-  return result.nudgeSettings || {};
+  const result = await chrome.storage.sync.get(['SICOSISettings']);
+  return result.SICOSISettings || {};
 }
 
 /**
@@ -450,7 +450,7 @@ async function getUserSettings() {
 async function updateUserSettings(newSettings) {
   const current = await getUserSettings();
   const updated = { ...current, ...newSettings, lastUpdated: Date.now() };
-  await chrome.storage.sync.set({ nudgeSettings: updated });
+  await chrome.storage.sync.set({ SICOSISettings: updated });
 }
 
 /**
@@ -458,12 +458,12 @@ async function updateUserSettings(newSettings) {
  */
 async function getExtensionStatistics() {
   const [stats, settings] = await Promise.all([
-    chrome.storage.local.get(['nudgeStatistics']),
-    chrome.storage.sync.get(['nudgeSettings'])
+    chrome.storage.local.get(['SICOSIStatistics']),
+    chrome.storage.sync.get(['SICOSISettings'])
   ]);
   
-  const statistics = stats.nudgeStatistics || {};
-  const userSettings = settings.nudgeSettings || {};
+  const statistics = stats.SICOSIStatistics || {};
+  const userSettings = settings.SICOSISettings || {};
   
   return {
     usage: statistics,
@@ -495,7 +495,7 @@ async function exportUserData() {
  * Realiza limpeza diária
  */
 async function performDailyCleanup() {
-  console.log('Nudge Background: Executando limpeza diária');
+  console.log('SICOSI Background: Executando limpeza diária');
   
   try {
     // Limpar cache expirado
@@ -512,7 +512,7 @@ async function performDailyCleanup() {
     });
     
   } catch (error) {
-    console.error('Nudge Background: Erro na limpeza diária:', error);
+    console.error('SICOSI Background: Erro na limpeza diária:', error);
   }
 }
 
@@ -535,7 +535,7 @@ async function cleanupExpiredCache() {
   
   if (keysToRemove.length > 0) {
     await chrome.storage.local.remove(keysToRemove);
-    console.log(`Nudge Background: ${keysToRemove.length} itens de cache removidos`);
+    console.log(`SICOSI Background: ${keysToRemove.length} itens de cache removidos`);
   }
 }
 
@@ -543,15 +543,15 @@ async function cleanupExpiredCache() {
  * Limpa logs antigos
  */
 async function cleanupOldLogs() {
-  const result = await chrome.storage.local.get(['nudgeAnalyticsLogs']);
-  const logs = result.nudgeAnalyticsLogs || [];
+  const result = await chrome.storage.local.get(['SICOSIAnalyticsLogs']);
+  const logs = result.SICOSIAnalyticsLogs || [];
   
   const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
   const recentLogs = logs.filter(log => log.timestamp > thirtyDaysAgo);
   
   if (recentLogs.length !== logs.length) {
-    await chrome.storage.local.set({ nudgeAnalyticsLogs: recentLogs });
-    console.log(`Nudge Background: ${logs.length - recentLogs.length} logs antigos removidos`);
+    await chrome.storage.local.set({ SICOSIAnalyticsLogs: recentLogs });
+    console.log(`SICOSI Background: ${logs.length - recentLogs.length} logs antigos removidos`);
   }
 }
 
@@ -560,15 +560,15 @@ async function cleanupOldLogs() {
  */
 async function optimizeStorage() {
   // Implementar otimizações específicas se necessário
-  console.log('Nudge Background: Storage otimizado');
+  console.log('SICOSI Background: Storage otimizado');
 }
 
 /**
  * Log de evento genérico
  */
 async function logEvent(event, data) {
-  const result = await chrome.storage.local.get(['nudgeAnalyticsLogs']);
-  const logs = result.nudgeAnalyticsLogs || [];
+  const result = await chrome.storage.local.get(['SICOSIAnalyticsLogs']);
+  const logs = result.SICOSIAnalyticsLogs || [];
   
   logs.push({
     event,
@@ -581,7 +581,7 @@ async function logEvent(event, data) {
     logs.splice(0, logs.length - 500);
   }
   
-  await chrome.storage.local.set({ nudgeAnalyticsLogs: logs });
+  await chrome.storage.local.set({ SICOSIAnalyticsLogs: logs });
 }
 
 /**
@@ -645,14 +645,14 @@ async function resetDailyStatsIfNeeded() {
  */
 async function checkDatabaseUpdates() {
   // Implementar verificação de atualizações se necessário
-  console.log('Nudge Background: Verificando atualizações da base de dados');
+  console.log('SICOSI Background: Verificando atualizações da base de dados');
 }
 
 /**
  * Gera estatísticas semanais
  */
 async function generateWeeklyStats() {
-  console.log('Nudge Background: Gerando estatísticas semanais');
+  console.log('SICOSI Background: Gerando estatísticas semanais');
   
   const stats = await getExtensionStatistics();
   
@@ -671,6 +671,6 @@ async function showWelcomePage() {
       url: chrome.runtime.getURL('pages/welcome.html')
     });
   } catch (error) {
-    console.warn('Nudge Background: Não foi possível abrir página de boas-vindas:', error);
+    console.warn('SICOSI Background: Não foi possível abrir página de boas-vindas:', error);
   }
 }

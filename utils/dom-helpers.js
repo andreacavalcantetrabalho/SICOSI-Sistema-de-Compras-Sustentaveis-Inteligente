@@ -1,5 +1,5 @@
 /**
- * DOM Helpers - Nudge Sustentável  
+ * DOM Helpers - SICOSI  
  * Funções auxiliares para manipulação e análise do DOM
  */
 
@@ -433,9 +433,9 @@ class DOMHelpers {
 }
 
 // Tornar disponível globalmente
-window.NudgeDOMHelpers = new DOMHelpers();
+window.SICOSIDOMHelpers = new DOMHelpers();
 
 // Cleanup automático quando página for descarregada
 window.addEventListener('beforeunload', () => {
-  window.NudgeDOMHelpers.destroy();
+  window.SICOSIDOMHelpers.destroy();
 });

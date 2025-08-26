@@ -1,5 +1,5 @@
 /**
- * Web Search - Nudge Sustentável
+ * Web Search - SICOSI Sustentável
  * Busca alternativas sustentáveis em fontes externas quando não encontradas no catálogo
  */
 
@@ -428,7 +428,7 @@ class WebSearchManager {
    */
   async getCachedResults(cacheKey) {
     try {
-      const cached = await window.NudgeStorage.getCachedAlternatives(cacheKey);
+      const cached = await window.SICOSIStorage.getCachedAlternatives(cacheKey);
       return cached;
     } catch (error) {
       return null;
@@ -442,7 +442,7 @@ class WebSearchManager {
    */
   async cacheResults(cacheKey, results) {
     try {
-      await window.NudgeStorage.cacheAlternatives(cacheKey, results, 3600000); // 1 hora
+      await window.SICOSIStorage.cacheAlternatives(cacheKey, results, 3600000); // 1 hora
     } catch (error) {
       console.warn('Web Search: Erro ao armazenar cache:', error);
     }
@@ -469,4 +469,4 @@ class WebSearchManager {
 }
 
 // Tornar disponível globalmente
-window.NudgeWebSearch = new WebSearchManager();
+window.SICOSIWebSearch = new WebSearchManager();

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Nudge Sustentável - ComprasNet",
+  "name": "SICOSI - Sistema de Compras Sustentáveis Inteligente",
   "version": "1.0.0",
-  "description": "Extensão que sugere alternativas sustentáveis durante o cadastro de itens no ComprasNet para compras públicas",
+  "description": "Sistema inteligente que promove compras públicas sustentáveis sugerindo alternativas ecológicas durante o cadastro de itens no ComprasNet",
   
   "permissions": [
     "activeTab",
@@ -45,7 +45,7 @@
   
   "action": {
     "default_popup": "pages/popup.html",
-    "default_title": "Nudge Sustentável",
+    "default_title": "SICOSI",
     "default_icon": {
       "16": "assets/icons/icon16.png",
       "48": "assets/icons/icon48.png",
@@ -75,6 +75,6 @@
     }
   ],
   
-  "author": "Projeto Nudge Sustentável",
-  "homepage_url": "https://github.com/toticavalcanti/nudge-sustentavel-comprasnet"
+  "author": "Projeto SICOSI",
+  "homepage_url": "https://github.com/toticavalcanti/SICOSI-comprasnet"
 }

@@ -558,7 +558,7 @@ class PopupManager {
       const url = URL.createObjectURL(dataBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `nudge-sustentavel-backup-${new Date().toISOString().split('T')[0]}.json`;
+      link.download = `SICOSI-backup-${new Date().toISOString().split('T')[0]}.json`;
       
       document.body.appendChild(link);
       link.click();
@@ -607,11 +607,11 @@ class PopupManager {
    * Abre páginas externas
    */
   openHelpPage() {
-    chrome.tabs.create({ url: 'https://github.com/toticavalcanti/nudge-sustentavel-comprasnet#readme' });
+    chrome.tabs.create({ url: 'https://github.com/toticavalcanti/SICOSI-comprasnet#readme' });
   }
 
   openFeedbackPage() {
-    chrome.tabs.create({ url: 'https://github.com/toticavalcanti/nudge-sustentavel-comprasnet/issues' });
+    chrome.tabs.create({ url: 'https://github.com/toticavalcanti/SICOSI-comprasnet/issues' });
   }
 
   openAboutPage() {
@@ -623,7 +623,7 @@ class PopupManager {
   }
 
   openGitHubPage() {
-    chrome.tabs.create({ url: 'https://github.com/toticavalcanti/nudge-sustentavel-comprasnet' });
+    chrome.tabs.create({ url: 'https://github.com/toticavalcanti/SICOSI-comprasnet' });
   }
 
   /**

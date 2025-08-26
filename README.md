@@ -1,16 +1,16 @@
-# 🌱 Nudge Sustentável - ComprasNet
+# 🌱 SICOSI - Sistema de Compras Sustentáveis Inteligente
 
 > Extensão de navegador que promove compras públicas sustentáveis sugerindo alternativas ecológicas durante o cadastro de itens no ComprasNet
 
-[![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow)](https://github.com/toticavalcanti/nudge-sustentavel-comprasnet)
-[![Versão](https://img.shields.io/badge/Versão-1.0.0-blue)](https://github.com/toticavalcanti/nudge-sustentavel-comprasnet/releases)
+[![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow)](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente)
+[![Versão](https://img.shields.io/badge/Versão-1.0.0-blue)](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/releases)
 [![Licença](https://img.shields.io/badge/Licença-MIT-green)](LICENSE)
 [![Chrome](https://img.shields.io/badge/Chrome-Compatível-red)](https://chrome.google.com/webstore)
 [![Firefox](https://img.shields.io/badge/Firefox-Em%20Breve-orange)](https://addons.mozilla.org)
 
 ## 📖 Sobre o Projeto
 
-O **Nudge Sustentável** é uma extensão de navegador que atua como um "lembrete amigável" para servidores públicos durante o processo de compras governamentais. Quando um servidor está cadastrando um item não-sustentável no ComprasNet (como "copo descartável de plástico"), a extensão sugere automaticamente alternativas mais ecológicas.
+O **SICOSI** é uma extensão de navegador que atua como um "lembrete amigável" para servidores públicos durante o processo de compras governamentais. Quando um servidor está cadastrando um item não-sustentável no ComprasNet (como "copo descartável de plástico"), a extensão sugere automaticamente alternativas mais ecológicas.
 
 ### 🎯 Problema que Resolve
 
@@ -76,12 +76,12 @@ A extensão atua especificamente na **tela de seleção de itens** - após o ser
 
 #### Chrome/Edge:
 1. Acesse a [Chrome Web Store](https://chrome.google.com/webstore) 
-2. Busque por "Nudge Sustentável"
+2. Busque por "SICOSI"
 3. Clique em "Adicionar ao Chrome"
 
 #### Firefox:
 1. Acesse o [Firefox Add-ons](https://addons.mozilla.org)
-2. Busque por "Nudge Sustentável" 
+2. Busque por "SICOSI" 
 3. Clique em "Adicionar ao Firefox"
 
 ### 👨‍💻 **Para Desenvolvedores**
@@ -93,10 +93,10 @@ A extensão atua especificamente na **tela de seleção de itens** - após o ser
 #### Instalação Local
 ```bash
 # Clone o repositório
-git clone https://github.com/toticavalcanti/nudge-sustentavel-comprasnet.git
+git clone https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente.git
 
 # Entre na pasta do projeto  
-cd nudge-sustentavel-comprasnet
+cd SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente
 
 # Instale no Chrome
 # 1. Abra chrome://extensions/
@@ -122,7 +122,7 @@ cd nudge-sustentavel-comprasnet
 
 ### 📁 **Estrutura do Projeto**
 ```
-nudge-sustentavel-comprasnet/
+SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/
 ├── 📄 manifest.json                 # Configuração da extensão
 ├── 📁 scripts/
 │   ├── content-script.js           # Lógica principal
@@ -222,13 +222,13 @@ Contribuições são muito bem-vindas! Este projeto visa impacto social e ambien
 
 #### 🐛 **Reportar Bugs**
 1. Verifique se o bug já foi reportado
-2. Crie uma [nova issue](https://github.com/toticavalcanti/nudge-sustentavel-comprasnet/issues)
+2. Crie uma [nova issue](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/issues)
 3. Descreva o problema detalhadamente
 4. Inclua screenshots se possível
 
 #### 💡 **Sugerir Funcionalidades**
 1. Verifique se já não foi sugerido
-2. Abra uma [feature request](https://github.com/toticavalcanti/nudge-sustentavel-comprasnet/issues)
+2. Abra uma [feature request](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/issues)
 3. Descreva o caso de uso
 4. Explique o impacto esperado
 
@@ -290,8 +290,8 @@ Este projeto é mantido voluntariamente. Se você ou sua organização se benefi
 ## 📞 Contato e Suporte
 
 ### 💬 **Comunidade**
-- **GitHub Issues:** [Reportar problemas ou sugestões](https://github.com/toticavalcanti/nudge-sustentavel-comprasnet/issues)
-- **GitHub Discussions:** [Discussões e perguntas](https://github.com/toticavalcanti/nudge-sustentavel-comprasnet/discussions)
+- **GitHub Issues:** [Reportar problemas ou sugestões](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/issues)
+- **GitHub Discussions:** [Discussões e perguntas](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/discussions)
 
 ### 📧 **Contato Direto**
 - **Email:** [seu-email@exemplo.com](mailto:seu-email@exemplo.com)
@@ -299,8 +299,8 @@ Este projeto é mantido voluntariamente. Se você ou sua organização se benefi
 
 ### 📊 **Status do Projeto**
 - **🔄 Desenvolvimento Ativo** - Novas funcionalidades sendo adicionadas
-- **🐛 Issues Abertas** - [Ver problemas conhecidos](https://github.com/toticavalcanti/nudge-sustentavel-comprasnet/issues)
-- **📋 Roadmap** - [Ver próximas funcionalidades](https://github.com/toticavalcanti/nudge-sustentavel-comprasnet/projects)
+- **🐛 Issues Abertas** - [Ver problemas conhecidos](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/issues)
+- **📋 Roadmap** - [Ver próximas funcionalidades](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/projects)
 
 ---
 
@@ -310,7 +310,7 @@ Este projeto é mantido voluntariamente. Se você ou sua organização se benefi
 
 *Se este projeto te ajudou, considere dar uma ⭐ para apoiar o desenvolvimento!*
 
-[![GitHub stars](https://img.shields.io/github/stars/toticavalcanti/nudge-sustentavel-comprasnet?style=social)](https://github.com/toticavalcanti/nudge-sustentavel-comprasnet/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/toticavalcanti/nudge-sustentavel-comprasnet?style=social)](https://github.com/toticavalcanti/nudge-sustentavel-comprasnet/network)
+[![GitHub stars](https://img.shields.io/github/stars/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente?style=social)](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente?style=social)](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/network)
 
 </div>

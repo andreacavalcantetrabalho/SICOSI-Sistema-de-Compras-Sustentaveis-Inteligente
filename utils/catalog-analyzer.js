@@ -1,5 +1,5 @@
 /**
- * Catalog Analyzer - Nudge Sustentável
+ * Catalog Analyzer - SICOSI
  * Analisa o catálogo do ComprasNet para encontrar alternativas sustentáveis
  */
 
@@ -24,7 +24,7 @@ class CatalogAnalyzer {
       console.error('Catalog Analyzer: Erro ao carregar base de dados:', error);
       // Fallback para constantes se não conseguir carregar o arquivo
       this.sustainableDatabase = {
-        categories: window.NudgeConstants?.SUSTAINABLE_ALTERNATIVES || {}
+        categories: window.Constants?.SUSTAINABLE_ALTERNATIVES || {}
       };
     }
   }
@@ -90,7 +90,7 @@ class CatalogAnalyzer {
       '.ng-star-inserted table tbody'
     ];
 
-    return window.NudgeDOMHelpers.findFirstElement(selectors);
+    return window.SICOSIDOMHelpers.findFirstElement(selectors);
   }
 
   /**
@@ -109,9 +109,9 @@ class CatalogAnalyzer {
       if (cells.length >= 3) {
         const result = {
           element: row,
-          class: window.NudgeDOMHelpers.extractCleanText(cells[0]),
-          code: window.NudgeDOMHelpers.extractCleanText(cells[1]),
-          description: window.NudgeDOMHelpers.extractCleanText(cells[2]).toLowerCase(),
+          class: window.SICOSIDOMHelpers.extractCleanText(cells[0]),
+          code: window.SICOSIDOMHelpers.extractCleanText(cells[1]),
+          description: window.SICOSIDOMHelpers.extractCleanText(cells[2]).toLowerCase(),
           selectButton: row.querySelector('button:contains("Selecionar")') || 
                        row.querySelector('button') ||
                        row.querySelector('.btn')
@@ -167,8 +167,8 @@ class CatalogAnalyzer {
     }
 
     // Análise adicional usando constantes se base não carregou
-    if (analysis.isSustainable && window.NudgeConstants?.NON_SUSTAINABLE_KEYWORDS) {
-      const keywords = window.NudgeConstants.NON_SUSTAINABLE_KEYWORDS;
+    if (analysis.isSustainable && window.SICOSIConstants?.NON_SUSTAINABLE_KEYWORDS) {
+      const keywords = window.SICOSIConstants.NON_SUSTAINABLE_KEYWORDS;
       
       Object.keys(keywords).forEach(category => {
         keywords[category].forEach(keyword => {
@@ -351,8 +351,8 @@ class CatalogAnalyzer {
    */
   async executeAlternativeSearch(searchTerm) {
     try {
-      const searchInput = window.NudgeDOMHelpers.findFirstElement(
-        window.NudgeConstants.DOM_SELECTORS.SEARCH_INPUT
+      const searchInput = window.SICOSIDOMHelpers.findFirstElement(
+        window.SICOSIConstants.DOM_SELECTORS.SEARCH_INPUT
       );
 
       if (searchInput) {
@@ -360,15 +360,15 @@ class CatalogAnalyzer {
         this.currentSearchResults = [];
         
         // Executar nova busca
-        await window.NudgeDOMHelpers.humanType(searchInput, searchTerm);
+        await window.SICOSIDOMHelpers.humanType(searchInput, searchTerm);
         
         // Aguardar resultados carregarem
-        await window.NudgeDOMHelpers.sleep(2000);
+        await window.SICOSIDOMHelpers.sleep(2000);
         
         // Disparar evento de busca se necessário
         const searchButton = document.querySelector('button[type="submit"], .search-button');
         if (searchButton) {
-          window.NudgeDOMHelpers.humanClick(searchButton);
+          window.SICOSIDOMHelpers.humanClick(searchButton);
         } else {
           // Tentar Enter se não há botão
           searchInput.dispatchEvent(new KeyboardEvent('keydown', {
@@ -429,13 +429,13 @@ class CatalogAnalyzer {
 }
 
 // Tornar disponível globalmente
-window.NudgeCatalogAnalyzer = new CatalogAnalyzer();
+window.SICOSICatalogAnalyzer = new CatalogAnalyzer();
 
 // Inicializar quando o DOM estiver pronto
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
-    window.NudgeCatalogAnalyzer.initialize();
+    window.SICOSICatalogAnalyzer.initialize();
   });
 } else {
-  window.NudgeCatalogAnalyzer.initialize();
+  window.SICOSICatalogAnalyzer.initialize();
 }
