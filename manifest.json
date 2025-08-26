@@ -24,7 +24,7 @@
         "*://catalogo.compras.gov.br/*"
       ],
       "js": [
-        "utils/constants.js",
+        "config/constants.js",
         "utils/storage-manager.js",
         "utils/dom-helpers.js",
         "utils/catalog-analyzer.js",
@@ -76,5 +76,5 @@
   ],
   
   "author": "Projeto SICOSI",
-  "homepage_url": "https://github.com/toticavalcanti/SICOSI-comprasnet"
+  "homepage_url": "https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente"
 }
