@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nudge Sustentável</title>
+  <link rel="stylesheet" href="../styles/popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="popup-header">
+      <div class="logo-section">
+        <span class="logo-icon">🌱</span>
+        <div class="logo-text">
+          <h1>Nudge Sustentável</h1>
+          <p class="version">v1.0.0</p>
+        </div>
+      </div>
+      <button class="settings-btn" id="settingsBtn" title="Configurações">
+        ⚙️
+      </button>
+    </header>
+
+    <!-- Status Section -->
+    <section class="status-section">
+      <div class="status-indicator">
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-text" id="statusText">Carregando...</span>
+      </div>
+      
+      <div class="toggle-section">
+        <label class="toggle-switch">
+          <input type="checkbox" id="extensionToggle">
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label">Extensão ativa</span>
+      </div>
+    </section>
+
+    <!-- Quick Stats -->
+    <section class="stats-section">
+      <h3>Estatísticas de Hoje</h3>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number" id="modalCount">-</div>
+          <div class="stat-label">Sugestões</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="alternativeCount">-</div>
+          <div class="stat-label">Alternativas</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="impactScore">-</div>
+          <div class="stat-label">Impacto</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories-section">
+      <h3>Categorias Ativas</h3>
+      <div class="categories-list">
+        <label class="category-item">
+          <input type="checkbox" class="category-checkbox" data-category="descartaveis">
+          <span class="category-icon">🥤</span>
+          <span class="category-name">Descartáveis</span>
+        </label>
+        
+        <label class="category-item">
+          <input type="checkbox" class="category-checkbox" data-category="papel">
+          <span class="category-icon">📄</span>
+          <span class="category-name">Papel</span>
+        </label>
+        
+        <label class="category-item">
+          <input type="checkbox" class="category-checkbox" data-category="limpeza">
+          <span class="category-icon">🧽</span>
+          <span class="category-name">Limpeza</span>
+        </label>
+        
+        <label class="category-item">
+          <input type="checkbox" class="category-checkbox" data-category="equipamentos">
+          <span class="category-icon">💻</span>
+          <span class="category-name">Equipamentos</span>
+        </label>
+        
+        <label class="category-item">
+          <input type="checkbox" class="category-checkbox" data-category="embalagens">
+          <span class="category-icon">📦</span>
+          <span class="category-name">Embalagens</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Impact Summary -->
+    <section class="impact-section">
+      <h3>Impacto Total</h3>
+      <div class="impact-metrics">
+        <div class="impact-item">
+          <div class="impact-icon">🌍</div>
+          <div class="impact-details">
+            <div class="impact-value" id="co2Saved">0 kg</div>
+            <div class="impact-desc">CO² evitado</div>
+          </div>
+        </div>
+        
+        <div class="impact-item">
+          <div class="impact-icon">♻️</div>
+          <div class="impact-details">
+            <div class="impact-value" id="wasteSaved">0 g</div>
+            <div class="impact-desc">Resíduo evitado</div>
+          </div>
+        </div>
+        
+        <div class="impact-item">
+          <div class="impact-icon">🌱</div>
+          <div class="impact-details">
+            <div class="impact-value" id="itemsReplaced">0</div>
+            <div class="impact-desc">Itens sustentáveis</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Current Site Info -->
+    <section class="site-section" id="siteSection" style="display: none;">
+      <h3>Site Atual</h3>
+      <div class="site-info">
+        <div class="site-status">
+          <span class="site-icon">🌐</span>
+          <span class="site-name" id="siteName">ComprasNet</span>
+          <span class="compatibility-badge" id="compatibilityBadge">Compatível</span>
+        </div>
+        <div class="site-actions">
+          <button class="action-btn" id="testModeBtn">Modo Teste</button>
+          <button class="action-btn" id="debugBtn">Debug</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="actions-section">
+      <div class="action-buttons">
+        <button class="primary-btn" id="viewStatsBtn">
+          📊 Ver Estatísticas
+        </button>
+        
+        <button class="secondary-btn" id="exportDataBtn">
+          💾 Exportar Dados
+        </button>
+      </div>
+      
+      <div class="quick-links">
+        <a href="#" class="link" id="helpLink">❓ Ajuda</a>
+        <a href="#" class="link" id="feedbackLink">💬 Feedback</a>
+        <a href="#" class="link" id="aboutLink">ℹ️ Sobre</a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="popup-footer">
+      <div class="footer-text">
+        Promovendo compras públicas sustentáveis
+      </div>
+      <div class="footer-links">
+        <a href="#" class="footer-link" id="privacyLink">Privacidade</a>
+        <span class="separator">•</span>
+        <a href="#" class="footer-link" id="githubLink">GitHub</a>
+      </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Carregando...</div>
+    </div>
+
+    <!-- Settings Modal (Hidden by default) -->
+    <div class="modal-overlay" id="settingsModal" style="display: none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Configurações</h2>
+          <button class="close-btn" id="closeSettingsBtn">×</button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="settings-group">
+            <h3>Notificações</h3>
+            <label class="setting-item">
+              <input type="checkbox" id="soundNotifications">
+              <span>Sons de notificação</span>
+            </label>
+            <label class="setting-item">
+              <input type="checkbox" id="modalNotifications" checked>
+              <span>Modais de sugestão</span>
+            </label>
+          </div>
+          
+          <div class="settings-group">
+            <h3>Busca</h3>
+            <label class="setting-item">
+              <input type="checkbox" id="autoSearch" checked>
+              <span>Busca automática no catálogo</span>
+            </label>
+            <label class="setting-item">
+              <input type="checkbox" id="externalSearch" checked>
+              <span>Busca em fontes externas</span>
+            </label>
+          </div>
+          
+          <div class="settings-group">
+            <h3>Privacidade</h3>
+            <label class="setting-item">
+              <input type="checkbox" id="analyticsEnabled" checked>
+              <span>Permitir coleta de estatísticas</span>
+            </label>
+            <label class="setting-item">
+              <input type="checkbox" id="cacheEnabled" checked>
+              <span>Cache de resultados</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="secondary-btn" id="resetSettingsBtn">Restaurar Padrões</button>
+          <button class="primary-btn" id="saveSettingsBtn">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../scripts/popup.js"></script>
+</body>
+</html>
