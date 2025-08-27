@@ -28,7 +28,7 @@
       "js": [
         "config/constants.js",
         "utils/storage-manager.js",
-        "utils/dom-helpers.js",
+        "utils/dom-helpers.js", 
         "utils/catalog-analyzer.js",
         "scripts/content-script.js"
       ],
