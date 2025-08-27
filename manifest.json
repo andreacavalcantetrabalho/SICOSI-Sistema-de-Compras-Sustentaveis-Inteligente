@@ -14,7 +14,8 @@
   "host_permissions": [
     "*://compras.gov.br/*",
     "*://*.compras.gov.br/*",
-    "*://catalogo.compras.gov.br/*"
+    "*://catalogo.compras.gov.br/*",
+    "*://cnetmobile.estaleiro.serpro.gov.br/*"
   ],
   
   "content_scripts": [
