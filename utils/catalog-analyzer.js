@@ -24,7 +24,7 @@ class CatalogAnalyzer {
       console.error('Catalog Analyzer: Erro ao carregar base de dados:', error);
       // Fallback para constantes se não conseguir carregar o arquivo
       this.sustainableDatabase = {
-        categories: window.Constants?.SUSTAINABLE_ALTERNATIVES || {}
+        categories: window.SICOSIConstants?.SUSTAINABLE_ALTERNATIVES || {}
       };
     }
   }
@@ -90,11 +90,20 @@ class CatalogAnalyzer {
       '.ng-star-inserted table tbody'
     ];
 
-    return window.SICOSIDOMHelpers.findFirstElement(selectors);
+    // Fallback se DOM helpers não disponível
+    if (window.SICOSIDOMHelpers) {
+      return window.SICOSIDOMHelpers.findFirstElement(selectors);
+    } else {
+      for (const selector of selectors) {
+        const element = document.querySelector(selector);
+        if (element) return element;
+      }
+      return null;
+    }
   }
 
   /**
-   * Extrai dados dos resultados da busca atual
+   * Extrai dados dos resultados da busca atual - CORRIGIDO
    * @param {Element} container - Container dos resultados
    * @returns {Array} Array com dados dos resultados
    */
@@ -107,14 +116,19 @@ class CatalogAnalyzer {
     rows.forEach(row => {
       const cells = row.querySelectorAll('td');
       if (cells.length >= 3) {
+        // CORREÇÃO: Encontrar botão sem usar :contains
+        const buttons = Array.from(row.querySelectorAll('button'));
+        const selectButton = buttons.find(btn => {
+          const text = btn.textContent || btn.innerText || '';
+          return text.toLowerCase().includes('selecionar');
+        }) || buttons[0] || row.querySelector('.btn');
+
         const result = {
           element: row,
-          class: window.SICOSIDOMHelpers.extractCleanText(cells[0]),
-          code: window.SICOSIDOMHelpers.extractCleanText(cells[1]),
-          description: window.SICOSIDOMHelpers.extractCleanText(cells[2]).toLowerCase(),
-          selectButton: row.querySelector('button:contains("Selecionar")') || 
-                       row.querySelector('button') ||
-                       row.querySelector('.btn')
+          class: this.extractCleanText(cells[0]),
+          code: this.extractCleanText(cells[1]),
+          description: this.extractCleanText(cells[2]).toLowerCase(),
+          selectButton: selectButton
         };
         
         if (result.description) {
@@ -125,6 +139,19 @@ class CatalogAnalyzer {
 
     console.log(`Catalog Analyzer: ${results.length} itens extraídos dos resultados`);
     return results;
+  }
+
+  /**
+   * Extrai texto limpo - fallback se DOM helpers não disponível
+   */
+  extractCleanText(element) {
+    if (window.SICOSIDOMHelpers) {
+      return window.SICOSIDOMHelpers.extractCleanText(element);
+    } else {
+      if (!element) return '';
+      const text = element.textContent || element.innerText || '';
+      return text.replace(/\s+/g, ' ').trim();
+    }
   }
 
   /**
@@ -351,24 +378,37 @@ class CatalogAnalyzer {
    */
   async executeAlternativeSearch(searchTerm) {
     try {
-      const searchInput = window.SICOSIDOMHelpers.findFirstElement(
-        window.SICOSIConstants.DOM_SELECTORS.SEARCH_INPUT
-      );
+      let searchInput = null;
+      
+      if (window.SICOSIDOMHelpers) {
+        searchInput = window.SICOSIDOMHelpers.findFirstElement(
+          window.SICOSIConstants?.DOM_SELECTORS?.SEARCH_INPUT || ['input[type="text"]']
+        );
+      } else {
+        searchInput = document.querySelector('input[type="text"]');
+      }
 
       if (searchInput) {
         // Limpar cache de busca anterior
         this.currentSearchResults = [];
         
         // Executar nova busca
-        await window.SICOSIDOMHelpers.humanType(searchInput, searchTerm);
-        
-        // Aguardar resultados carregarem
-        await window.SICOSIDOMHelpers.sleep(2000);
+        if (window.SICOSIDOMHelpers) {
+          await window.SICOSIDOMHelpers.humanType(searchInput, searchTerm);
+          await window.SICOSIDOMHelpers.sleep(2000);
+        } else {
+          searchInput.value = searchTerm;
+          searchInput.focus();
+        }
         
         // Disparar evento de busca se necessário
         const searchButton = document.querySelector('button[type="submit"], .search-button');
         if (searchButton) {
-          window.SICOSIDOMHelpers.humanClick(searchButton);
+          if (window.SICOSIDOMHelpers) {
+            window.SICOSIDOMHelpers.humanClick(searchButton);
+          } else {
+            searchButton.click();
+          }
         } else {
           // Tentar Enter se não há botão
           searchInput.dispatchEvent(new KeyboardEvent('keydown', {
