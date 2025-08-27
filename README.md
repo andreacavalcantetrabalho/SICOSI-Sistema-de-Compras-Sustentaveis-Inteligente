@@ -152,6 +152,7 @@ SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/
 │   └── sustainable-alternatives.json    # Alternativas sustentáveis
 └── 📁 utils/
     ├── api-client.js                    # Cliente de APIs externas
+    ├── data-converter.js                    
     ├── catalog-analyzer.js              # Análise do catálogo
     ├── dom-helper.js                    # Funções auxiliares de DOM
     ├── storage-manager.js               # Gerenciamento de dados
