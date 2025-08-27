@@ -1,6 +1,7 @@
 /**
  * Storage Manager - SICOSI Sustentável
  * Gerencia armazenamento de dados da extensão usando Chrome Storage API
+ * VERSÃO CORRIGIDA: Aguarda o carregamento das constantes antes de inicializar.
  */
 
 class StorageManager {
@@ -385,10 +386,23 @@ class StorageManager {
   }
 }
 
-// Tornar disponível globalmente
-window.SICOSIStorage = new StorageManager();
+/**
+ * Função de inicialização segura.
+ */
+function initializeStorageManager() {
+  if (window.SICOSIStorage) return; // Previne dupla inicialização
+  window.SICOSIStorage = new StorageManager();
+  console.log('🌱 SICOSI Storage Manager inicializado com segurança.');
 
-// Limpar cache expirado a cada hora
-setInterval(() => {
-  window.SICOSIStorage.clearExpiredCache();
-}, 60 * 60 * 1000);
+  // Limpar cache expirado a cada hora
+  setInterval(() => {
+    window.SICOSIStorage.clearExpiredCache();
+  }, 60 * 60 * 1000);
+}
+
+// Lógica de espera:
+if (window.SICOSIConstants) {
+  initializeStorageManager();
+} else {
+  window.addEventListener('SICOSIConstantsReady', initializeStorageManager, { once: true });
+}

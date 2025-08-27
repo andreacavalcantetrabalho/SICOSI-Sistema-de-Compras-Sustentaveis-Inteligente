@@ -1,138 +1,84 @@
 /**
- * CORREÇÃO 2: scripts/content-script.js - Carregamento Robusto
- * Versão corrigida com melhor gestão de dependências e inicialização
+ * Content Script - SICOSI
+ * Script principal que monitora o ComprasNet e sugere alternativas sustentáveis
+ * VERSÃO CORRIGIDA: Com análise inteligente usando LLM
  */
 
-(function() {
-  'use strict';
+(function () {
+  "use strict";
 
-  // Verificar se já foi inicializado para evitar múltiplas execuções
+  // Verificar se já foi inicializado
   if (window.SICOSISustentavelInitialized) {
     return;
   }
   window.SICOSISustentavelInitialized = true;
 
-  // Variáveis globais do script
+  // Variáveis globais
   let currentModal = null;
   let isModalVisible = false;
   let debounceTimer = null;
   let observerInstance = null;
   let userSettings = null;
   let isInitialized = false;
+  let llmAnalyzer = null;
 
-  // CORREÇÃO: Sistema de inicialização robusto com múltiplas estratégias
-  class SICOSIInitializer {
+  class SICOSIManager {
     constructor() {
       this.dependencies = {
         constants: false,
         storage: false,
         domHelpers: false,
-        catalogAnalyzer: false
+        catalogAnalyzer: false,
+        llmAnalyzer: false,
+        apiKeys: false,
       };
       this.initAttempts = 0;
-      this.maxAttempts = 50; // 5 segundos de tentativas
+      this.maxAttempts = 50;
     }
 
     async initialize() {
-      console.log('🌱 SICOSI: Iniciando carregamento...');
-      
+      console.log("🌱 SICOSI: Iniciando...");
+
       try {
-        // Estratégia 1: Aguardar evento de constants ready
-        await this.waitForConstantsEvent();
-        
-        // Estratégia 2: Polling para verificar dependências
+        // Aguardar dependências
         await this.waitForDependencies();
-        
-        // Estratégia 3: Inicializar componentes na ordem correta
+
+        // Inicializar componentes
         await this.initializeComponents();
-        
+
         // Inicializar funcionalidade principal
         await this.startMainFunctionality();
-        
+
         isInitialized = true;
-        console.log('🌱 SICOSI: Inicialização completa com sucesso!');
-        
+        console.log("🌱 SICOSI: Pronto para uso!");
       } catch (error) {
-        console.error('🌱 SICOSI: Erro na inicialização:', error);
-        this.createFallbackConstants();
-        await this.startMainFunctionality();
+        console.error("🌱 SICOSI: Erro na inicialização:", error);
       }
     }
 
-    async waitForConstantsEvent() {
-      return new Promise((resolve, reject) => {
-        // Se já está disponível, resolver imediatamente
-        if (window.SICOSIConstants) {
-          this.dependencies.constants = true;
-          resolve();
-          return;
-        }
-
-        // Aguardar evento customizado
-        const timeout = setTimeout(() => {
-          window.removeEventListener('SICOSIConstantsReady', handler);
-          reject(new Error('Timeout waiting for constants event'));
-        }, 3000);
-
-        const handler = (event) => {
-          clearTimeout(timeout);
-          window.removeEventListener('SICOSIConstantsReady', handler);
-          this.dependencies.constants = true;
-          console.log('🌱 SICOSI: Constants carregado via evento');
-          resolve();
-        };
-
-        window.addEventListener('SICOSIConstantsReady', handler);
-      });
-    }
-
     async waitForDependencies() {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         const checkDependencies = () => {
           this.initAttempts++;
 
-          // Verificar constants
-          if (window.SICOSIConstants && !this.dependencies.constants) {
-            this.dependencies.constants = true;
-            console.log('🌱 SICOSI: Constants encontrado');
-          }
-
-          // Verificar storage
-          if (window.SICOSIStorage && !this.dependencies.storage) {
-            this.dependencies.storage = true;
-            console.log('🌱 SICOSI: Storage encontrado');
-          }
-
-          // Verificar DOM helpers
-          if (window.SICOSIDOMHelpers && !this.dependencies.domHelpers) {
-            this.dependencies.domHelpers = true;
-            console.log('🌱 SICOSI: DOM Helpers encontrado');
-          }
-
-          // Verificar catalog analyzer
-          if (window.SICOSICatalogAnalyzer && !this.dependencies.catalogAnalyzer) {
+          // Verificar todas as dependências
+          if (window.SICOSIConstants) this.dependencies.constants = true;
+          if (window.SICOSIStorage) this.dependencies.storage = true;
+          if (window.SICOSIDOMHelpers) this.dependencies.domHelpers = true;
+          if (window.SICOSICatalogAnalyzer)
             this.dependencies.catalogAnalyzer = true;
-            console.log('🌱 SICOSI: Catalog Analyzer encontrado');
-          }
+          if (window.SICOSILLMAnalyzer) this.dependencies.llmAnalyzer = true;
+          if (window.SICOSI_API_KEYS) this.dependencies.apiKeys = true;
 
-          // Verificar se todas as dependências estão prontas
-          const allReady = Object.values(this.dependencies).every(ready => ready);
-          
-          if (allReady) {
-            console.log('🌱 SICOSI: Todas as dependências carregadas');
+          // Verificar se essenciais estão prontas
+          const essentialsReady = this.dependencies.constants;
+
+          if (essentialsReady || this.initAttempts >= this.maxAttempts) {
+            console.log("🌱 SICOSI: Dependências carregadas");
             resolve();
-            return;
+          } else {
+            setTimeout(checkDependencies, 100);
           }
-
-          // Verificar timeout
-          if (this.initAttempts >= this.maxAttempts) {
-            console.warn('🌱 SICOSI: Timeout nas dependências, usando fallbacks');
-            resolve(); // Continuar mesmo sem todas as dependências
-            return;
-          }
-
-          // Tentar novamente
-          setTimeout(checkDependencies, 100);
         };
 
         checkDependencies();
@@ -140,141 +86,50 @@
     }
 
     async initializeComponents() {
-      // Inicializar storage se disponível
-      if (this.dependencies.storage && window.SICOSIStorage) {
-        try {
-          await this.loadUserSettings();
-        } catch (error) {
-          console.warn('SICOSI: Erro ao carregar configurações:', error);
-          userSettings = this.getDefaultSettings();
-        }
-      } else {
-        userSettings = this.getDefaultSettings();
-      }
-
-      // Inicializar catalog analyzer se disponível
-      if (this.dependencies.catalogAnalyzer && window.SICOSICatalogAnalyzer) {
-        try {
-          await window.SICOSICatalogAnalyzer.initialize();
-        } catch (error) {
-          console.warn('SICOSI: Erro ao inicializar catalog analyzer:', error);
-        }
-      }
-    }
-
-    async loadUserSettings() {
+      // Carregar configurações do usuário
       if (window.SICOSIStorage) {
         userSettings = await window.SICOSIStorage.loadUserSettings();
-      } else if (chrome?.storage?.sync) {
-        // Fallback direto para Chrome Storage
-        const result = await chrome.storage.sync.get(['SICOSISettings']);
-        userSettings = result.SICOSISettings || this.getDefaultSettings();
       } else {
-        userSettings = this.getDefaultSettings();
-      }
-    }
-
-    getDefaultSettings() {
-      return window.SICOSIConstants?.DEFAULT_SETTINGS || {
-        enabled: true,
-        categories: {
-          descartaveis: true,
-          papel: true,
-          limpeza: true,
-          equipamentos: true,
-          embalagens: true
-        }
-      };
-    }
-
-    createFallbackConstants() {
-      if (!window.SICOSIConstants) {
-        console.warn('🌱 SICOSI: Criando constants de fallback');
-        window.SICOSIConstants = {
-          DOM_SELECTORS: {
-            SEARCH_INPUT: ['input[type="text"]', 'input[type="search"]'],
-            SELECT_BUTTONS: ['button'],
-            ITEM_CONFIG_PAGE: ['.pdm', '.item-details']
-          },
-          NON_SUSTAINABLE_KEYWORDS: {
-            DISPOSABLE_PLASTIC: ['copo descartável', 'copo plástico', 'prato descartável'],
-            NON_CERTIFIED_PAPER: ['papel sulfite', 'papel a4'],
-            CONVENTIONAL_CLEANING: ['detergente', 'desinfetante']
-          },
-          SUSTAINABLE_ALTERNATIVES: {
-            'copo descartável': {
-              alternatives: ['copo biodegradável', 'copo de papel'],
-              search_terms: ['biodegradável', 'compostável'],
-              reason: 'Reduz poluição plástica',
-              impact: 'Alto',
-              category: 'Descartáveis'
-            },
-            'papel sulfite': {
-              alternatives: ['papel reciclado', 'papel FSC'],
-              search_terms: ['reciclado', 'FSC'],
-              reason: 'Certificação florestal responsável',
-              impact: 'Médio',
-              category: 'Papel'
-            }
-          },
-          MODAL_CONFIG: {
-            ID: 'SICOSI-modal',
-            CLASS_PREFIX: 'SICOSI-',
-            AUTO_CLOSE_DELAY: 15000
-          },
-          UI_MESSAGES: {
-            MODAL_TITLE: '🌱 Alternativa Sustentável',
-            MODAL_SUBTITLE: 'Opções mais ecológicas'
-          },
-          ANALYTICS_CONFIG: {
-            STORAGE_KEY: 'SICOSI-logs',
-            MAX_LOGS: 100,
-            EVENTS: {
-              MODAL_SHOWN: 'modal_shown',
-              ALTERNATIVE_SELECTED: 'alternative_selected',
-              MODAL_DISMISSED: 'modal_dismissed'
-            }
-          },
-          DEFAULT_SETTINGS: {
-            enabled: true,
-            categories: {
-              descartaveis: true,
-              papel: true,
-              limpeza: true
-            }
-          }
+        userSettings = window.SICOSIConstants?.DEFAULT_SETTINGS || {
+          enabled: true,
         };
+      }
+
+      // Inicializar analisador LLM
+      if (window.SICOSILLMAnalyzer) {
+        llmAnalyzer = window.SICOSILLMAnalyzer;
+        await llmAnalyzer.initialize();
+        console.log("🌱 SICOSI: Analisador LLM inicializado");
       }
     }
 
     async startMainFunctionality() {
       if (!this.isCompatiblePage()) {
-        console.log('🌱 SICOSI: Página não compatível');
+        console.log("🌱 SICOSI: Página não compatível");
         return;
       }
 
       if (!userSettings?.enabled) {
-        console.log('🌱 SICOSI: Extensão desabilitada pelo usuário');
+        console.log("🌱 SICOSI: Extensão desabilitada");
         return;
       }
 
-      // Configurar observador de mudanças na página
+      // Configurar observador
       this.setupPageObserver();
-      
+
       // Monitorar elementos existentes
       this.monitorExistingElements();
-      
-      console.log('🌱 SICOSI: Funcionalidade principal ativa');
+
+      console.log("🌱 SICOSI: Monitoramento ativo");
     }
 
     isCompatiblePage() {
-      const currentUrl = window.location.href;
       const hostname = window.location.hostname;
-      
-      return hostname.includes('compras.gov.br') ||
-             hostname === 'localhost' ||
-             currentUrl.startsWith('file://') ||
-             hostname === '127.0.0.1';
+      return (
+        hostname.includes("compras.gov.br") ||
+        hostname === "localhost" ||
+        hostname === "127.0.0.1"
+      );
     }
 
     setupPageObserver() {
@@ -284,13 +139,15 @@
 
       observerInstance = new MutationObserver((mutations) => {
         let shouldCheck = false;
-        
+
         mutations.forEach((mutation) => {
-          if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+          if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
             mutation.addedNodes.forEach((node) => {
               if (node.nodeType === Node.ELEMENT_NODE) {
-                if (node.tagName === 'BUTTON' || 
-                    (node.querySelector && node.querySelector('button'))) {
+                if (
+                  node.tagName === "BUTTON" ||
+                  node.querySelector?.("button")
+                ) {
                   shouldCheck = true;
                 }
               }
@@ -306,249 +163,412 @@
 
       observerInstance.observe(document.body, {
         childList: true,
-        subtree: true
+        subtree: true,
       });
     }
 
     monitorExistingElements() {
       if (!userSettings?.enabled) return;
 
-      // Monitorar botões de "Selecionar"
-      this.monitorSelectButtons();
-      
-      // Monitorar tela de configuração de item
-      this.monitorItemConfigPage();
-    }
+      const buttons = document.querySelectorAll("button");
 
-    monitorSelectButtons() {
-      const buttons = document.querySelectorAll('button');
-      
-      buttons.forEach(button => {
-        const buttonText = button.textContent || button.innerText || '';
-        
-        if (buttonText.toLowerCase().includes('selecionar') && !button.hasSICOSIListener) {
+      buttons.forEach((button) => {
+        const buttonText = (button.textContent || "").toLowerCase();
+
+        if (
+          (buttonText.includes("adicionar") ||
+            buttonText.includes("selecionar")) &&
+          !button.hasSICOSIListener
+        ) {
           button.hasSICOSIListener = true;
-          button.addEventListener('click', this.handleSelectButtonClick.bind(this));
-          console.log('🌱 SICOSI: Listener adicionado ao botão:', buttonText.trim());
+          button.addEventListener(
+            "click",
+            this.handleSelectButtonClick.bind(this),
+            true
+          );
         }
       });
     }
 
-    monitorItemConfigPage() {
-      const selectors = window.SICOSIConstants?.DOM_SELECTORS?.ITEM_CONFIG_PAGE || ['.pdm', '.item-details'];
-      const configIndicators = selectors
-        .map(selector => document.querySelector(selector))
-        .filter(Boolean);
-      
-      if (configIndicators.length > 0) {
-        setTimeout(() => {
-          this.analyzeCurrentItem();
-        }, 1000);
-      }
-    }
-
-    handleSelectButtonClick(event) {
-      const button = event.currentTarget;
-      const itemRow = button.closest('tr') || button.closest('.item-row') || button.parentElement?.parentElement;
-      
-      if (itemRow) {
-        const itemDescription = this.extractItemDescription(itemRow);
-        
-        if (itemDescription && this.isNonSustainableItem(itemDescription)) {
-          event.preventDefault();
-          event.stopPropagation();
-          
-          this.showSustainabilityModal(itemDescription, () => {
-            setTimeout(() => {
-              button.click();
-            }, 100);
-          });
-          
-          this.logAnalytics('modal_shown', itemDescription);
-        }
-      }
-    }
-
-    analyzeCurrentItem() {
+    async handleSelectButtonClick(event) {
       if (isModalVisible) return;
 
-      const itemDescription = this.extractItemFromConfigPage();
-      
-      if (itemDescription && this.isNonSustainableItem(itemDescription)) {
-        this.showSustainabilityModal(itemDescription);
-        this.logAnalytics('modal_shown', itemDescription);
+      const button = event.currentTarget;
+      const itemRow = button.closest("tr") || button.closest(".item-row");
+
+      if (!itemRow) return;
+
+      // Extrair informações completas do produto
+      const productInfo = this.extractCompleteProductInfo(itemRow);
+      console.log("🌱 SICOSI: Analisando produto:", productInfo);
+
+      // Análise inteligente com LLM ou local
+      const analysis = await this.analyzeProduct(productInfo);
+
+      if (!analysis.isSustainable && analysis.needsAlternatives) {
+        console.log("🌱 SICOSI: Produto precisa de alternativas sustentáveis");
+        event.preventDefault();
+        event.stopPropagation();
+
+        await this.showSmartSustainabilityModal(productInfo, analysis, () => {
+          button.removeEventListener(
+            "click",
+            this.handleSelectButtonClick.bind(this),
+            true
+          );
+          button.click();
+        });
+
+        this.logAnalytics("modal_shown", productInfo.description);
+      } else if (analysis.isSustainable) {
+        console.log("🌱 SICOSI: Produto já é sustentável:", analysis.reason);
+        // Não interferir - deixar compra prosseguir
       }
     }
 
-    extractItemDescription(itemRow) {
-      const cells = itemRow.querySelectorAll('td');
-      
-      for (let cell of cells) {
-        const text = cell.textContent || cell.innerText || '';
-        if (text.length > 10 && !text.match(/^\d+$/)) {
-          return text.trim().toLowerCase();
-        }
-      }
-      
-      return null;
-    }
+    extractCompleteProductInfo(itemRow) {
+      const cells = itemRow.querySelectorAll("td");
+      const info = {
+        code: "",
+        description: "",
+        material: "",
+        capacity: "",
+        application: "",
+        characteristics: "",
+        fullText: "",
+      };
 
-    extractItemFromConfigPage() {
-      const possibleElements = [
-        document.querySelector('h1'),
-        document.querySelector('h2'),
-        document.querySelector('h3'),
-        document.querySelector('.title'),
-        document.querySelector('.product-name'),
-        document.querySelector('[class*="descri"]')
-      ].filter(Boolean);
-      
-      for (let element of possibleElements) {
-        const text = element.textContent || element.innerText || '';
-        if (text.length > 5) {
-          return text.trim().toLowerCase();
-        }
-      }
-      
-      return null;
-    }
+      // Extrair dados de cada célula
+      if (cells.length >= 3) {
+        info.code = this.extractCleanText(cells[0]);
+        info.description = this.extractCleanText(cells[1]);
 
-    isNonSustainableItem(description) {
-      if (!description || !window.SICOSIConstants?.NON_SUSTAINABLE_KEYWORDS) {
-        return false;
-      }
-      
-      const lowerDesc = description.toLowerCase();
-      const keywords = window.SICOSIConstants.NON_SUSTAINABLE_KEYWORDS;
-      
-      for (const category in keywords) {
-        const categoryKeywords = keywords[category];
-        if (Array.isArray(categoryKeywords)) {
-          for (const keyword of categoryKeywords) {
-            if (lowerDesc.includes(keyword.toLowerCase())) {
-              console.log('🌱 SICOSI: Item não-sustentável detectado:', keyword);
-              return true;
-            }
+        // Tentar extrair mais detalhes se disponíveis
+        for (let i = 2; i < cells.length - 1; i++) {
+          const cellText = this.extractCleanText(cells[i]);
+
+          if (cellText.includes("material:")) {
+            info.material = cellText.replace("material:", "").trim();
+          } else if (cellText.includes("capacidade:")) {
+            info.capacity = cellText.replace("capacidade:", "").trim();
+          } else if (cellText.includes("aplicação:")) {
+            info.application = cellText.replace("aplicação:", "").trim();
+          } else if (cellText.includes("características")) {
+            info.characteristics = cellText
+              .replace(/características.*:/i, "")
+              .trim();
           }
         }
       }
-      
-      return false;
+
+      // Texto completo para análise
+      info.fullText = Object.values(info).join(" ").toLowerCase();
+
+      return info;
     }
 
-    findSustainableAlternatives(description) {
-      if (!window.SICOSIConstants?.SUSTAINABLE_ALTERNATIVES) {
-        return [];
+    extractCleanText(element) {
+      if (!element) return "";
+      const text = element.textContent || element.innerText || "";
+      return text.replace(/\s+/g, " ").trim();
+    }
+
+    async analyzeProduct(productInfo) {
+      // Usar LLM Analyzer se disponível
+      if (llmAnalyzer) {
+        return await llmAnalyzer.analyzeProduct(productInfo);
       }
-      
-      const lowerDesc = description.toLowerCase();
-      const alternatives = window.SICOSIConstants.SUSTAINABLE_ALTERNATIVES;
-      const matches = [];
-      
-      for (const keyword in alternatives) {
-        if (lowerDesc.includes(keyword)) {
-          matches.push({
-            keyword,
-            data: alternatives[keyword]
-          });
+
+      // Fallback para análise local
+      return this.localProductAnalysis(productInfo);
+    }
+
+    localProductAnalysis(productInfo) {
+      const fullText = productInfo.fullText;
+
+      // Indicadores de sustentabilidade
+      const sustainableTerms = [
+        "biodegradável",
+        "biodegradavel",
+        "compostável",
+        "compostavel",
+        "bagaço de cana",
+        "bagaco de cana",
+        "bagaço",
+        "bagaco",
+        "bambu",
+        "papel kraft",
+        "reciclado",
+        "reciclável",
+        "fsc",
+        "certificado",
+        "energy star",
+        "epeat",
+        "atóxico",
+        "atoxico",
+        "ecológico",
+        "ecologico",
+        "sustentável",
+        "sustentavel",
+        "natural",
+        "renovável",
+      ];
+
+      const unsustainableTerms = [
+        "plástico comum",
+        "plastico comum",
+        "descartável comum",
+        "poliestireno",
+        "isopor",
+        "pvc",
+        "polipropileno",
+        "não reciclável",
+        "nao reciclavel",
+      ];
+
+      // Verificar presença de termos
+      const hasSustainableTerms = sustainableTerms.some((term) =>
+        fullText.includes(term)
+      );
+      const hasUnsustainableTerms = unsustainableTerms.some((term) =>
+        fullText.includes(term)
+      );
+
+      const isSustainable = hasSustainableTerms && !hasUnsustainableTerms;
+
+      // Gerar alternativas se não for sustentável
+      const alternatives = isSustainable
+        ? []
+        : this.generateLocalAlternatives(productInfo);
+
+      return {
+        isSustainable,
+        reason: isSustainable
+          ? "Produto já possui características sustentáveis"
+          : "Produto convencional sem certificação ambiental",
+        sustainabilityScore: isSustainable ? 8 : 3,
+        alternatives,
+        needsAlternatives: !isSustainable && alternatives.length > 0,
+        analysisMethod: "local",
+      };
+    }
+
+    generateLocalAlternatives(productInfo) {
+      const desc = productInfo.description.toLowerCase();
+      const alternatives = [];
+
+      // Mapeamento específico por tipo de produto
+      if (desc.includes("copo")) {
+        if (!desc.includes("biodegradável") && !desc.includes("bagaço")) {
+          alternatives.push(
+            {
+              name: "Copo de bagaço de cana 200ml",
+              description: "Copo produzido com fibra de bagaço de cana",
+              benefits:
+                "Resíduo agrícola reaproveitado, biodegradável em 90 dias",
+              searchTerms: ["copo bagaço cana", "copo fibra natural"],
+            },
+            {
+              name: "Copo de papel certificado FSC",
+              description: "Copo de papel com certificação florestal",
+              benefits: "Manejo florestal responsável, totalmente reciclável",
+              searchTerms: ["copo papel FSC", "copo certificado"],
+            }
+          );
         }
+      } else if (desc.includes("papel") && !desc.includes("reciclado")) {
+        alternatives.push({
+          name: "Papel A4 100% reciclado",
+          description: "Papel produzido com fibras pós-consumo",
+          benefits: "Zero desmatamento, economia de água e energia",
+          searchTerms: ["papel reciclado A4", "resma reciclada"],
+        });
+      } else if (
+        desc.includes("detergente") &&
+        !desc.includes("biodegradável")
+      ) {
+        alternatives.push({
+          name: "Detergente biodegradável concentrado",
+          description: "Detergente com surfactantes vegetais",
+          benefits: "Não contamina águas, biodegrada em 28 dias",
+          searchTerms: ["detergente biodegradável", "detergente eco"],
+        });
       }
-      
-      return matches;
+
+      return alternatives;
     }
 
-    async showSustainabilityModal(itemDescription, continueCallback = null) {
+    async showSmartSustainabilityModal(
+      productInfo,
+      analysis,
+      continueCallback
+    ) {
       if (isModalVisible) return;
 
-      const alternatives = this.findSustainableAlternatives(itemDescription);
-      
-      if (alternatives.length === 0) {
-        console.log('🌱 SICOSI: Nenhuma alternativa encontrada para:', itemDescription);
-        return;
+      isModalVisible = true;
+
+      // Buscar fornecedores reais se houver alternativas
+      if (
+        analysis.alternatives &&
+        analysis.alternatives.length > 0 &&
+        llmAnalyzer
+      ) {
+        analysis.alternatives = await llmAnalyzer.findRealSuppliers(
+          analysis.alternatives
+        );
       }
 
-      isModalVisible = true;
-      currentModal = this.createModal(alternatives, itemDescription, continueCallback);
+      currentModal = this.createSmartModal(
+        productInfo,
+        analysis,
+        continueCallback
+      );
       document.body.appendChild(currentModal);
 
       setTimeout(() => {
-        currentModal.classList.add('SICOSI-modal-visible');
+        if (currentModal) currentModal.classList.add("sicosi-modal-visible");
       }, 50);
 
-      const autoCloseDelay = window.SICOSIConstants?.MODAL_CONFIG?.AUTO_CLOSE_DELAY || 15000;
+      // Auto-fechar após tempo configurado
+      const autoCloseDelay =
+        window.SICOSIConstants?.MODAL_CONFIG?.AUTO_CLOSE_DELAY || 30000;
       setTimeout(() => {
-        if (currentModal) {
-          this.closeModal();
-        }
+        if (currentModal) this.closeModal();
       }, autoCloseDelay);
     }
 
-    createModal(alternatives, itemDescription, continueCallback) {
-      const modal = document.createElement('div');
-      modal.id = window.SICOSIConstants?.MODAL_CONFIG?.ID || 'SICOSI-modal';
-      modal.className = 'SICOSI-modal-overlay';
+    createSmartModal(productInfo, analysis, continueCallback) {
+      const modal = document.createElement("div");
+      modal.id = "sicosi-modal";
+      modal.className = "sicosi-modal-overlay";
 
-      const modalTitle = window.SICOSIConstants?.UI_MESSAGES?.MODAL_TITLE || '🌱 Alternativa Sustentável';
-      const modalSubtitle = window.SICOSIConstants?.UI_MESSAGES?.MODAL_SUBTITLE || 'Opções mais ecológicas';
+      const alternativesHTML = analysis.alternatives
+        .map(
+          (alt) => `
+        <div class="sicosi-alternative-item">
+          <div class="sicosi-alt-header">
+            <h4>${alt.name}</h4>
+            ${
+              alt.estimatedPrice
+                ? `<span class="sicosi-price">${alt.estimatedPrice}</span>`
+                : ""
+            }
+          </div>
+          <p class="sicosi-alt-description">${alt.description}</p>
+          <p class="sicosi-alt-benefits">✅ ${alt.benefits}</p>
+          ${
+            alt.suppliers && alt.suppliers.length > 0
+              ? `
+            <div class="sicosi-suppliers">
+              <strong>Fornecedores:</strong>
+              ${alt.suppliers
+                .map(
+                  (s) => `
+                <a href="${s.website}" target="_blank" class="sicosi-supplier-link">
+                  ${s.name}
+                </a>
+              `
+                )
+                .join(", ")}
+            </div>
+          `
+              : ""
+          }
+          <div class="sicosi-alt-actions">
+            ${(alt.searchTerms || [])
+              .map(
+                (term) => `
+              <button class="sicosi-search-btn" data-search="${term}">
+                🔍 Buscar: ${term}
+              </button>
+            `
+              )
+              .join("")}
+          </div>
+        </div>
+      `
+        )
+        .join("");
 
       modal.innerHTML = `
-        <div class="SICOSI-modal-content">
-          <div class="SICOSI-modal-header">
-            <div class="SICOSI-modal-icon">🌱</div>
-            <div class="SICOSI-modal-title">
-              <h3>${modalTitle}</h3>
-              <p class="SICOSI-modal-subtitle">${modalSubtitle}</p>
+        <div class="sicosi-modal-content">
+          <div class="sicosi-modal-header">
+            <div class="sicosi-header-left">
+              <span class="sicosi-modal-icon">🌱</span>
+              <div>
+                <h3>Análise de Sustentabilidade</h3>
+                <p class="sicosi-modal-subtitle">Sistema Inteligente de Compras Sustentáveis</p>
+              </div>
             </div>
-            <button class="SICOSI-close-btn">&times;</button>
+            <button class="sicosi-close-btn">&times;</button>
           </div>
           
-          <div class="SICOSI-modal-body">
-            <div class="SICOSI-current-item">
-              <strong>Item selecionado:</strong> ${itemDescription}
+          <div class="sicosi-modal-body">
+            <div class="sicosi-product-info">
+              <h4>Produto Selecionado:</h4>
+              <p><strong>Código:</strong> ${productInfo.code}</p>
+              <p><strong>Descrição:</strong> ${productInfo.description}</p>
+              ${
+                productInfo.material
+                  ? `<p><strong>Material:</strong> ${productInfo.material}</p>`
+                  : ""
+              }
+              ${
+                productInfo.characteristics
+                  ? `<p><strong>Características:</strong> ${productInfo.characteristics}</p>`
+                  : ""
+              }
             </div>
-            
-            ${alternatives.map(alternative => {
-              const alt = alternative.data || {};
-              return `
-                <div class="SICOSI-suggestion-item">
-                  <div class="SICOSI-suggestion-header">
-                    <span class="SICOSI-category-badge">${alt.category || 'Geral'}</span>
-                    <span class="SICOSI-impact-badge impact-${(alt.impact || 'medio').toLowerCase()}">
-                      ${alt.impact || 'Médio'} Impacto
-                    </span>
-                  </div>
-                  
-                  <div class="SICOSI-alternatives-list">
-                    <p><strong>Alternativas sustentáveis:</strong></p>
-                    <div class="SICOSI-alternatives-grid">
-                      ${(alt.alternatives || []).map(altOption => `
-                        <button class="SICOSI-alternative-btn" data-alternative="${altOption}">
-                          ${altOption}
-                        </button>
-                      `).join('')}
-                    </div>
-                  </div>
-                  
-                  <div class="SICOSI-reason">
-                    <p class="SICOSI-benefit">
-                      <strong>Benefício:</strong> ${alt.reason || 'Opção mais sustentável'}
-                    </p>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-            
-            <div class="SICOSI-modal-actions">
-              <button class="SICOSI-btn SICOSI-btn-primary" id="searchAlternatives">
-                🔍 Buscar Alternativas
-              </button>
-              <button class="SICOSI-btn SICOSI-btn-secondary" id="continueOriginal">
-                Continuar com item original
-              </button>
+
+            <div class="sicosi-analysis-result">
+              <div class="sicosi-score">
+                <span class="sicosi-score-label">Score de Sustentabilidade:</span>
+                <span class="sicosi-score-value" style="color: ${
+                  analysis.sustainabilityScore >= 5 ? "#4CAF50" : "#f44336"
+                }">
+                  ${analysis.sustainabilityScore}/10
+                </span>
+              </div>
+              <p class="sicosi-reason">${analysis.reason}</p>
             </div>
-            
-            <div class="SICOSI-modal-footer">
-              <small>💡 Esta sugestão visa promover compras públicas mais sustentáveis</small>
+
+            ${
+              analysis.needsAlternatives
+                ? `
+              <div class="sicosi-alternatives-section">
+                <h4>🌿 Alternativas Sustentáveis Recomendadas:</h4>
+                ${alternativesHTML}
+              </div>
+            `
+                : `
+              <div class="sicosi-no-alternatives">
+                <p>✅ Este produto já possui características sustentáveis adequadas.</p>
+              </div>
+            `
+            }
+
+            <div class="sicosi-modal-footer">
+              <div class="sicosi-footer-actions">
+                ${
+                  analysis.needsAlternatives
+                    ? `
+                  <button class="sicosi-btn sicosi-btn-secondary" id="continueOriginal">
+                    Continuar com produto original
+                  </button>
+                `
+                    : `
+                  <button class="sicosi-btn sicosi-btn-primary" id="continueOriginal">
+                    ✅ Prosseguir com a compra
+                  </button>
+                `
+                }
+              </div>
+              <small class="sicosi-footer-info">
+                Análise: ${
+                  analysis.analysisMethod === "llm" ? "🤖 IA" : "📊 Local"
+                } | 
+                ${new Date().toLocaleTimeString("pt-BR")}
+              </small>
             </div>
           </div>
         </div>
@@ -559,94 +579,74 @@
     }
 
     setupModalEventListeners(modal, continueCallback) {
-      // Botão de fechar
-      const closeBtn = modal.querySelector('.SICOSI-close-btn');
+      // Botão fechar
+      const closeBtn = modal.querySelector(".sicosi-close-btn");
       if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
+        closeBtn.addEventListener("click", () => {
           this.closeModal();
-          this.logAnalytics('modal_dismissed', 'close_button');
+          this.logAnalytics("modal_dismissed", "close_button");
         });
       }
 
-      // Botões de alternativas
-      modal.querySelectorAll('.SICOSI-alternative-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const alternative = btn.dataset.alternative;
-          this.searchForAlternative(alternative);
-          this.logAnalytics('alternative_selected', alternative);
+      // Botões de busca
+      modal.querySelectorAll(".sicosi-search-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const searchTerm = btn.dataset.search;
+          this.searchForAlternative(searchTerm);
+          this.logAnalytics("alternative_search", searchTerm);
         });
       });
 
-      // Botão de buscar alternativas
-      const searchBtn = modal.querySelector('#searchAlternatives');
-      if (searchBtn) {
-        searchBtn.addEventListener('click', () => {
-          this.closeModal();
-          this.logAnalytics('search_performed', 'manual_search');
-        });
-      }
-
-      // Botão de continuar com original
-      const continueBtn = modal.querySelector('#continueOriginal');
+      // Botão continuar
+      const continueBtn = modal.querySelector("#continueOriginal");
       if (continueBtn) {
-        continueBtn.addEventListener('click', () => {
+        continueBtn.addEventListener("click", () => {
           this.closeModal();
-          if (continueCallback) {
-            continueCallback();
-          }
-          this.logAnalytics('modal_dismissed', 'continue_original');
+          if (continueCallback) continueCallback();
+          this.logAnalytics("modal_action", "continue_original");
         });
       }
 
-      // Fechar ao clicar no backdrop
-      modal.addEventListener('click', (e) => {
+      // Fechar ao clicar fora
+      modal.addEventListener("click", (e) => {
         if (e.target === modal) {
           this.closeModal();
-          this.logAnalytics('modal_dismissed', 'backdrop_click');
+          this.logAnalytics("modal_dismissed", "backdrop_click");
         }
       });
     }
 
-    searchForAlternative(alternative) {
-      this.closeModal();
-      
-      const selectors = window.SICOSIConstants?.DOM_SELECTORS?.SEARCH_INPUT || ['input[type="text"]'];
-      let searchInput = null;
-      
-      for (const selector of selectors) {
-        searchInput = document.querySelector(selector);
-        if (searchInput && searchInput.offsetParent !== null) {
-          break;
-        }
-      }
-      
+    searchForAlternative(searchTerm) {
+      const searchInput = document.querySelector(
+        'input[type="text"], input[type="search"]'
+      );
+
       if (searchInput) {
-        searchInput.value = alternative;
+        searchInput.value = searchTerm;
         searchInput.focus();
-        
+
         // Disparar eventos
-        ['input', 'change', 'keyup'].forEach(eventType => {
+        ["input", "change"].forEach((eventType) => {
           searchInput.dispatchEvent(new Event(eventType, { bubbles: true }));
         });
-        
+
         // Simular Enter
-        const enterEvent = new KeyboardEvent('keydown', {
-          key: 'Enter',
+        const enterEvent = new KeyboardEvent("keydown", {
+          key: "Enter",
           keyCode: 13,
-          bubbles: true
+          bubbles: true,
         });
         searchInput.dispatchEvent(enterEvent);
-        
-        console.log('🌱 SICOSI: Busca executada para:', alternative);
-      } else {
-        console.warn('🌱 SICOSI: Campo de busca não encontrado');
+
+        console.log("🌱 SICOSI: Buscando por:", searchTerm);
+        this.closeModal();
       }
     }
 
     closeModal() {
       if (currentModal) {
-        currentModal.classList.add('SICOSI-modal-closing');
-        
+        currentModal.classList.add("sicosi-modal-closing");
+
         setTimeout(() => {
           if (currentModal && currentModal.parentNode) {
             currentModal.parentNode.removeChild(currentModal);
@@ -658,77 +658,362 @@
     }
 
     logAnalytics(event, details) {
-      const logEntry = {
-        timestamp: new Date().toISOString(),
-        event,
-        details,
-        url: window.location.href
-      };
-
-      try {
-        if (window.SICOSIStorage) {
-          // Usar storage manager se disponível
-          window.SICOSIStorage.logAnalytics(event, details);
-        } else if (chrome?.storage?.local) {
-          // Fallback direto
-          const storageKey = window.SICOSIConstants?.ANALYTICS_CONFIG?.STORAGE_KEY || 'SICOSI-logs';
-          const maxLogs = window.SICOSIConstants?.ANALYTICS_CONFIG?.MAX_LOGS || 100;
-          
-          chrome.storage.local.get([storageKey], (result) => {
-            const logs = result[storageKey] || [];
-            logs.push(logEntry);
-
-            if (logs.length > maxLogs) {
-              logs.splice(0, logs.length - maxLogs);
-            }
-
-            chrome.storage.local.set({ [storageKey]: logs });
-          });
-        }
-        
-        console.log('🌱 SICOSI Analytics:', logEntry);
-      } catch (error) {
-        console.warn('🌱 SICOSI: Erro no analytics:', error);
+      if (window.SICOSIStorage) {
+        window.SICOSIStorage.logAnalytics(event, details);
       }
+      console.log("📊 SICOSI Analytics:", event, details);
     }
   }
 
-  // Inicializar quando a página carregar
-  const initializer = new SICOSIInitializer();
+  // CSS melhorado para o modal
+  const style = document.createElement("style");
+  style.textContent = `
+    .sicosi-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      initializer.initialize();
-    });
+    .sicosi-modal-overlay.sicosi-modal-visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .sicosi-modal-content {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 700px;
+      max-height: 85vh;
+      width: 90%;
+      overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.3s ease;
+    }
+
+    .sicosi-modal-visible .sicosi-modal-content {
+      transform: scale(1);
+    }
+
+    .sicosi-modal-header {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: white;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sicosi-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sicosi-modal-icon {
+      font-size: 28px;
+    }
+
+    .sicosi-modal-header h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .sicosi-modal-subtitle {
+      margin: 2px 0 0 0;
+      font-size: 13px;
+      opacity: 0.95;
+    }
+
+    .sicosi-close-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      font-size: 24px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .sicosi-close-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .sicosi-modal-body {
+      padding: 24px;
+      max-height: calc(85vh - 140px);
+      overflow-y: auto;
+    }
+
+    .sicosi-product-info {
+      background: #f5f5f5;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .sicosi-product-info h4 {
+      margin: 0 0 12px 0;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .sicosi-product-info p {
+      margin: 6px 0;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .sicosi-analysis-result {
+      background: linear-gradient(90deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%);
+      padding: 16px;
+      border-radius: 8px;
+      border-left: 4px solid #4CAF50;
+      margin-bottom: 20px;
+    }
+
+    .sicosi-score {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .sicosi-score-label {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .sicosi-score-value {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .sicosi-reason {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .sicosi-alternatives-section h4 {
+      margin: 24px 0 16px 0;
+      color: #333;
+      font-size: 16px;
+    }
+
+    .sicosi-alternative-item {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: #fafafa;
+      transition: all 0.2s;
+    }
+
+    .sicosi-alternative-item:hover {
+      border-color: #4CAF50;
+      background: #f8fff8;
+    }
+
+    .sicosi-alt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .sicosi-alt-header h4 {
+      margin: 0;
+      color: #333;
+      font-size: 15px;
+    }
+
+    .sicosi-price {
+      background: #4CAF50;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .sicosi-alt-description {
+      font-size: 13px;
+      color: #666;
+      margin: 8px 0;
+    }
+
+    .sicosi-alt-benefits {
+      font-size: 13px;
+      color: #4CAF50;
+      font-weight: 500;
+      margin: 8px 0;
+    }
+
+    .sicosi-suppliers {
+      font-size: 12px;
+      color: #555;
+      margin: 10px 0;
+    }
+
+    .sicosi-supplier-link {
+      color: #2196F3;
+      text-decoration: none;
+      margin: 0 4px;
+    }
+
+    .sicosi-supplier-link:hover {
+      text-decoration: underline;
+    }
+
+    .sicosi-alt-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .sicosi-search-btn {
+      background: white;
+      color: #4CAF50;
+      border: 1px solid #4CAF50;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sicosi-search-btn:hover {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .sicosi-no-alternatives {
+      background: #e8f5e9;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .sicosi-no-alternatives p {
+      margin: 0;
+      color: #2e7d32;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .sicosi-modal-footer {
+      border-top: 1px solid #e0e0e0;
+      padding: 16px 24px;
+      background: #fafafa;
+    }
+
+    .sicosi-footer-actions {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .sicosi-btn {
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .sicosi-btn-primary {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .sicosi-btn-primary:hover {
+      background: #45a049;
+    }
+
+    .sicosi-btn-secondary {
+      background: #f5f5f5;
+      color: #666;
+      border: 1px solid #ddd;
+    }
+
+    .sicosi-btn-secondary:hover {
+      background: #e8e8e8;
+    }
+
+    .sicosi-footer-info {
+      display: block;
+      text-align: center;
+      font-size: 11px;
+      color: #888;
+    }
+
+    .sicosi-modal-closing {
+      opacity: 0;
+      visibility: hidden;
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Inicializar
+  const manager = new SICOSIManager();
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => manager.initialize());
   } else {
-    initializer.initialize();
+    manager.initialize();
   }
 
-  // Cleanup quando a página for descarregada
-  window.addEventListener('beforeunload', () => {
-    if (observerInstance) {
-      observerInstance.disconnect();
-    }
-    if (currentModal) {
-      initializer.closeModal();
-    }
+  // Cleanup ao sair
+  window.addEventListener("beforeunload", () => {
+    if (observerInstance) observerInstance.disconnect();
+    if (currentModal) manager.closeModal();
   });
 
   // Exportar para debug
   window.SICOSI_DEBUG = {
     isInitialized: () => isInitialized,
     isModalVisible: () => isModalVisible,
-    showTestModal: () => {
-      if (isInitialized) {
-        initializer.showSustainabilityModal('teste de copo descartável');
+    testAnalysis: async (description) => {
+      if (llmAnalyzer) {
+        return await llmAnalyzer.analyzeProduct({
+          description,
+          fullText: description.toLowerCase(),
+        });
+      }
+      return "LLM Analyzer não inicializado";
+    },
+    showTestModal: async () => {
+      if (manager) {
+        const testProduct = {
+          code: "TEST001",
+          description: "Copo descartável plástico 200ml",
+          material: "Plástico comum",
+          fullText: "copo descartável plástico comum 200ml",
+        };
+        const analysis = await manager.analyzeProduct(testProduct);
+        await manager.showSmartSustainabilityModal(testProduct, analysis, null);
       }
     },
-    testDetection: (product) => {
-      return initializer.isNonSustainableItem(product);
-    },
-    constants: () => window.SICOSIConstants,
-    settings: () => userSettings,
-    dependencies: () => initializer.dependencies
+    getSettings: () => userSettings,
+    getLLMStatus: () => (llmAnalyzer ? "Configurado" : "Não configurado"),
   };
-
 })();

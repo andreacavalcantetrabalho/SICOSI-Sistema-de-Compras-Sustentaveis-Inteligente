@@ -15,7 +15,7 @@ O **SICOSI** é uma extensão de navegador que atua como um "lembrete amigável"
 ### 🎯 Problema que Resolve
 
 - **Falta de consciência** sobre alternativas sustentáveis durante compras públicas
-- **Catálogo limitado** - servidores não conhecem todas as opções disponíveis  
+- **Catálogo limitado** - servidores não conhecem todas as opções disponíveis
 - **Processo manual** - buscar alternativas sustentáveis demanda tempo extra
 - **Impacto ambiental** - governo brasileiro gasta bilhões em produtos não-sustentáveis
 
@@ -28,18 +28,22 @@ Um "cutucão sustentável" **no momento certo** - quando o servidor já escolheu
 ## 🚀 Funcionalidades
 
 ### ✅ **Implementado**
-- 🔍 **Detecção inteligente** de itens não-sustentáveis no ComprasNet
-- 🌱 **Base de dados** com 50+ alternativas sustentáveis mapeadas
-- 📝 **Modal discreto** com sugestões contextuais
-- ⚙️ **Configurações básicas** para ativar/desativar categorias
 
-### 🔄 **Em Desenvolvimento** 
+- 🤖 **Análise Inteligente**: Detecção aprimorada que identifica se um produto **JÁ É** sustentável (ex: "copo de bagaço de cana") e evita sugestões desnecessárias.
+- 💡 **Sugestões Dinâmicas**: Oferece alternativas contextuais baseadas em análise local ou via LLMs (Grok, GPT, Claude, etc.).
+- 🌐 **Busca de Fornecedores Reais**: Integração opcional com Google Custom Search ou SerpAPI para encontrar fornecedores de produtos sustentáveis.
+- 📝 **Modal Aprimorado**: Interface mais clara e informativa com benefícios e nível de impacto.
+- ⚙️ **Configurações Flexíveis**: Funciona 100% offline com análise local, com a opção de adicionar chaves de API para turbinar a inteligência.
+
+### 🔄 **Em Desenvolvimento**
+
 - 🔍 **Busca automática** por alternativas no próprio catálogo ComprasNet
 - 🌐 **Pesquisa externa** quando não há alternativas internas disponíveis
 - 📊 **Dashboard** com estatísticas de impacto ambiental
 - 📈 **Relatórios** de adoção de práticas sustentáveis
 
 ### 🎪 **Roadmap Futuro**
+
 - 🤖 **IA para análise** de sustentabilidade mais sofisticada
 - 📱 **App mobile** para acompanhamento
 - 🏛️ **Integração** com outros sistemas de compras públicas
@@ -49,20 +53,26 @@ Um "cutucão sustentável" **no momento certo** - quando o servidor já escolheu
 
 ## 🖥️ Como Funciona
 
-### 📋 **Fluxo de Uso**
+### 📋 **Fluxo de Uso Inteligente**
 
-1. **Servidor acessa** o ComprasNet normalmente
-2. **Busca por item** (ex: "copo descartável") 
-3. **Seleciona produto** da lista de resultados
-4. **⚡ Extensão detecta** item não-sustentável
-5. **🌱 Modal aparece** com sugestões sustentáveis
-6. **Servidor escolhe:** usar alternativa sustentável OU continuar com original
+1.  **Servidor acessa** o ComprasNet normalmente.
+2.  **Busca e seleciona** um item (ex: "copo descartável").
+3.  **⚡ Análise Inteligente da Extensão**:
+    - **Com LLM configurada**: A descrição do item é enviada para uma análise de IA profunda para entender o contexto e a real necessidade.
+    - **Sem LLM**: A extensão usa sua lógica local aprimorada para analisar o item.
+4.  **🌱 Decisão Inteligente**:
+    - Se o item já é sustentável (ex: "copo de bagaço de cana biodegradável"), a extensão **não interfere**.
+    - Se o item é problemático (ex: "copo plástico comum"), um modal aparece com **sugestões específicas e dinâmicas**.
+5.  **Servidor escolhe:**
+    - **Buscar Alternativas**: Inicia uma busca por fornecedores reais (se a API de busca estiver configurada).
+    - **Continuar com original**: Fecha o modal e permite que o usuário prossiga.
 
 ### 🎯 **Momento da Intervenção**
 
 A extensão atua especificamente na **tela de seleção de itens** - após o servidor encontrar o produto desejado, mas antes de adicioná-lo ao carrinho de compras.
 
 **Por que esse momento?**
+
 - ✅ Servidor já tem **contexto completo** sobre o produto
 - ✅ **Timing perfeito** para reconsiderar sem atrapalhar o fluxo
 - ✅ Informações técnicas **já estão visíveis** (material, especificações)
@@ -75,37 +85,42 @@ A extensão atua especificamente na **tela de seleção de itens** - após o ser
 ### 📦 **Para Usuários Finais**
 
 #### Chrome/Edge:
-1. Acesse a [Chrome Web Store](https://chrome.google.com/webstore) 
+
+1. Acesse a [Chrome Web Store](https://chrome.google.com/webstore)
 2. Busque por "SICOSI"
 3. Clique em "Adicionar ao Chrome"
 
 #### Firefox:
+
 1. Acesse o [Firefox Add-ons](https://addons.mozilla.org)
-2. Busque por "SICOSI" 
+2. Busque por "SICOSI"
 3. Clique em "Adicionar ao Firefox"
 
 ### 👨‍💻 **Para Desenvolvedores**
 
 #### Pré-requisitos
+
 - Chrome 88+ ou Firefox 78+
 - Git instalado
 
 #### Instalação Local
+
 ```bash
 # Clone o repositório
 git clone https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente.git
 
-# Entre na pasta do projeto  
+# Entre na pasta do projeto
 cd SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente
 
 # Instale no Chrome
 # 1. Abra chrome://extensions/
-# 2. Ative "Modo do desenvolvedor"  
+# 2. Ative "Modo do desenvolvedor"
 # 3. Clique "Carregar sem compactação"
 # 4. Selecione a pasta do projeto
 ```
 
 #### Testando
+
 ```bash
 # Acesse o ComprasNet
 # https://compras.gov.br
@@ -116,11 +131,52 @@ cd SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente
 # A extensão deve mostrar sugestões automaticamente
 ```
 
+### 🔧 **Configurando as APIs (Opcional, mas Recomendado)**
+
+A extensão funciona perfeitamente sem chaves de API, usando sua lógica interna. Para habilitar a análise por IA e a busca na web, siga os passos abaixo.
+
+**1. Crie e edite o arquivo `config/api-keys.js`**
+
+Adicione o seguinte conteúdo ao arquivo e preencha com suas chaves.
+
+**2. Escolha uma LLM para Análise Inteligente (Recomendado: Grok)**
+
+```javascript
+// config/api-keys.js
+window.SICOSI_API_KEYS = {
+  GROK: {
+    enabled: true, // Mude para true
+    key: 'xai-sua-chave-aqui', // Obtenha em [https://x.ai/api](https://x.ai/api)
+  },
+  OPENAI: {
+    enabled: false,
+    key: 'sk-sua-chave-openai', // Obtenha em [https://platform.openai.com](https://platform.openai.com)
+  },
+  // ... outras LLMs
+```
+
+**3. Configure uma API de Busca Web**
+
+```javascript
+// continuação de config/api-keys.js
+  GOOGLE_SEARCH: {
+    enabled: true,
+    key: 'AIza...', // Sua API key do Google Cloud
+    cx: '123456...', // Seu Search Engine ID do Google CSE
+  },
+  SERPAPI: {
+    enabled: false,
+    key: 'sua-chave-serpapi', // Obtenha em [https://serpapi.com](https://serpapi.com)
+  }
+};
+```
+
 ---
 
 ## 🏗️ Arquitetura
 
 ### 📁 **Estrutura do Projeto**
+
 ```
 SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/
 ├── 📄 manifest.json                     # Configuração da extensão
@@ -152,7 +208,7 @@ SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/
 │   └── sustainable-alternatives.json    # Alternativas sustentáveis
 └── 📁 utils/
     ├── api-client.js                    # Cliente de APIs externas
-    ├── data-converter.js                    
+    ├── data-converter.js                # Converte dados para uso interno
     ├── catalog-analyzer.js              # Análise do catálogo
     ├── dom-helper.js                    # Funções auxiliares de DOM
     ├── storage-manager.js               # Gerenciamento de dados
@@ -162,15 +218,16 @@ SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/
 
 ### 🔧 **Tecnologias**
 
-| Componente | Tecnologia | Por quê? |
-|------------|------------|----------|
+| Componente   | Tecnologia         | Por quê?                                  |
+| ------------ | ------------------ | ----------------------------------------- |
 | **Frontend** | Vanilla JavaScript | Zero dependências, máxima compatibilidade |
-| **Styling** | CSS3 Puro | Performance e simplicidade |
-| **Storage** | Chrome Storage API | Sincronização entre dispositivos |
-| **Manifest** | Manifest V3 | Padrão mais recente e seguro |
-| **APIs** | Fetch API nativo | Sem bibliotecas externas |
+| **Styling**  | CSS3 Puro          | Performance e simplicidade                |
+| **Storage**  | Chrome Storage API | Sincronização entre dispositivos          |
+| **Manifest** | Manifest V3        | Padrão mais recente e seguro              |
+| **APIs**     | Fetch API nativo   | Sem bibliotecas externas                  |
 
 ### ⚡ **Performance**
+
 - **< 50KB** tamanho total da extensão
 - **< 100ms** tempo de carregamento
 - **Zero impacto** na performance do ComprasNet
@@ -181,18 +238,21 @@ SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/
 ## 🎯 Público-Alvo
 
 ### 🏛️ **Instituições**
+
 - **Universidades públicas** (foco inicial)
-- **Órgãos federais, estaduais e municipais** 
+- **Órgãos federais, estaduais e municipais**
 - **Empresas públicas e autarquias**
 - **Fundações e institutos governamentais**
 
 ### 👥 **Usuários**
+
 - **Servidores** responsáveis por compras e licitações
 - **Gestores** de sustentabilidade em órgãos públicos
 - **Coordenadores** de compras institucionais
 - **Qualquer pessoa** envolvida em compras públicas
 
 ### 📊 **Números Potenciais**
+
 - **🏫 5.000+** instituições públicas no Brasil
 - **👨‍💼 50.000+** servidores envolvidos em compras
 - **💰 R$ 500 bilhões** em compras públicas anuais
@@ -205,24 +265,28 @@ SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/
 ### 📈 **Cenários de Adoção**
 
 #### Conservador (Ano 1)
+
 - **50 universidades** adotam a extensão
 - **10%** dos servidores instalam
 - **20%** das sugestões são aceitas
 - **📊 Resultado:** 15.000+ itens sustentáveis/ano
 
 #### Otimista (Ano 3)
-- **500 órgãos** usam a extensão  
+
+- **500 órgãos** usam a extensão
 - **30%** dos servidores adotam
 - **40%** das sugestões aceitas
 - **📊 Resultado:** 200.000+ itens sustentáveis/ano
 
 ### 🌱 **Benefícios Ambientais**
+
 - ♻️ **Redução de plásticos** em órgãos públicos
-- 🌳 **Menos papel** de fontes não-sustentáveis  
+- 🌳 **Menos papel** de fontes não-sustentáveis
 - 🧪 **Produtos menos tóxicos** para limpeza
 - ⚡ **Equipamentos** mais eficientes energeticamente
 
 ### 💰 **Benefícios Econômicos**
+
 - 📉 **Economia** a longo prazo com produtos duráveis
 - 📈 **Fortalecimento** do mercado de fornecedores sustentáveis
 - 🏆 **Liderança** do governo em sustentabilidade
@@ -237,18 +301,21 @@ Contribuições são muito bem-vindas! Este projeto visa impacto social e ambien
 ### 🎯 **Como Contribuir**
 
 #### 🐛 **Reportar Bugs**
+
 1. Verifique se o bug já foi reportado
 2. Crie uma [nova issue](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/issues)
 3. Descreva o problema detalhadamente
 4. Inclua screenshots se possível
 
 #### 💡 **Sugerir Funcionalidades**
+
 1. Verifique se já não foi sugerido
 2. Abra uma [feature request](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/issues)
 3. Descreva o caso de uso
 4. Explique o impacto esperado
 
 #### 🔧 **Contribuir com Código**
+
 1. **Fork** o repositório
 2. **Crie** uma branch: `git checkout -b feature/nova-funcionalidade`
 3. **Commit** suas mudanças: `git commit -m 'Adiciona nova funcionalidade'`
@@ -256,12 +323,14 @@ Contribuições são muito bem-vindas! Este projeto visa impacto social e ambien
 5. **Abra** um Pull Request
 
 #### 📚 **Melhorar Documentação**
+
 - Corrigir typos no README
 - Adicionar exemplos de uso
 - Traduzir para outros idiomas
 - Criar tutoriais em vídeo
 
 ### 🎨 **Áreas que Precisam de Ajuda**
+
 - 🎨 **Design UX/UI** - melhorar interface do modal
 - 🔍 **Base de dados** - adicionar mais alternativas sustentáveis
 - 🌐 **APIs externas** - integrar com fornecedores
@@ -275,9 +344,10 @@ Contribuições são muito bem-vindas! Este projeto visa impacto social e ambien
 Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
 ### 🤝 **Por que MIT?**
+
 - ✅ **Uso livre** para qualquer finalidade
 - ✅ **Modificações** permitidas
-- ✅ **Distribuição comercial** permitida  
+- ✅ **Distribuição comercial** permitida
 - ✅ **Máximo impacto social** possível
 
 ---
@@ -285,17 +355,21 @@ Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](L
 ## 👥 Autores e Agradecimentos
 
 ### 👨‍💻 **Equipe Principal**
-- **[@toticavalcanti](https://github.com/toticavalcanti)** - *Idealizador e Desenvolvedor Principal*
-- **Dea Cavalcanti** - *Product Owner e Especialista em Compras Públicas*
+
+- **[@toticavalcanti](https://github.com/toticavalcanti)** - _Idealizador e Desenvolvedor Principal_
+- **Dea Cavalcanti** - _Product Owner e Especialista em Compras Públicas_
 
 ### 🙏 **Agradecimentos Especiais**
+
 - **Servidores públicos** que validaram a necessidade
 - **Especialistas em sustentabilidade** que auxiliaram na curadoria
 - **Comunidade open source** de extensões Chrome
 - **Universidades públicas** que apoiaram o projeto
 
 ### 💝 **Apoiadores**
+
 Este projeto é mantido voluntariamente. Se você ou sua organização se beneficiam desta extensão, considere:
+
 - ⭐ **Dar uma estrela** no GitHub
 - 🐛 **Reportar bugs** e **sugerir melhorias**
 - 💬 **Compartilhar** com colegas do setor público
@@ -306,14 +380,17 @@ Este projeto é mantido voluntariamente. Se você ou sua organização se benefi
 ## 📞 Contato e Suporte
 
 ### 💬 **Comunidade**
+
 - **GitHub Issues:** [Reportar problemas ou sugestões](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/issues)
 - **GitHub Discussions:** [Discussões e perguntas](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/discussions)
 
 ### 📧 **Contato Direto**
+
 - **Email:** [seu-email@exemplo.com](mailto:seu-email@exemplo.com)
 - **LinkedIn:** [Seu perfil LinkedIn](https://linkedin.com/in/seu-perfil)
 
 ### 📊 **Status do Projeto**
+
 - **🔄 Desenvolvimento Ativo** - Novas funcionalidades sendo adicionadas
 - **🐛 Issues Abertas** - [Ver problemas conhecidos](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/issues)
 - **📋 Roadmap** - [Ver próximas funcionalidades](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/projects)
@@ -324,7 +401,7 @@ Este projeto é mantido voluntariamente. Se você ou sua organização se benefi
 
 **🌱 Construído com ❤️ para um governo mais sustentável**
 
-*Se este projeto te ajudou, considere dar uma ⭐ para apoiar o desenvolvimento!*
+_Se este projeto te ajudou, considere dar uma ⭐ para apoiar o desenvolvimento!_
 
 [![GitHub stars](https://img.shields.io/github/stars/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente?style=social)](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente?style=social)](https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/network)
