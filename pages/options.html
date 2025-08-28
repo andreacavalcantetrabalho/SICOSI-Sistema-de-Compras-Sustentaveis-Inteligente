@@ -1,683 +1,934 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SICOSI - Configurações</title>
-  <link rel="stylesheet" href="../styles/common.css">
-  <link rel="stylesheet" href="../styles/options.css">
-</head>
-<body>
-  <div class="options-container">
-    <!-- Header -->
-    <header class="options-header">
-      <div class="header-content">
-        <div class="logo-section">
-          <span class="logo-icon">🌱</span>
-          <div class="logo-text">
-            <h1>SICOSI</h1>
-            <p class="subtitle">Sistema de Compras Sustentáveis Inteligente</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SICOSI - Configurações</title>
+    <link rel="stylesheet" href="../styles/common.css" />
+    <link rel="stylesheet" href="../styles/options.css" />
+  </head>
+  <body>
+    <div class="options-container">
+      <!-- Header -->
+      <header class="options-header">
+        <div class="header-content">
+          <div class="logo-section">
+            <span class="logo-icon">🌱</span>
+            <div class="logo-text">
+              <h1>SICOSI</h1>
+              <p class="subtitle">
+                Sistema de Compras Sustentáveis Inteligente
+              </p>
+            </div>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary" id="exportBtn">
+              💾 Exportar Dados
+            </button>
+            <button class="btn btn-primary" id="saveAllBtn">
+              💾 Salvar Tudo
+            </button>
           </div>
         </div>
-        <div class="header-actions">
-          <button class="btn btn-secondary" id="exportBtn">💾 Exportar Dados</button>
-          <button class="btn btn-primary" id="saveAllBtn">💾 Salvar Tudo</button>
+      </header>
+
+      <!-- Navigation Tabs -->
+      <nav class="options-nav">
+        <div class="nav-tabs">
+          <button class="nav-tab active" data-tab="general">⚙️ Geral</button>
+          <button class="nav-tab" data-tab="categories">📦 Categorias</button>
+          <button class="nav-tab" data-tab="notifications">
+            🔔 Notificações
+          </button>
+          <button class="nav-tab" data-tab="advanced">🔧 Avançado</button>
+          <button class="nav-tab" data-tab="privacy">🛡️ Privacidade</button>
+          <button class="nav-tab" data-tab="about">ℹ️ Sobre</button>
+        </div>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="options-main">
+        <!-- General Tab -->
+        <section class="tab-content active" id="general-tab">
+          <div class="content-header">
+            <h2>Configurações Gerais</h2>
+            <p class="text-gray-600">
+              Configurações básicas da extensão SICOSI
+            </p>
+          </div>
+
+          <div class="settings-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3>Status da Extensão</h3>
+              </div>
+              <div class="card-body">
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label">Habilitar SICOSI</label>
+                    <p class="setting-description">
+                      Ativa ou desativa completamente a extensão para sugestões
+                      sustentáveis
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="extensionEnabled" checked />
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label">Modo de Desenvolvimento</label>
+                    <p class="setting-description">
+                      Habilita logs detalhados e funcionalidades de debug
+                      (apenas para desenvolvedores)
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="debugMode" />
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Configurações de Interface</h3>
+              </div>
+              <div class="card-body">
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label">Posição do Modal</label>
+                    <p class="setting-description">
+                      Onde as sugestões sustentáveis aparecerão na tela
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <select id="modalPosition" class="form-select">
+                      <option value="center">Centro da Tela</option>
+                      <option value="top">Topo</option>
+                      <option value="bottom">Base</option>
+                      <option value="right">Lado Direito</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label"
+                      >Tempo de Auto-Fechamento</label
+                    >
+                    <p class="setting-description">
+                      Tempo em segundos para fechar automaticamente as sugestões
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <input
+                      type="range"
+                      id="autoCloseTime"
+                      min="5"
+                      max="30"
+                      value="15"
+                      class="range-slider"
+                    />
+                    <span class="range-value">15s</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Categories Tab -->
+        <section class="tab-content" id="categories-tab">
+          <div class="content-header">
+            <h2>Gerenciar Categorias</h2>
+            <p class="text-gray-600">
+              Escolha quais tipos de produtos receberão sugestões sustentáveis
+            </p>
+          </div>
+
+          <div class="categories-grid">
+            <div class="category-card" data-category="descartaveis">
+              <div class="category-header">
+                <div class="category-icon">🥤</div>
+                <div class="category-info">
+                  <h3>Descartáveis</h3>
+                  <p>Copos, pratos, talheres plásticos</p>
+                </div>
+                <label class="toggle-switch">
+                  <input
+                    type="checkbox"
+                    class="category-toggle"
+                    data-category="descartaveis"
+                    checked
+                  />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="category-details">
+                <div class="category-stats">
+                  <span class="stat-item">
+                    <strong>25</strong> alternativas
+                  </span>
+                  <span class="stat-item"> <strong>Alto</strong> impacto </span>
+                </div>
+                <div class="category-examples">
+                  <small
+                    >Exemplos: copo biodegradável, prato de bagaço de
+                    cana</small
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="category-card" data-category="papel">
+              <div class="category-header">
+                <div class="category-icon">📄</div>
+                <div class="category-info">
+                  <h3>Papel e Escritório</h3>
+                  <p>Papel A4, sulfite, material de escritório</p>
+                </div>
+                <label class="toggle-switch">
+                  <input
+                    type="checkbox"
+                    class="category-toggle"
+                    data-category="papel"
+                    checked
+                  />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="category-details">
+                <div class="category-stats">
+                  <span class="stat-item">
+                    <strong>18</strong> alternativas
+                  </span>
+                  <span class="stat-item">
+                    <strong>Médio</strong> impacto
+                  </span>
+                </div>
+                <div class="category-examples">
+                  <small
+                    >Exemplos: papel reciclado, papel FSC certificado</small
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="category-card" data-category="limpeza">
+              <div class="category-header">
+                <div class="category-icon">🧽</div>
+                <div class="category-info">
+                  <h3>Produtos de Limpeza</h3>
+                  <p>Detergentes, desinfetantes, químicos</p>
+                </div>
+                <label class="toggle-switch">
+                  <input
+                    type="checkbox"
+                    class="category-toggle"
+                    data-category="limpeza"
+                    checked
+                  />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="category-details">
+                <div class="category-stats">
+                  <span class="stat-item">
+                    <strong>12</strong> alternativas
+                  </span>
+                  <span class="stat-item"> <strong>Alto</strong> impacto </span>
+                </div>
+                <div class="category-examples">
+                  <small
+                    >Exemplos: detergente biodegradável, produtos
+                    ecológicos</small
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="category-card" data-category="equipamentos">
+              <div class="category-header">
+                <div class="category-icon">💻</div>
+                <div class="category-info">
+                  <h3>Equipamentos</h3>
+                  <p>Computadores, impressoras, eletrônicos</p>
+                </div>
+                <label class="toggle-switch">
+                  <input
+                    type="checkbox"
+                    class="category-toggle"
+                    data-category="equipamentos"
+                    checked
+                  />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="category-details">
+                <div class="category-stats">
+                  <span class="stat-item">
+                    <strong>8</strong> alternativas
+                  </span>
+                  <span class="stat-item">
+                    <strong>Médio</strong> impacto
+                  </span>
+                </div>
+                <div class="category-examples">
+                  <small>Exemplos: Energy Star, EPEAT certificado</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="category-card" data-category="embalagens">
+              <div class="category-header">
+                <div class="category-icon">📦</div>
+                <div class="category-info">
+                  <h3>Embalagens</h3>
+                  <p>Sacos plásticos, embalagens diversas</p>
+                </div>
+                <label class="toggle-switch">
+                  <input
+                    type="checkbox"
+                    class="category-toggle"
+                    data-category="embalagens"
+                    checked
+                  />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="category-details">
+                <div class="category-stats">
+                  <span class="stat-item">
+                    <strong>6</strong> alternativas
+                  </span>
+                  <span class="stat-item"> <strong>Alto</strong> impacto </span>
+                </div>
+                <div class="category-examples">
+                  <small>Exemplos: sacolas biodegradáveis, papel kraft</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bulk-actions">
+            <button class="btn btn-secondary" id="enableAllCategories">
+              ✅ Habilitar Todas
+            </button>
+            <button class="btn btn-secondary" id="disableAllCategories">
+              ❌ Desabilitar Todas
+            </button>
+            <button class="btn btn-secondary" id="resetCategories">
+              🔄 Restaurar Padrão
+            </button>
+          </div>
+        </section>
+
+        <!-- Notifications Tab -->
+        <section class="tab-content" id="notifications-tab">
+          <div class="content-header">
+            <h2>Configurações de Notificações</h2>
+            <p class="text-gray-600">
+              Configure como você receberá as sugestões sustentáveis
+            </p>
+          </div>
+
+          <div class="settings-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3>Tipos de Notificação</h3>
+              </div>
+              <div class="card-body">
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label">Modal de Sugestões</label>
+                    <p class="setting-description">
+                      Exibir janela com alternativas sustentáveis quando
+                      detectar produtos não-ecológicos
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="modalNotifications" checked />
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label">Sons de Notificação</label>
+                    <p class="setting-description">
+                      Reproduzir som quando uma sugestão sustentável aparecer
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="soundNotifications" />
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label">Notificações no Browser</label>
+                    <p class="setting-description">
+                      Mostrar notificações do sistema quando alternativas forem
+                      encontradas
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="browserNotifications" />
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Frequência e Timing</h3>
+              </div>
+              <div class="card-body">
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label">Delay de Detecção</label>
+                    <p class="setting-description">
+                      Tempo de espera antes de mostrar sugestões (em
+                      milissegundos)
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <input
+                      type="range"
+                      id="detectionDelay"
+                      min="100"
+                      max="2000"
+                      value="800"
+                      class="range-slider"
+                    />
+                    <span class="range-value">800ms</span>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label"
+                      >Limite de Sugestões por Sessão</label
+                    >
+                    <p class="setting-description">
+                      Máximo de sugestões por sessão para evitar spam
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <input
+                      type="number"
+                      id="maxSuggestions"
+                      min="1"
+                      max="50"
+                      value="10"
+                      class="form-input"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="test-section">
+            <h3>Testar Notificações</h3>
+            <div class="test-buttons">
+              <button class="btn btn-secondary" id="testModal">
+                🧪 Testar Modal
+              </button>
+              <button class="btn btn-secondary" id="testSound">
+                🔊 Testar Som
+              </button>
+              <button class="btn btn-secondary" id="testBrowser">
+                🔔 Testar Browser
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Advanced Tab -->
+        <section class="tab-content" id="advanced-tab">
+          <div class="content-header">
+            <h2>Configurações Avançadas</h2>
+            <p class="text-gray-600">
+              Opções para usuários experientes e desenvolvedores
+            </p>
+          </div>
+
+          <div class="settings-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3>Busca e Performance</h3>
+              </div>
+              <div class="card-body">
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label"
+                      >Busca Automática no Catálogo</label
+                    >
+                    <p class="setting-description">
+                      Buscar automaticamente alternativas no próprio catálogo
+                      ComprasNet
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="autoSearch" checked />
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label"
+                      >Busca em Fontes Externas</label
+                    >
+                    <p class="setting-description">
+                      Procurar alternativas em fornecedores externos quando não
+                      encontrar no catálogo
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="externalSearch" checked />
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label">Cache de Resultados</label>
+                    <p class="setting-description">
+                      Armazenar resultados de busca para melhorar performance
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="cacheEnabled" checked />
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label"
+                      >Timeout de Busca Externa</label
+                    >
+                    <p class="setting-description">
+                      Tempo limite para buscas externas (em segundos)
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <input
+                      type="range"
+                      id="searchTimeout"
+                      min="2"
+                      max="15"
+                      value="5"
+                      class="range-slider"
+                    />
+                    <span class="range-value">5s</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Dados e Storage</h3>
+              </div>
+              <div class="card-body">
+                <div class="storage-info">
+                  <div class="storage-item">
+                    <span class="storage-label">Configurações:</span>
+                    <span class="storage-value" id="syncStorage">0 KB</span>
+                  </div>
+                  <div class="storage-item">
+                    <span class="storage-label">Cache e Logs:</span>
+                    <span class="storage-value" id="localStorage">0 KB</span>
+                  </div>
+                </div>
+
+                <div class="storage-actions">
+                  <button class="btn btn-secondary" id="clearCache">
+                    🗑️ Limpar Cache
+                  </button>
+                  <button class="btn btn-secondary" id="clearLogs">
+                    🗑️ Limpar Logs
+                  </button>
+                  <button class="btn btn-danger" id="clearAllData">
+                    ⚠️ Limpar Tudo
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Adicionar após o card "Dados e Storage" -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Configuração do Proxy AI (Grok)</h3>
+              </div>
+              <div class="card-body">
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label">URL do Proxy Vercel</label>
+                    <p class="setting-description">
+                      Configure a URL do seu proxy Grok deployado no Vercel para
+                      análise AI de sustentabilidade
+                    </p>
+                  </div>
+                  <div
+                    class="setting-control"
+                    style="
+                      flex-direction: column;
+                      gap: 10px;
+                      align-items: flex-start;
+                    "
+                  >
+                    <input
+                      type="text"
+                      id="proxyUrl"
+                      class="form-input"
+                      placeholder="https://seu-projeto.vercel.app/api/grok-proxy"
+                      style="width: 100%; max-width: 400px"
+                    />
+                    <div style="display: flex; gap: 8px">
+                      <button class="btn btn-secondary" id="testProxyBtn">
+                        🔌 Testar Conexão
+                      </button>
+                      <button class="btn btn-primary" id="saveProxyBtn">
+                        💾 Salvar URL
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label">Status da Conexão</label>
+                    <p class="setting-description">
+                      Status atual da conexão com o serviço de análise AI
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <div
+                      id="proxyStatus"
+                      style="
+                        padding: 8px 12px;
+                        border-radius: 4px;
+                        background: #f5f5f5;
+                        min-width: 200px;
+                        text-align: center;
+                      "
+                    >
+                      <span style="color: #666">⚪ Não configurado</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label">Modo de Análise</label>
+                    <p class="setting-description">
+                      Escolha entre análise AI (quando disponível) ou análise
+                      local
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <select id="analysisMode" class="form-select">
+                      <option value="auto">
+                        Automático (AI com fallback local)
+                      </option>
+                      <option value="ai-only">
+                        Apenas AI (requer proxy configurado)
+                      </option>
+                      <option value="local-only">Apenas Local (sem AI)</option>
+                    </select>
+                  </div>
+                </div>
+                <!-- Instruções de setup -->
+                <div
+                  style="
+                    margin-top: 20px;
+                    padding: 15px;
+                    background: #e8f5e9;
+                    border-radius: 8px;
+                    border-left: 4px solid #4caf50;
+                  "
+                >
+                  <h4 style="margin: 0 0 10px 0; color: #2e7d32">
+                    📚 Como configurar:
+                  </h4>
+                  <ol
+                    style="
+                      margin: 0;
+                      padding-left: 20px;
+                      font-size: 13px;
+                      line-height: 1.6;
+                    "
+                  >
+                    <li>
+                      Faça deploy do projeto no Vercel:
+                      <code
+                        style="
+                          background: #fff;
+                          padding: 2px 4px;
+                          border-radius: 3px;
+                        "
+                        >vercel deploy</code
+                      >
+                    </li>
+                    <li>
+                      Configure a variável de ambiente:
+                      <code
+                        style="
+                          background: #fff;
+                          padding: 2px 4px;
+                          border-radius: 3px;
+                        "
+                        >GROK_API_KEY</code
+                      >
+                    </li>
+                    <li>
+                      Copie a URL gerada (ex: https://sicosi-abc.vercel.app)
+                    </li>
+                    <li>
+                      Cole a URL completa acima adicionando
+                      <code>/api/grok-proxy</code>
+                    </li>
+                    <li>Clique em "Testar Conexão" e depois "Salvar URL"</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Privacy Tab -->
+        <section class="tab-content" id="privacy-tab">
+          <div class="content-header">
+            <h2>Configurações de Privacidade</h2>
+            <p class="text-gray-600">
+              Controle quais dados são coletados e como são usados
+            </p>
+          </div>
+
+          <div class="settings-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3>Coleta de Dados</h3>
+              </div>
+              <div class="card-body">
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label">Permitir Analytics</label>
+                    <p class="setting-description">
+                      Coletar estatísticas anônimas de uso para melhorar a
+                      extensão
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="analyticsEnabled" checked />
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <label class="setting-label">Logs de Erro</label>
+                    <p class="setting-description">
+                      Registrar erros para ajudar na correção de problemas
+                    </p>
+                  </div>
+                  <div class="setting-control">
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="errorLogging" checked />
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Dados Coletados</h3>
+              </div>
+              <div class="card-body">
+                <div class="privacy-info">
+                  <h4>✅ O que coletamos:</h4>
+                  <ul>
+                    <li>Número de sugestões mostradas</li>
+                    <li>Tipos de produtos pesquisados (anonimizados)</li>
+                    <li>Alternativas selecionadas pelos usuários</li>
+                    <li>Erros e problemas técnicos</li>
+                  </ul>
+
+                  <h4>❌ O que NÃO coletamos:</h4>
+                  <ul>
+                    <li>Informações pessoais identificáveis</li>
+                    <li>Dados específicos de licitações</li>
+                    <li>URLs ou conteúdo de páginas visitadas</li>
+                    <li>Localização ou endereço IP</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="privacy-actions">
+            <button class="btn btn-secondary" id="viewPrivacyPolicy">
+              📋 Política de Privacidade
+            </button>
+            <button class="btn btn-secondary" id="downloadData">
+              📥 Baixar Meus Dados
+            </button>
+          </div>
+        </section>
+
+        <!-- About Tab -->
+        <section class="tab-content" id="about-tab">
+          <div class="content-header">
+            <h2>Sobre o SICOSI</h2>
+            <p class="text-gray-600">
+              Sistema de Compras Sustentáveis Inteligente
+            </p>
+          </div>
+
+          <div class="about-grid">
+            <div class="card">
+              <div class="card-body">
+                <div class="about-logo">
+                  <span class="logo-icon large">🌱</span>
+                  <h3>SICOSI v1.0.0</h3>
+                  <p>Sistema de Compras Sustentáveis Inteligente</p>
+                </div>
+
+                <div class="about-description">
+                  <p>
+                    O SICOSI é uma extensão de navegador que promove compras
+                    públicas mais sustentáveis, sugerindo alternativas
+                    ecológicas durante o processo de aquisição no ComprasNet.
+                  </p>
+                  <p>
+                    Nosso objetivo é ajudar o governo brasileiro a reduzir o
+                    impacto ambiental das compras públicas através de "SICOSI"
+                    inteligentes e baseados em evidências científicas.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Estatísticas da Extensão</h3>
+              </div>
+              <div class="card-body">
+                <div class="stats-grid">
+                  <div class="stat-item">
+                    <div class="stat-number" id="totalSuggestions">0</div>
+                    <div class="stat-label">Sugestões Mostradas</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-number" id="totalAlternatives">0</div>
+                    <div class="stat-label">Alternativas Selecionadas</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-number" id="co2Impact">0kg</div>
+                    <div class="stat-label">CO² Estimado Evitado</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Links Úteis</h3>
+              </div>
+              <div class="card-body">
+                <div class="links-grid">
+                  <a
+                    href="https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente"
+                    class="link-item"
+                    target="_blank"
+                  >
+                    📂 Código Fonte
+                  </a>
+                  <a
+                    href="https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/issues"
+                    class="link-item"
+                    target="_blank"
+                  >
+                    🐛 Reportar Bug
+                  </a>
+                  <a
+                    href="https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/discussions"
+                    class="link-item"
+                    target="_blank"
+                  >
+                    💬 Discussões
+                  </a>
+                  <a href="#" class="link-item" id="helpLink"> ❓ Ajuda </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="about-footer">
+            <p class="text-gray-600">
+              Desenvolvido com ❤️ para promover sustentabilidade nas compras
+              públicas brasileiras.
+            </p>
+            <p class="text-gray-600">
+              <strong>Licença:</strong> MIT | <strong>Versão:</strong> 1.0.0 |
+              <strong>Build:</strong> 2025.01.26
+            </p>
+          </div>
+        </section>
+      </main>
+
+      <!-- Loading Overlay -->
+      <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="spinner spinner-lg"></div>
+        <div class="loading-text">Salvando configurações...</div>
+      </div>
+
+      <!-- Success Toast -->
+      <div class="toast toast-success hidden" id="successToast">
+        <div class="toast-content">
+          <span class="toast-icon">✅</span>
+          <span class="toast-message">Configurações salvas com sucesso!</span>
         </div>
       </div>
-    </header>
 
-    <!-- Navigation Tabs -->
-    <nav class="options-nav">
-      <div class="nav-tabs">
-        <button class="nav-tab active" data-tab="general">
-          ⚙️ Geral
-        </button>
-        <button class="nav-tab" data-tab="categories">
-          📦 Categorias
-        </button>
-        <button class="nav-tab" data-tab="notifications">
-          🔔 Notificações
-        </button>
-        <button class="nav-tab" data-tab="advanced">
-          🔧 Avançado
-        </button>
-        <button class="nav-tab" data-tab="privacy">
-          🛡️ Privacidade
-        </button>
-        <button class="nav-tab" data-tab="about">
-          ℹ️ Sobre
-        </button>
+      <!-- Error Toast -->
+      <div class="toast toast-error hidden" id="errorToast">
+        <div class="toast-content">
+          <span class="toast-icon">❌</span>
+          <span class="toast-message">Erro ao salvar configurações.</span>
+        </div>
       </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="options-main">
-      
-      <!-- General Tab -->
-      <section class="tab-content active" id="general-tab">
-        <div class="content-header">
-          <h2>Configurações Gerais</h2>
-          <p class="text-gray-600">Configurações básicas da extensão SICOSI</p>
-        </div>
-
-        <div class="settings-grid">
-          <div class="card">
-            <div class="card-header">
-              <h3>Status da Extensão</h3>
-            </div>
-            <div class="card-body">
-              <div class="setting-row">
-                <div class="setting-info">
-                  <label class="setting-label">Habilitar SICOSI</label>
-                  <p class="setting-description">
-                    Ativa ou desativa completamente a extensão para sugestões sustentáveis
-                  </p>
-                </div>
-                <div class="setting-control">
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="extensionEnabled" checked>
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-              
-              <div class="setting-row">
-                <div class="setting-info">
-                  <label class="setting-label">Modo de Desenvolvimento</label>
-                  <p class="setting-description">
-                    Habilita logs detalhados e funcionalidades de debug (apenas para desenvolvedores)
-                  </p>
-                </div>
-                <div class="setting-control">
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="debugMode">
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <h3>Configurações de Interface</h3>
-            </div>
-            <div class="card-body">
-              <div class="setting-row">
-                <div class="setting-info">
-                  <label class="setting-label">Posição do Modal</label>
-                  <p class="setting-description">
-                    Onde as sugestões sustentáveis aparecerão na tela
-                  </p>
-                </div>
-                <div class="setting-control">
-                  <select id="modalPosition" class="form-select">
-                    <option value="center">Centro da Tela</option>
-                    <option value="top">Topo</option>
-                    <option value="bottom">Base</option>
-                    <option value="right">Lado Direito</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="setting-row">
-                <div class="setting-info">
-                  <label class="setting-label">Tempo de Auto-Fechamento</label>
-                  <p class="setting-description">
-                    Tempo em segundos para fechar automaticamente as sugestões
-                  </p>
-                </div>
-                <div class="setting-control">
-                  <input type="range" id="autoCloseTime" min="5" max="30" value="15" class="range-slider">
-                  <span class="range-value">15s</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Categories Tab -->
-      <section class="tab-content" id="categories-tab">
-        <div class="content-header">
-          <h2>Gerenciar Categorias</h2>
-          <p class="text-gray-600">Escolha quais tipos de produtos receberão sugestões sustentáveis</p>
-        </div>
-
-        <div class="categories-grid">
-          <div class="category-card" data-category="descartaveis">
-            <div class="category-header">
-              <div class="category-icon">🥤</div>
-              <div class="category-info">
-                <h3>Descartáveis</h3>
-                <p>Copos, pratos, talheres plásticos</p>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" class="category-toggle" data-category="descartaveis" checked>
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="category-details">
-              <div class="category-stats">
-                <span class="stat-item">
-                  <strong>25</strong> alternativas
-                </span>
-                <span class="stat-item">
-                  <strong>Alto</strong> impacto
-                </span>
-              </div>
-              <div class="category-examples">
-                <small>Exemplos: copo biodegradável, prato de bagaço de cana</small>
-              </div>
-            </div>
-          </div>
-
-          <div class="category-card" data-category="papel">
-            <div class="category-header">
-              <div class="category-icon">📄</div>
-              <div class="category-info">
-                <h3>Papel e Escritório</h3>
-                <p>Papel A4, sulfite, material de escritório</p>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" class="category-toggle" data-category="papel" checked>
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="category-details">
-              <div class="category-stats">
-                <span class="stat-item">
-                  <strong>18</strong> alternativas
-                </span>
-                <span class="stat-item">
-                  <strong>Médio</strong> impacto
-                </span>
-              </div>
-              <div class="category-examples">
-                <small>Exemplos: papel reciclado, papel FSC certificado</small>
-              </div>
-            </div>
-          </div>
-
-          <div class="category-card" data-category="limpeza">
-            <div class="category-header">
-              <div class="category-icon">🧽</div>
-              <div class="category-info">
-                <h3>Produtos de Limpeza</h3>
-                <p>Detergentes, desinfetantes, químicos</p>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" class="category-toggle" data-category="limpeza" checked>
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="category-details">
-              <div class="category-stats">
-                <span class="stat-item">
-                  <strong>12</strong> alternativas
-                </span>
-                <span class="stat-item">
-                  <strong>Alto</strong> impacto
-                </span>
-              </div>
-              <div class="category-examples">
-                <small>Exemplos: detergente biodegradável, produtos ecológicos</small>
-              </div>
-            </div>
-          </div>
-
-          <div class="category-card" data-category="equipamentos">
-            <div class="category-header">
-              <div class="category-icon">💻</div>
-              <div class="category-info">
-                <h3>Equipamentos</h3>
-                <p>Computadores, impressoras, eletrônicos</p>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" class="category-toggle" data-category="equipamentos" checked>
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="category-details">
-              <div class="category-stats">
-                <span class="stat-item">
-                  <strong>8</strong> alternativas
-                </span>
-                <span class="stat-item">
-                  <strong>Médio</strong> impacto
-                </span>
-              </div>
-              <div class="category-examples">
-                <small>Exemplos: Energy Star, EPEAT certificado</small>
-              </div>
-            </div>
-          </div>
-
-          <div class="category-card" data-category="embalagens">
-            <div class="category-header">
-              <div class="category-icon">📦</div>
-              <div class="category-info">
-                <h3>Embalagens</h3>
-                <p>Sacos plásticos, embalagens diversas</p>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" class="category-toggle" data-category="embalagens" checked>
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="category-details">
-              <div class="category-stats">
-                <span class="stat-item">
-                  <strong>6</strong> alternativas
-                </span>
-                <span class="stat-item">
-                  <strong>Alto</strong> impacto
-                </span>
-              </div>
-              <div class="category-examples">
-                <small>Exemplos: sacolas biodegradáveis, papel kraft</small>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bulk-actions">
-          <button class="btn btn-secondary" id="enableAllCategories">✅ Habilitar Todas</button>
-          <button class="btn btn-secondary" id="disableAllCategories">❌ Desabilitar Todas</button>
-          <button class="btn btn-secondary" id="resetCategories">🔄 Restaurar Padrão</button>
-        </div>
-      </section>
-
-      <!-- Notifications Tab -->
-      <section class="tab-content" id="notifications-tab">
-        <div class="content-header">
-          <h2>Configurações de Notificações</h2>
-          <p class="text-gray-600">Configure como você receberá as sugestões sustentáveis</p>
-        </div>
-
-        <div class="settings-grid">
-          <div class="card">
-            <div class="card-header">
-              <h3>Tipos de Notificação</h3>
-            </div>
-            <div class="card-body">
-              <div class="setting-row">
-                <div class="setting-info">
-                  <label class="setting-label">Modal de Sugestões</label>
-                  <p class="setting-description">
-                    Exibir janela com alternativas sustentáveis quando detectar produtos não-ecológicos
-                  </p>
-                </div>
-                <div class="setting-control">
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="modalNotifications" checked>
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="setting-row">
-                <div class="setting-info">
-                  <label class="setting-label">Sons de Notificação</label>
-                  <p class="setting-description">
-                    Reproduzir som quando uma sugestão sustentável aparecer
-                  </p>
-                </div>
-                <div class="setting-control">
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="soundNotifications">
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="setting-row">
-                <div class="setting-info">
-                  <label class="setting-label">Notificações no Browser</label>
-                  <p class="setting-description">
-                    Mostrar notificações do sistema quando alternativas forem encontradas
-                  </p>
-                </div>
-                <div class="setting-control">
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="browserNotifications">
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <h3>Frequência e Timing</h3>
-            </div>
-            <div class="card-body">
-              <div class="setting-row">
-                <div class="setting-info">
-                  <label class="setting-label">Delay de Detecção</label>
-                  <p class="setting-description">
-                    Tempo de espera antes de mostrar sugestões (em milissegundos)
-                  </p>
-                </div>
-                <div class="setting-control">
-                  <input type="range" id="detectionDelay" min="100" max="2000" value="800" class="range-slider">
-                  <span class="range-value">800ms</span>
-                </div>
-              </div>
-
-              <div class="setting-row">
-                <div class="setting-info">
-                  <label class="setting-label">Limite de Sugestões por Sessão</label>
-                  <p class="setting-description">
-                    Máximo de sugestões por sessão para evitar spam
-                  </p>
-                </div>
-                <div class="setting-control">
-                  <input type="number" id="maxSuggestions" min="1" max="50" value="10" class="form-input">
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="test-section">
-          <h3>Testar Notificações</h3>
-          <div class="test-buttons">
-            <button class="btn btn-secondary" id="testModal">🧪 Testar Modal</button>
-            <button class="btn btn-secondary" id="testSound">🔊 Testar Som</button>
-            <button class="btn btn-secondary" id="testBrowser">🔔 Testar Browser</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Advanced Tab -->
-      <section class="tab-content" id="advanced-tab">
-        <div class="content-header">
-          <h2>Configurações Avançadas</h2>
-          <p class="text-gray-600">Opções para usuários experientes e desenvolvedores</p>
-        </div>
-
-        <div class="settings-grid">
-          <div class="card">
-            <div class="card-header">
-              <h3>Busca e Performance</h3>
-            </div>
-            <div class="card-body">
-              <div class="setting-row">
-                <div class="setting-info">
-                  <label class="setting-label">Busca Automática no Catálogo</label>
-                  <p class="setting-description">
-                    Buscar automaticamente alternativas no próprio catálogo ComprasNet
-                  </p>
-                </div>
-                <div class="setting-control">
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="autoSearch" checked>
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="setting-row">
-                <div class="setting-info">
-                  <label class="setting-label">Busca em Fontes Externas</label>
-                  <p class="setting-description">
-                    Procurar alternativas em fornecedores externos quando não encontrar no catálogo
-                  </p>
-                </div>
-                <div class="setting-control">
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="externalSearch" checked>
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="setting-row">
-                <div class="setting-info">
-                  <label class="setting-label">Cache de Resultados</label>
-                  <p class="setting-description">
-                    Armazenar resultados de busca para melhorar performance
-                  </p>
-                </div>
-                <div class="setting-control">
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="cacheEnabled" checked>
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="setting-row">
-                <div class="setting-info">
-                  <label class="setting-label">Timeout de Busca Externa</label>
-                  <p class="setting-description">
-                    Tempo limite para buscas externas (em segundos)
-                  </p>
-                </div>
-                <div class="setting-control">
-                  <input type="range" id="searchTimeout" min="2" max="15" value="5" class="range-slider">
-                  <span class="range-value">5s</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <h3>Dados e Storage</h3>
-            </div>
-            <div class="card-body">
-              <div class="storage-info">
-                <div class="storage-item">
-                  <span class="storage-label">Configurações:</span>
-                  <span class="storage-value" id="syncStorage">0 KB</span>
-                </div>
-                <div class="storage-item">
-                  <span class="storage-label">Cache e Logs:</span>
-                  <span class="storage-value" id="localStorage">0 KB</span>
-                </div>
-              </div>
-
-              <div class="storage-actions">
-                <button class="btn btn-secondary" id="clearCache">🗑️ Limpar Cache</button>
-                <button class="btn btn-secondary" id="clearLogs">🗑️ Limpar Logs</button>
-                <button class="btn btn-danger" id="clearAllData">⚠️ Limpar Tudo</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Privacy Tab -->
-      <section class="tab-content" id="privacy-tab">
-        <div class="content-header">
-          <h2>Configurações de Privacidade</h2>
-          <p class="text-gray-600">Controle quais dados são coletados e como são usados</p>
-        </div>
-
-        <div class="settings-grid">
-          <div class="card">
-            <div class="card-header">
-              <h3>Coleta de Dados</h3>
-            </div>
-            <div class="card-body">
-              <div class="setting-row">
-                <div class="setting-info">
-                  <label class="setting-label">Permitir Analytics</label>
-                  <p class="setting-description">
-                    Coletar estatísticas anônimas de uso para melhorar a extensão
-                  </p>
-                </div>
-                <div class="setting-control">
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="analyticsEnabled" checked>
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="setting-row">
-                <div class="setting-info">
-                  <label class="setting-label">Logs de Erro</label>
-                  <p class="setting-description">
-                    Registrar erros para ajudar na correção de problemas
-                  </p>
-                </div>
-                <div class="setting-control">
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="errorLogging" checked>
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <h3>Dados Coletados</h3>
-            </div>
-            <div class="card-body">
-              <div class="privacy-info">
-                <h4>✅ O que coletamos:</h4>
-                <ul>
-                  <li>Número de sugestões mostradas</li>
-                  <li>Tipos de produtos pesquisados (anonimizados)</li>
-                  <li>Alternativas selecionadas pelos usuários</li>
-                  <li>Erros e problemas técnicos</li>
-                </ul>
-
-                <h4>❌ O que NÃO coletamos:</h4>
-                <ul>
-                  <li>Informações pessoais identificáveis</li>
-                  <li>Dados específicos de licitações</li>
-                  <li>URLs ou conteúdo de páginas visitadas</li>
-                  <li>Localização ou endereço IP</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="privacy-actions">
-          <button class="btn btn-secondary" id="viewPrivacyPolicy">📋 Política de Privacidade</button>
-          <button class="btn btn-secondary" id="downloadData">📥 Baixar Meus Dados</button>
-        </div>
-      </section>
-
-      <!-- About Tab -->
-      <section class="tab-content" id="about-tab">
-        <div class="content-header">
-          <h2>Sobre o SICOSI</h2>
-          <p class="text-gray-600">Sistema de Compras Sustentáveis Inteligente</p>
-        </div>
-
-        <div class="about-grid">
-          <div class="card">
-            <div class="card-body">
-              <div class="about-logo">
-                <span class="logo-icon large">🌱</span>
-                <h3>SICOSI v1.0.0</h3>
-                <p>Sistema de Compras Sustentáveis Inteligente</p>
-              </div>
-
-              <div class="about-description">
-                <p>
-                  O SICOSI é uma extensão de navegador que promove compras públicas mais sustentáveis,
-                  sugerindo alternativas ecológicas durante o processo de aquisição no ComprasNet.
-                </p>
-                <p>
-                  Nosso objetivo é ajudar o governo brasileiro a reduzir o impacto ambiental das compras
-                  públicas através de "SICOSI" inteligentes e baseados em evidências científicas.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <h3>Estatísticas da Extensão</h3>
-            </div>
-            <div class="card-body">
-              <div class="stats-grid">
-                <div class="stat-item">
-                  <div class="stat-number" id="totalSuggestions">0</div>
-                  <div class="stat-label">Sugestões Mostradas</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-number" id="totalAlternatives">0</div>
-                  <div class="stat-label">Alternativas Selecionadas</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-number" id="co2Impact">0kg</div>
-                  <div class="stat-label">CO² Estimado Evitado</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <h3>Links Úteis</h3>
-            </div>
-            <div class="card-body">
-              <div class="links-grid">
-                <a href="https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente" class="link-item" target="_blank">
-                  📂 Código Fonte
-                </a>
-                <a href="https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/issues" class="link-item" target="_blank">
-                  🐛 Reportar Bug
-                </a>
-                <a href="https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/discussions" class="link-item" target="_blank">
-                  💬 Discussões
-                </a>
-                <a href="#" class="link-item" id="helpLink">
-                  ❓ Ajuda
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="about-footer">
-          <p class="text-gray-600">
-            Desenvolvido com ❤️ para promover sustentabilidade nas compras públicas brasileiras.
-          </p>
-          <p class="text-gray-600">
-            <strong>Licença:</strong> MIT | <strong>Versão:</strong> 1.0.0 | <strong>Build:</strong> 2025.01.26
-          </p>
-        </div>
-      </section>
-
-    </main>
-
-    <!-- Loading Overlay -->
-    <div class="loading-overlay hidden" id="loadingOverlay">
-      <div class="spinner spinner-lg"></div>
-      <div class="loading-text">Salvando configurações...</div>
     </div>
 
-    <!-- Success Toast -->
-    <div class="toast toast-success hidden" id="successToast">
-      <div class="toast-content">
-        <span class="toast-icon">✅</span>
-        <span class="toast-message">Configurações salvas com sucesso!</span>
-      </div>
-    </div>
-
-    <!-- Error Toast -->
-    <div class="toast toast-error hidden" id="errorToast">
-      <div class="toast-content">
-        <span class="toast-icon">❌</span>
-        <span class="toast-message">Erro ao salvar configurações.</span>
-      </div>
-    </div>
-
-  </div>
-
-  <script src="../config/constants.js"></script>
-  <script src="../scripts/options.js"></script>
-</body>
+    <script src="../config/constants.js"></script>
+    <script src="../scripts/options.js"></script>
+  </body>
 </html>

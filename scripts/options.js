@@ -158,6 +158,10 @@ class OptionsManager {
     document.getElementById('clearLogs').addEventListener('click', this.clearLogs.bind(this));
     document.getElementById('clearAllData').addEventListener('click', this.clearAllData.bind(this));
     
+    // Proxy Configuration
+    document.getElementById('testProxyBtn')?.addEventListener('click', this.handleTestProxy.bind(this));
+    document.getElementById('saveProxyBtn')?.addEventListener('click', this.handleSaveProxy.bind(this));
+
     // Privacy
     document.getElementById('analyticsEnabled').addEventListener('change', this.handleSettingChange);
     document.getElementById('errorLogging').addEventListener('change', this.handleSettingChange);
@@ -190,7 +194,7 @@ class OptionsManager {
     
     tabButtons.forEach(button => {
       button.addEventListener('click', (e) => {
-        const tabName = e.target.dataset.tab;
+        const tabName = e.currentTarget.dataset.tab;
         this.switchTab(tabName);
       });
     });
@@ -209,13 +213,10 @@ class OptionsManager {
           let value = input.value;
           let unit = '';
           
-          // Determinar unidade baseado no ID
-          if (input.id === 'autoCloseTime') {
+          if (input.id === 'autoCloseTime' || input.id === 'searchTimeout') {
             unit = 's';
           } else if (input.id === 'detectionDelay') {
             unit = 'ms';
-          } else if (input.id === 'searchTimeout') {
-            unit = 's';
           }
           
           valueDisplay.textContent = value + unit;
@@ -231,19 +232,15 @@ class OptionsManager {
    * Troca de aba
    */
   switchTab(tabName) {
-    // Atualizar navegação
     document.querySelectorAll('.nav-tab').forEach(tab => {
       tab.classList.toggle('active', tab.dataset.tab === tabName);
     });
     
-    // Atualizar conteúdo
     document.querySelectorAll('.tab-content').forEach(content => {
       content.classList.toggle('active', content.id === `${tabName}-tab`);
     });
     
     this.currentTab = tabName;
-    
-    // Salvar aba atual no storage
     chrome.storage.local.set({ lastActiveTab: tabName });
   }
 
@@ -255,8 +252,7 @@ class OptionsManager {
     document.getElementById('extensionEnabled').checked = this.settings.enabled !== false;
     document.getElementById('debugMode').checked = this.settings.advanced?.debugMode || false;
     document.getElementById('modalPosition').value = this.settings.notifications?.position || 'center';
-    document.getElementById('autoCloseTime').value = 
-      (this.settings.timing?.autoCloseDelay || 15000) / 1000;
+    document.getElementById('autoCloseTime').value = (this.settings.timing?.autoCloseDelay || 15000) / 1000;
     
     // Categorias
     const categories = this.settings.categories || {};
@@ -267,45 +263,34 @@ class OptionsManager {
     });
     
     // Notificações
-    document.getElementById('modalNotifications').checked = 
-      this.settings.notifications?.modal !== false;
-    document.getElementById('soundNotifications').checked = 
-      this.settings.notifications?.sound || false;
-    document.getElementById('browserNotifications').checked = 
-      this.settings.notifications?.browser || false;
-    document.getElementById('detectionDelay').value = 
-      this.settings.timing?.debounceDelay || 800;
-    document.getElementById('maxSuggestions').value = 
-      this.settings.notifications?.maxPerSession || 10;
+    document.getElementById('modalNotifications').checked = this.settings.notifications?.modal !== false;
+    document.getElementById('soundNotifications').checked = this.settings.notifications?.sound || false;
+    document.getElementById('browserNotifications').checked = this.settings.notifications?.browser || false;
+    document.getElementById('detectionDelay').value = this.settings.timing?.debounceDelay || 800;
+    document.getElementById('maxSuggestions').value = this.settings.notifications?.maxPerSession || 10;
     
     // Avançado
-    document.getElementById('autoSearch').checked = 
-      this.settings.advanced?.autoSearch !== false;
-    document.getElementById('externalSearch').checked = 
-      this.settings.advanced?.externalSearch !== false;
-    document.getElementById('cacheEnabled').checked = 
-      this.settings.advanced?.cacheEnabled !== false;
-    document.getElementById('searchTimeout').value = 
-      (this.settings.timing?.searchTimeout || 5000) / 1000;
+    document.getElementById('autoSearch').checked = this.settings.advanced?.autoSearch !== false;
+    document.getElementById('externalSearch').checked = this.settings.advanced?.externalSearch !== false;
+    document.getElementById('cacheEnabled').checked = this.settings.advanced?.cacheEnabled !== false;
+    document.getElementById('searchTimeout').value = (this.settings.timing?.searchTimeout || 5000) / 1000;
     
     // Privacy
-    document.getElementById('analyticsEnabled').checked = 
-      this.settings.privacy?.analytics !== false;
-    document.getElementById('errorLogging').checked = 
-      this.settings.privacy?.errorLogging !== false;
+    document.getElementById('analyticsEnabled').checked = this.settings.privacy?.analytics !== false;
+    document.getElementById('errorLogging').checked = this.settings.privacy?.errorLogging !== false;
     
     // Storage info
     document.getElementById('syncStorage').textContent = `${this.storageInfo.sync} KB`;
     document.getElementById('localStorage').textContent = `${this.storageInfo.local} KB`;
     
     // Estatísticas
-    document.getElementById('totalSuggestions').textContent = 
-      this.statistics.totalModalShown || 0;
-    document.getElementById('totalAlternatives').textContent = 
-      this.statistics.totalAlternativesSelected || 0;
-    document.getElementById('co2Impact').textContent = 
-      `${(this.statistics.impactMetrics?.estimatedCO2Saved || 0).toFixed(2)}kg`;
+    document.getElementById('totalSuggestions').textContent = this.statistics.totalModalShown || 0;
+    document.getElementById('totalAlternatives').textContent = this.statistics.totalAlternativesSelected || 0;
+    document.getElementById('co2Impact').textContent = `${(this.statistics.impactMetrics?.estimatedCO2Saved || 0).toFixed(2)}kg`;
     
+    // Carregar configurações do Proxy
+    this.loadProxySettings();
+
     // Restaurar aba ativa
     this.restoreActiveTab();
   }
@@ -330,7 +315,6 @@ class OptionsManager {
     this.hasUnsavedChanges = true;
     this.updateSaveButton();
     
-    // Auto-save para algumas configurações críticas
     const criticalSettings = ['extensionEnabled'];
     if (criticalSettings.includes(event.target.id)) {
       this.saveAllSettings();
@@ -392,6 +376,88 @@ class OptionsManager {
     this.hasUnsavedChanges = true;
     this.updateSaveButton();
   }
+  
+  /**
+   * Carrega e exibe as configurações do proxy salvas.
+   */
+  async loadProxySettings() {
+    try {
+      const result = await chrome.storage.sync.get(['proxySettings']);
+      const settings = result.proxySettings || {};
+      
+      if (settings.grokProxyUrl) {
+        document.getElementById('proxyUrl').value = settings.grokProxyUrl;
+        this.testProxyConnection(settings.grokProxyUrl); // Testa a conexão ao carregar
+      }
+      if (settings.analysisMode) {
+        document.getElementById('analysisMode').value = settings.analysisMode;
+      }
+    } catch (error) {
+      console.error("Erro ao carregar configurações do proxy:", error);
+    }
+  }
+
+  /**
+   * Testa a conexão com a URL do proxy fornecida.
+   * @param {string} url - A URL do endpoint do proxy.
+   */
+  async testProxyConnection(url) {
+    const statusEl = document.getElementById('proxyStatus');
+    if (!url || !url.startsWith('https://')) {
+      statusEl.innerHTML = '<span style="color: red;">❌ URL inválida</span>';
+      return;
+    }
+
+    statusEl.innerHTML = '<span>🔄 Testando conexão...</span>';
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productDescription: 'teste de conexão' })
+      });
+
+      if (response.ok) {
+        statusEl.innerHTML = '<span style="color: green;">✅ Conexão OK!</span>';
+      } else {
+        statusEl.innerHTML = `<span style="color: red;">❌ Erro HTTP ${response.status}</span>`;
+      }
+    } catch (error) {
+      console.error("Erro ao testar proxy:", error);
+      statusEl.innerHTML = '<span style="color: red;">❌ Erro de conexão</span>';
+    }
+  }
+
+  /**
+   * Manipulador para o botão de teste do proxy.
+   */
+  handleTestProxy() {
+    const url = document.getElementById('proxyUrl').value;
+    this.testProxyConnection(url);
+  }
+
+  /**
+   * Salva as configurações do proxy no chrome.storage.
+   */
+  async handleSaveProxy() {
+    const url = document.getElementById('proxyUrl').value;
+    const mode = document.getElementById('analysisMode').value;
+    const statusEl = document.getElementById('proxyStatus');
+
+    try {
+      await chrome.storage.sync.set({ 
+        proxySettings: { 
+          grokProxyUrl: url,
+          analysisMode: mode 
+        } 
+      });
+      statusEl.innerHTML = '<span style="color: green;">✅ Configuração salva!</span>';
+      this.showToast('Configurações do Proxy salvas!', 'success');
+    } catch (error) {
+      console.error("Erro ao salvar configurações do proxy:", error);
+      statusEl.innerHTML = '<span style="color: red;">❌ Erro ao salvar</span>';
+      this.showToast('Erro ao salvar configurações do Proxy', 'error');
+    }
+  }
 
   /**
    * Salva todas as configurações
@@ -400,7 +466,6 @@ class OptionsManager {
     try {
       this.showLoading(true);
       
-      // Coletar configurações da interface
       const updatedSettings = {
         enabled: document.getElementById('extensionEnabled').checked,
         categories: {},
@@ -428,13 +493,11 @@ class OptionsManager {
         }
       };
       
-      // Coletar configurações de categorias
       document.querySelectorAll('.category-toggle').forEach(toggle => {
         const category = toggle.dataset.category;
         updatedSettings.categories[category] = toggle.checked;
       });
       
-      // Salvar via background script
       const response = await chrome.runtime.sendMessage({
         type: 'UPDATE_USER_SETTINGS',
         data: updatedSettings
@@ -444,6 +507,9 @@ class OptionsManager {
         throw new Error(response.error);
       }
       
+      // Salva também as configurações do proxy
+      await this.handleSaveProxy();
+
       this.settings = updatedSettings;
       this.hasUnsavedChanges = false;
       this.updateSaveButton();
@@ -513,7 +579,6 @@ class OptionsManager {
    * Testa modal de sugestão
    */
   testModal() {
-    // Simular modal da extensão
     alert('Modal de teste: Esta seria uma sugestão sustentável para "copo descartável" → "copo biodegradável"');
   }
 
@@ -521,7 +586,6 @@ class OptionsManager {
    * Testa som de notificação
    */
   testSound() {
-    // Criar elemento de áudio temporário
     const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMbBj2Y2/LLdSgFIHzL8N2SQgkPVLjo6qZVFAg+lt/xwmsiCzm06PCxWh0MGmK+7+WgWA4dTaXh6rFdGAg5kNT4znkfBSJ/yO7ZkzwIM06q5+OtXR0WOwgTOh');
     audio.play().catch(() => {
       this.showToast('Som de teste reproduzido (silencioso)', 'success');
@@ -567,7 +631,6 @@ class OptionsManager {
     }
     
     try {
-      // Implementar limpeza via background script
       await chrome.runtime.sendMessage({
         type: 'CLEAR_CACHE'
       });
@@ -620,7 +683,6 @@ class OptionsManager {
       
       this.showToast('Todos os dados foram limpos. A página será recarregada.', 'success');
       
-      // Recarregar página após 2 segundos
       setTimeout(() => {
         window.location.reload();
       }, 2000);
@@ -648,7 +710,6 @@ class OptionsManager {
         type: 'EXPORT_DATA'
       });
       
-      // Anonimizar dados sensíveis
       const anonymizedData = {
         settings: data.sync,
         statistics: data.local.SICOSIStatistics,
@@ -705,7 +766,6 @@ class OptionsManager {
     messageElement.textContent = message;
     toast.classList.remove('hidden');
     
-    // Auto-hide após 3 segundos
     setTimeout(() => {
       toast.classList.add('hidden');
     }, 3000);

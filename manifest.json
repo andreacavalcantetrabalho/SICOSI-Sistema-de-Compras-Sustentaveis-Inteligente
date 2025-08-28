@@ -26,7 +26,6 @@
         "*://catalogo.compras.gov.br/*"
       ],
       "js": [
-        "config/api-keys.js",
         "config/constants.js",
         "utils/storage-manager.js",
         "utils/dom-helpers.js",

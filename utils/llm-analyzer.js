@@ -1,121 +1,161 @@
 /**
  * LLM Analyzer - SICOSI
- * Módulo responsável por interagir com a API de LLM (via proxy) para
- * realizar análises de sustentabilidade de produtos.
+ * Análise de sustentabilidade usando Grok AI via proxy seguro
  */
 
 class SICOSILLMAnalyzer {
   constructor() {
     this.isInitialized = false;
-    this.apiClient = null;
+    this.proxyEndpoint = null;
   }
 
-  /**
-   * Inicializa o analisador, garantindo que o APIClient esteja disponível.
-   */
   async initialize() {
-    if (window.SICOSIAPIClient) {
-      this.apiClient = window.SICOSIAPIClient;
+    try {
+      // Buscar URL do proxy configurada
+      const result = await chrome.storage.sync.get(['proxySettings']);
+      const settings = result.proxySettings || {};
+      
+      // URL padrão ou configurada pelo usuário
+      this.proxyEndpoint = settings.grokProxyUrl || 'http://localhost:3000/api/grok-proxy';
+      
       this.isInitialized = true;
-      console.log('🌱 SICOSI: LLM Analyzer inicializado com sucesso.');
-    } else {
-      console.error('SICOSI: Falha ao inicializar LLM Analyzer - SICOSIAPIClient não encontrado.');
+      console.log('🌱 SICOSI: LLM Analyzer pronto com endpoint:', this.proxyEndpoint);
+    } catch (error) {
+      console.error('SICOSI: Erro ao inicializar LLM:', error);
       this.isInitialized = false;
     }
   }
 
-  /**
-   * Analisa um produto usando a melhor estratégia disponível (LLM ou local).
-   * @param {Object} productInfo - Informações do produto extraídas da página.
-   * @returns {Promise<Object>} Um objeto com o resultado da análise.
-   */
   async analyzeProduct(productInfo) {
-    if (!this.isInitialized || !this.apiClient) {
-      console.warn("LLM Analyzer não está pronto, usando análise local como fallback.");
+    // Se não inicializado ou sem endpoint, usa análise local
+    if (!this.isInitialized || !this.proxyEndpoint) {
+      console.log('LLM não disponível, usando análise local');
       return this.localFallbackAnalysis(productInfo);
     }
 
     try {
-      // Tenta a análise via proxy (camada online)
-      const llmResult = await this.apiClient.analyzeProductWithProxy(productInfo.description);
+      console.log('🤖 Enviando para análise Grok:', productInfo.description);
+      
+      const response = await fetch(this.proxyEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          productInfo: {
+            description: productInfo.description,
+            material: productInfo.material || '',
+            characteristics: productInfo.characteristics || ''
+          }
+        })
+      });
 
-      if (llmResult && typeof llmResult.isSustainable === 'boolean') {
-        // A API respondeu com sucesso
-        return {
-          ...llmResult,
-          needsAlternatives: !llmResult.isSustainable && llmResult.alternatives && llmResult.alternatives.length > 0,
-          analysisMethod: 'llm',
-        };
-      } else {
-        // A API falhou ou retornou um formato inesperado, usa o fallback local
-        console.warn("Análise via LLM falhou ou retornou formato inválido. Usando fallback local.");
-        return this.localFallbackAnalysis(productInfo);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
       }
+
+      const analysis = await response.json();
+      console.log('✅ Análise Grok recebida:', analysis);
+      
+      return {
+        ...analysis,
+        needsAlternatives: !analysis.isSustainable && (analysis.alternatives?.length > 0)
+      };
+      
     } catch (error) {
-      console.error("Erro durante a análise do produto com LLM, usando fallback local:", error);
+      console.error('❌ Erro na análise Grok, usando fallback:', error);
       return this.localFallbackAnalysis(productInfo);
     }
   }
 
-  /**
-   * Análise de fallback que roda localmente se a API falhar.
-   * Utiliza a base de dados interna para uma análise mais simples.
-   * @param {Object} productInfo - Informações do produto.
-   * @returns {Object} Resultado da análise local.
-   */
   localFallbackAnalysis(productInfo) {
-    const fullText = productInfo.fullText.toLowerCase();
-
-    const sustainableTerms = ["biodegradável", "compostável", "reciclado", "fsc", "energy star", "ecológico", "bagaço de cana"];
-    const unsustainableTerms = ["plástico comum", "isopor", "poliestireno", "convencional"];
-
-    let isSustainable = sustainableTerms.some(term => fullText.includes(term));
-    const isClearlyUnsustainable = unsustainableTerms.some(term => fullText.includes(term));
-
-    // Regra: Se tiver termos ruins, não é sustentável, mesmo que tenha termos bons.
-    if (isClearlyUnsustainable) {
-      isSustainable = false;
-    }
-
-    // Busca alternativas na base de dados offline
-    const alternatives = this.findLocalAlternatives(productInfo.description);
-
+    const text = (productInfo.fullText || productInfo.description || '').toLowerCase();
+    
+    // Detectar sustentabilidade
+    const sustainableTerms = ['biodegradável', 'compostável', 'reciclado', 'fsc', 'bambu', 'bagaço'];
+    const unsustainableTerms = ['plástico', 'isopor', 'descartável', 'comum'];
+    
+    const hasSustainable = sustainableTerms.some(t => text.includes(t));
+    const hasUnsustainable = unsustainableTerms.some(t => text.includes(t));
+    
+    const isSustainable = hasSustainable && !hasUnsustainable;
+    
+    // Buscar alternativas locais
+    const alternatives = this.getLocalAlternatives(productInfo.description);
+    
     return {
       isSustainable,
-      reason: isSustainable ? "Produto parece possuir características sustentáveis." : "Produto convencional com potencial de impacto ambiental.",
       sustainabilityScore: isSustainable ? 7 : 3,
-      alternatives: alternatives,
+      reason: isSustainable 
+        ? 'Produto apresenta características sustentáveis'
+        : 'Produto convencional - considere alternativas ecológicas',
+      alternatives,
       needsAlternatives: !isSustainable && alternatives.length > 0,
       analysisMethod: 'local_fallback',
+      category: this.detectCategory(text),
+      timestamp: Date.now()
     };
   }
 
-  /**
-   * Busca alternativas na base de dados local (gerenciada por data-converter).
-   * @param {string} description - Descrição do produto.
-   * @returns {Array} Lista de alternativas encontradas.
-   */
-  findLocalAlternatives(description) {
-      const alternativesData = window.SICOSIConstants.SUSTAINABLE_ALTERNATIVES;
-      const lowerDesc = description.toLowerCase();
-      let foundAlternatives = [];
+  getLocalAlternatives(description) {
+    const desc = description.toLowerCase();
+    const alternatives = [];
+    
+    if (desc.includes('copo') && (desc.includes('plástico') || desc.includes('descartável'))) {
+      alternatives.push({
+        name: 'Copo biodegradável de bagaço de cana',
+        description: 'Feito de resíduo agrícola, decompõe em 90 dias',
+        benefits: 'Zero plástico, compostável',
+        searchTerms: ['copo biodegradável', 'copo bagaço'],
+        estimatedCost: '15-20% mais caro'
+      });
+    }
+    
+    if (desc.includes('papel') && !desc.includes('reciclado')) {
+      alternatives.push({
+        name: 'Papel A4 100% reciclado',
+        description: 'Papel de alta qualidade feito de aparas',
+        benefits: 'Poupa árvores e água',
+        searchTerms: ['papel reciclado a4'],
+        estimatedCost: 'Preço similar'
+      });
+    }
+    
+    return alternatives.slice(0, 3); // Max 3 alternativas
+  }
 
-      for (const keyword in alternativesData) {
-          if (lowerDesc.includes(keyword)) {
-              const data = alternativesData[keyword];
-              // Mapeia para o formato esperado pelo modal
-              foundAlternatives = data.alternatives.map(altName => ({
-                  name: altName,
-                  description: data.reason,
-                  benefits: `Impacto: ${data.impact} | Categoria: ${data.category}`,
-                  searchTerms: data.search_terms,
-              }));
-              break; // Para no primeiro match
-          }
+  detectCategory(text) {
+    if (text.match(/copo|prato|talher|descartáv/)) return 'descartaveis';
+    if (text.match(/papel|sulfite|a4/)) return 'papel';
+    if (text.match(/detergente|sabão|limpeza/)) return 'limpeza';
+    if (text.match(/computador|impressora|monitor/)) return 'equipamentos';
+    return 'geral';
+  }
+
+  // Método para configurar endpoint
+  async setProxyEndpoint(url) {
+    this.proxyEndpoint = url;
+    await chrome.storage.sync.set({ 
+      proxySettings: { 
+        grokProxyUrl: url,
+        configuredAt: new Date().toISOString()
       }
-      return foundAlternatives;
+    });
+    console.log('Proxy configurado:', url);
+  }
+
+  // Teste de conectividade
+  async testConnection() {
+    try {
+      const response = await fetch(this.proxyEndpoint, {
+        method: 'OPTIONS'
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
   }
 }
 
-// Tornar a classe disponível globalmente para o content-script
+// Tornar disponível globalmente
 window.SICOSILLMAnalyzer = new SICOSILLMAnalyzer();
