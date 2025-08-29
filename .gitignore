@@ -14,3 +14,5 @@ config/api-keys.js
 
 # Apenas se gerar pacote final
 *.zip
+
+.env
