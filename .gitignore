@@ -16,3 +16,5 @@ config/api-keys.js
 *.zip
 
 .env
+
+config/env.js
