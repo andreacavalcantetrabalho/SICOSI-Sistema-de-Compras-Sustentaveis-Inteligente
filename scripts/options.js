@@ -158,10 +158,6 @@ class OptionsManager {
     document.getElementById('clearLogs').addEventListener('click', this.clearLogs.bind(this));
     document.getElementById('clearAllData').addEventListener('click', this.clearAllData.bind(this));
     
-    // Proxy Configuration
-    document.getElementById('testProxyBtn')?.addEventListener('click', this.handleTestProxy.bind(this));
-    document.getElementById('saveProxyBtn')?.addEventListener('click', this.handleSaveProxy.bind(this));
-
     // Privacy
     document.getElementById('analyticsEnabled').addEventListener('change', this.handleSettingChange);
     document.getElementById('errorLogging').addEventListener('change', this.handleSettingChange);
@@ -287,9 +283,6 @@ class OptionsManager {
     document.getElementById('totalSuggestions').textContent = this.statistics.totalModalShown || 0;
     document.getElementById('totalAlternatives').textContent = this.statistics.totalAlternativesSelected || 0;
     document.getElementById('co2Impact').textContent = `${(this.statistics.impactMetrics?.estimatedCO2Saved || 0).toFixed(2)}kg`;
-    
-    // Carregar configurações do Proxy
-    this.loadProxySettings();
 
     // Restaurar aba ativa
     this.restoreActiveTab();
@@ -376,88 +369,6 @@ class OptionsManager {
     this.hasUnsavedChanges = true;
     this.updateSaveButton();
   }
-  
-  /**
-   * Carrega e exibe as configurações do proxy salvas.
-   */
-  async loadProxySettings() {
-    try {
-      const result = await chrome.storage.sync.get(['proxySettings']);
-      const settings = result.proxySettings || {};
-      
-      if (settings.grokProxyUrl) {
-        document.getElementById('proxyUrl').value = settings.grokProxyUrl;
-        this.testProxyConnection(settings.grokProxyUrl); // Testa a conexão ao carregar
-      }
-      if (settings.analysisMode) {
-        document.getElementById('analysisMode').value = settings.analysisMode;
-      }
-    } catch (error) {
-      console.error("Erro ao carregar configurações do proxy:", error);
-    }
-  }
-
-  /**
-   * Testa a conexão com a URL do proxy fornecida.
-   * @param {string} url - A URL do endpoint do proxy.
-   */
-  async testProxyConnection(url) {
-    const statusEl = document.getElementById('proxyStatus');
-    if (!url || !url.startsWith('https://')) {
-      statusEl.innerHTML = '<span style="color: red;">❌ URL inválida</span>';
-      return;
-    }
-
-    statusEl.innerHTML = '<span>🔄 Testando conexão...</span>';
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productDescription: 'teste de conexão' })
-      });
-
-      if (response.ok) {
-        statusEl.innerHTML = '<span style="color: green;">✅ Conexão OK!</span>';
-      } else {
-        statusEl.innerHTML = `<span style="color: red;">❌ Erro HTTP ${response.status}</span>`;
-      }
-    } catch (error) {
-      console.error("Erro ao testar proxy:", error);
-      statusEl.innerHTML = '<span style="color: red;">❌ Erro de conexão</span>';
-    }
-  }
-
-  /**
-   * Manipulador para o botão de teste do proxy.
-   */
-  handleTestProxy() {
-    const url = document.getElementById('proxyUrl').value;
-    this.testProxyConnection(url);
-  }
-
-  /**
-   * Salva as configurações do proxy no chrome.storage.
-   */
-  async handleSaveProxy() {
-    const url = document.getElementById('proxyUrl').value;
-    const mode = document.getElementById('analysisMode').value;
-    const statusEl = document.getElementById('proxyStatus');
-
-    try {
-      await chrome.storage.sync.set({ 
-        proxySettings: { 
-          grokProxyUrl: url,
-          analysisMode: mode 
-        } 
-      });
-      statusEl.innerHTML = '<span style="color: green;">✅ Configuração salva!</span>';
-      this.showToast('Configurações do Proxy salvas!', 'success');
-    } catch (error) {
-      console.error("Erro ao salvar configurações do proxy:", error);
-      statusEl.innerHTML = '<span style="color: red;">❌ Erro ao salvar</span>';
-      this.showToast('Erro ao salvar configurações do Proxy', 'error');
-    }
-  }
 
   /**
    * Salva todas as configurações
@@ -506,9 +417,6 @@ class OptionsManager {
       if (response.error) {
         throw new Error(response.error);
       }
-      
-      // Salva também as configurações do proxy
-      await this.handleSaveProxy();
 
       this.settings = updatedSettings;
       this.hasUnsavedChanges = false;

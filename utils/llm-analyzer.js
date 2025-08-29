@@ -7,19 +7,23 @@ class SICOSILLMAnalyzer {
   constructor() {
     this.isInitialized = false;
     this.proxyEndpoint = null;
+    this.analysisMode = 'auto'; // 'auto', 'ai-only', 'local-only'
   }
 
   async initialize() {
     try {
-      // Buscar URL do proxy configurada
+      // Busca a URL do proxy e o modo de análise salvos
       const result = await chrome.storage.sync.get(['proxySettings']);
       const settings = result.proxySettings || {};
       
-      // URL padrão ou configurada pelo usuário
-      this.proxyEndpoint = settings.grokProxyUrl || 'http://localhost:3000/api/grok-proxy';
+      // IMPORTANTE: A URL de produção é definida aqui.
+      // Substitua pela URL do seu deploy na Vercel.
+      this.proxyEndpoint = 'COLE_SUA_URL_DA_VERCEL_AQUI/api/grok-proxy';
+      
+      this.analysisMode = settings.analysisMode || 'auto';
       
       this.isInitialized = true;
-      console.log('🌱 SICOSI: LLM Analyzer pronto com endpoint:', this.proxyEndpoint);
+      console.log('🌱 SICOSI: LLM Analyzer pronto. Modo:', this.analysisMode);
     } catch (error) {
       console.error('SICOSI: Erro ao inicializar LLM:', error);
       this.isInitialized = false;
@@ -27,9 +31,11 @@ class SICOSILLMAnalyzer {
   }
 
   async analyzeProduct(productInfo) {
-    // Se não inicializado ou sem endpoint, usa análise local
-    if (!this.isInitialized || !this.proxyEndpoint) {
-      console.log('LLM não disponível, usando análise local');
+    const useLocal = this.analysisMode === 'local-only';
+    const useAIOnly = this.analysisMode === 'ai-only';
+
+    if (useLocal || !this.proxyEndpoint) {
+      console.log('Análise forçada para modo local.');
       return this.localFallbackAnalysis(productInfo);
     }
 
@@ -38,20 +44,12 @@ class SICOSILLMAnalyzer {
       
       const response = await fetch(this.proxyEndpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
-          productInfo: {
-            description: productInfo.description,
-            material: productInfo.material || '',
-            characteristics: productInfo.characteristics || ''
-          }
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productInfo })
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        throw new Error(`Erro HTTP ${response.status}`);
       }
 
       const analysis = await response.json();
@@ -59,11 +57,21 @@ class SICOSILLMAnalyzer {
       
       return {
         ...analysis,
-        needsAlternatives: !analysis.isSustainable && (analysis.alternatives?.length > 0)
+        needsAlternatives: !analysis.isSustainable && (analysis.alternatives?.length > 0),
+        analysisMethod: 'llm'
       };
       
     } catch (error) {
       console.error('❌ Erro na análise Grok, usando fallback:', error);
+      if (useAIOnly) {
+        return {
+          isSustainable: false,
+          reason: 'Falha na conexão com o serviço de IA. Verifique a configuração do proxy.',
+          alternatives: [],
+          needsAlternatives: false,
+          analysisMethod: 'error'
+        }
+      }
       return this.localFallbackAnalysis(productInfo);
     }
   }
@@ -71,7 +79,6 @@ class SICOSILLMAnalyzer {
   localFallbackAnalysis(productInfo) {
     const text = (productInfo.fullText || productInfo.description || '').toLowerCase();
     
-    // Detectar sustentabilidade
     const sustainableTerms = ['biodegradável', 'compostável', 'reciclado', 'fsc', 'bambu', 'bagaço'];
     const unsustainableTerms = ['plástico', 'isopor', 'descartável', 'comum'];
     
@@ -80,7 +87,6 @@ class SICOSILLMAnalyzer {
     
     const isSustainable = hasSustainable && !hasUnsustainable;
     
-    // Buscar alternativas locais
     const alternatives = this.getLocalAlternatives(productInfo.description);
     
     return {
@@ -107,7 +113,6 @@ class SICOSILLMAnalyzer {
         description: 'Feito de resíduo agrícola, decompõe em 90 dias',
         benefits: 'Zero plástico, compostável',
         searchTerms: ['copo biodegradável', 'copo bagaço'],
-        estimatedCost: '15-20% mais caro'
       });
     }
     
@@ -117,11 +122,10 @@ class SICOSILLMAnalyzer {
         description: 'Papel de alta qualidade feito de aparas',
         benefits: 'Poupa árvores e água',
         searchTerms: ['papel reciclado a4'],
-        estimatedCost: 'Preço similar'
       });
     }
     
-    return alternatives.slice(0, 3); // Max 3 alternativas
+    return alternatives.slice(0, 3);
   }
 
   detectCategory(text) {
@@ -130,30 +134,6 @@ class SICOSILLMAnalyzer {
     if (text.match(/detergente|sabão|limpeza/)) return 'limpeza';
     if (text.match(/computador|impressora|monitor/)) return 'equipamentos';
     return 'geral';
-  }
-
-  // Método para configurar endpoint
-  async setProxyEndpoint(url) {
-    this.proxyEndpoint = url;
-    await chrome.storage.sync.set({ 
-      proxySettings: { 
-        grokProxyUrl: url,
-        configuredAt: new Date().toISOString()
-      }
-    });
-    console.log('Proxy configurado:', url);
-  }
-
-  // Teste de conectividade
-  async testConnection() {
-    try {
-      const response = await fetch(this.proxyEndpoint, {
-        method: 'OPTIONS'
-      });
-      return response.ok;
-    } catch {
-      return false;
-    }
   }
 }
 

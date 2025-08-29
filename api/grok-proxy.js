@@ -1,139 +1,85 @@
 // api/grok-proxy.js
-// Vercel Function - Proxy seguro para API do Grok (X.AI)
 
-export default async function handler(req, res) {
-  // Configurar CORS para extensão
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+export default async function handler(request, response) {
+  // --- INÍCIO DA ADIÇÃO DE CORS ---
+  // Configura headers para permitir que a extensão acesse a API
+  response.setHeader('Access-Control-Allow-Origin', '*'); // Permite qualquer origem
+  response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+  // A requisição OPTIONS é uma checagem de segurança que o navegador faz.
+  // Se for OPTIONS, apenas retorne OK.
+  if (request.method === 'OPTIONS') {
+    return response.status(200).end();
+  }
+  // --- FIM DA ADIÇÃO DE CORS ---
+
+  // 1. Validação de Segurança Básica
+  if (request.method !== 'POST') {
+    return response.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  // Só aceitar POST
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  const { productInfo } = request.body;
+
+  if (!productInfo || !productInfo.description) {
+    return response.status(400).json({ error: 'productInfo.description is required' });
   }
+
+  // 2. Chave de API (Segura no Servidor)
+  const grokApiKey = process.env.GROK_API_KEY;
+
+  if (!grokApiKey) {
+    console.error("Chave da API do Grok não configurada no servidor.");
+    return response.status(500).json({ error: 'API Key not configured on the server.' });
+  }
+
+  // 3. Montagem do Prompt e Requisição para o Grok
+  const prompt = `Analise o seguinte item de compra do governo e determine se ele é sustentável.
+    Produto: "${productInfo.description} ${productInfo.material || ''} ${productInfo.characteristics || ''}"
+    Responda em JSON com a seguinte estrutura:
+    {
+      "isSustainable": boolean,
+      "reason": "uma breve justificativa em português",
+      "sustainabilityScore": um número de 1 a 10,
+      "alternatives": [
+        {
+          "name": "Nome da alternativa 1",
+          "description": "Descrição da alternativa 1",
+          "benefits": "Benefícios da alternativa 1",
+          "searchTerms": ["termo de busca 1", "termo 2"]
+        }
+      ]
+    }`;
 
   try {
-    const { productInfo, analysisType = 'sustainability' } = req.body;
-
-    // Validar input
-    if (!productInfo || !productInfo.description) {
-      return res.status(400).json({ 
-        error: 'Product description is required' 
-      });
-    }
-
-    // Chave segura vem do ambiente
-    const GROK_API_KEY = process.env.GROK_API_KEY;
-    if (!GROK_API_KEY) {
-      console.error('GROK_API_KEY não configurada');
-      return res.status(500).json({ error: 'API configuration error' });
-    }
-
-    // Prompt para análise de sustentabilidade
-    const systemPrompt = `Você é um especialista em sustentabilidade e compras públicas brasileiras.
-Analise produtos para determinar se são sustentáveis e sugira alternativas quando necessário.
-
-Responda SEMPRE em JSON válido com esta estrutura:
-{
-  "isSustainable": boolean,
-  "sustainabilityScore": number (0-10),
-  "reason": "explicação clara",
-  "alternatives": [
-    {
-      "name": "nome da alternativa",
-      "description": "descrição detalhada", 
-      "benefits": "benefícios ambientais",
-      "searchTerms": ["termo1", "termo2", "termo3"],
-      "estimatedCost": "comparação de custo"
-    }
-  ],
-  "needsAlternatives": boolean,
-  "analysisMethod": "llm_grok",
-  "category": "categoria do produto"
-}`;
-
-    const userPrompt = `Analise este produto: "${productInfo.description}"
-${productInfo.material ? `Material: ${productInfo.material}` : ''}
-${productInfo.characteristics ? `Características: ${productInfo.characteristics}` : ''}
-
-Se NÃO for sustentável, sugira até 3 alternativas sustentáveis disponíveis no mercado brasileiro.`;
-
-    // Chamar API do Grok
+    // 4. Chamada para a API do Grok
     const grokResponse = await fetch('https://api.x.ai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROK_API_KEY}`
+        'Authorization': `Bearer ${grokApiKey}`,
       },
       body: JSON.stringify({
-        model: 'grok-beta',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        temperature: 0.3,
-        max_tokens: 1500
-      })
+        messages: [{ role: 'user', content: prompt }],
+        model: 'grok-1.5-sonnet',
+        response_format: { type: "json_object" } // Solicita resposta em JSON
+      }),
     });
 
     if (!grokResponse.ok) {
-      const errorText = await grokResponse.text();
-      console.error('Erro Grok API:', grokResponse.status, errorText);
-      return res.status(502).json({ 
-        error: 'External API error',
-        details: grokResponse.status 
-      });
+      const errorBody = await grokResponse.text();
+      console.error('Erro da API do Grok:', errorBody);
+      throw new Error(`Grok API responded with status: ${grokResponse.status}`);
     }
 
     const grokData = await grokResponse.json();
-    
-    if (!grokData.choices || !grokData.choices[0]) {
-      return res.status(502).json({ 
-        error: 'Invalid response from Grok API' 
-      });
-    }
+    const analysisResult = grokData.choices[0]?.message?.content || '{}';
 
-    // Processar resposta JSON do Grok
-    let analysisResult;
-    try {
-      const content = grokData.choices[0].message.content;
-      analysisResult = JSON.parse(content);
-      
-      // Adicionar metadados
-      analysisResult.timestamp = Date.now();
-      analysisResult.analysisMethod = 'llm_grok';
-      
-    } catch (parseError) {
-      console.error('Erro ao parsear Grok:', parseError);
-      
-      // Fallback se JSON inválido
-      analysisResult = {
-        isSustainable: false,
-        sustainabilityScore: 3,
-        reason: 'Produto convencional, considere alternativas sustentáveis',
-        alternatives: [],
-        needsAlternatives: true,
-        analysisMethod: 'llm_grok_fallback',
-        category: 'geral',
-        timestamp: Date.now()
-      };
-    }
-
-    // Log para monitoramento (sem dados sensíveis)
-    console.log(`Grok: Análise para "${productInfo.description.substring(0, 30)}..." - Score: ${analysisResult.sustainabilityScore}`);
-
-    return res.status(200).json(analysisResult);
+    // 5. Envio da Resposta para a Extensão
+    return response.status(200).json(JSON.parse(analysisResult));
 
   } catch (error) {
-    console.error('Erro interno grok-proxy:', error);
-    return res.status(500).json({ 
-      error: 'Internal server error',
-      message: process.env.NODE_ENV === 'development' ? error.message : 'Server error'
-    });
+    console.error('Erro no proxy da Vercel:', error);
+    return response.status(500).json({ error: 'Failed to fetch analysis from Grok API.' });
   }
 }
