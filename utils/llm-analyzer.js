@@ -1,8 +1,9 @@
+// utils/llm-analyzer.js
+
 /**
  * LLM Analyzer - SICOSI
- * Análise de sustentabilidade usando Grok AI via proxy seguro
+ * Análise de sustentabilidade usando Groq AI via proxy seguro
  */
-
 class SICOSILLMAnalyzer {
   constructor() {
     this.isInitialized = false;
@@ -12,20 +13,38 @@ class SICOSILLMAnalyzer {
 
   async initialize() {
     try {
-      // Busca a URL do proxy e o modo de análise salvos
+      // Busca o modo de análise salvo
       const result = await chrome.storage.sync.get(["proxySettings"]);
       const settings = result.proxySettings || {};
 
-      // IMPORTANTE: A URL de produção é definida aqui.
-      // Substitua pela URL do seu deploy na Vercel.
-      this.proxyEndpoint =
-        window.SICOSI_CONFIG?.PROXY_ENDPOINT ||
-        "COLE_SUA_URL_DA_VERCEL_AQUI/api/grok-proxy";
+      // <<< LÓGICA DE DETECÇÃO DE AMBIENTE >>>
+      // Verifica se a extensão foi instalada pela loja (produção) ou carregada localmente (desenvolvimento)
+      const isProduction = !!chrome.runtime.getManifest().update_url;
+
+      // Verifica se o objeto de configuração global existe
+      if (typeof window.SICOSI_CONFIG === "undefined") {
+        console.error(
+          "SICOSI ERRO CRÍTICO: O arquivo config/env.js não foi encontrado ou não foi carregado corretamente."
+        );
+        this.proxyEndpoint = null; // Força o modo offline
+      } else {
+        if (isProduction) {
+          this.proxyEndpoint = window.SICOSI_CONFIG.PRODUCTION_PROXY_ENDPOINT;
+          console.log("🌱 SICOSI: Ambiente de PRODUÇÃO detectado.");
+        } else {
+          this.proxyEndpoint = window.SICOSI_CONFIG.DEVELOPMENT_PROXY_ENDPOINT;
+          console.log("🌱 SICOSI: Ambiente de DESENVOLVIMENTO detectado.");
+        }
+      }
+      // <<< FIM DA LÓGICA >>>
 
       this.analysisMode = settings.analysisMode || "auto";
 
       this.isInitialized = true;
-      console.log("🌱 SICOSI: LLM Analyzer pronto. Modo:", this.analysisMode);
+      console.log(
+        "🌱 SICOSI: LLM Analyzer pronto. Usando endpoint:",
+        this.proxyEndpoint || "Modo Offline"
+      );
     } catch (error) {
       console.error("SICOSI: Erro ao inicializar LLM:", error);
       this.isInitialized = false;
@@ -36,13 +55,19 @@ class SICOSILLMAnalyzer {
     const useLocal = this.analysisMode === "local-only";
     const useAIOnly = this.analysisMode === "ai-only";
 
-    if (useLocal || !this.proxyEndpoint) {
-      console.log("Análise forçada para modo local.");
+    if (
+      useLocal ||
+      !this.proxyEndpoint ||
+      !this.proxyEndpoint.startsWith("http")
+    ) {
+      console.log(
+        "Análise forçada para modo local (proxy não configurado ou offline)."
+      );
       return this.localFallbackAnalysis(productInfo);
     }
 
     try {
-      console.log("🤖 Enviando para análise Grok:", productInfo.description);
+      console.log("🤖 Enviando para análise Groq:", productInfo.description);
 
       const response = await fetch(this.proxyEndpoint, {
         method: "POST",
@@ -55,7 +80,7 @@ class SICOSILLMAnalyzer {
       }
 
       const analysis = await response.json();
-      console.log("✅ Análise Grok recebida:", analysis);
+      console.log("✅ Análise Groq recebida:", analysis);
 
       return {
         ...analysis,
@@ -64,7 +89,7 @@ class SICOSILLMAnalyzer {
         analysisMethod: "llm",
       };
     } catch (error) {
-      console.error("❌ Erro na análise Grok, usando fallback:", error);
+      console.error("❌ Erro na análise Groq, usando fallback:", error);
       if (useAIOnly) {
         return {
           isSustainable: false,
