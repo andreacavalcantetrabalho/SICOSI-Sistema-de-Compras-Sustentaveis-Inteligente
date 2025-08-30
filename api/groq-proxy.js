@@ -1,4 +1,4 @@
-// api/grok-proxy.js
+// api/groq-proxy.js
 // Vercel Function - Proxy seguro para API do Grok (X.AI)
 export default async function handler(request, response) {
   // Configura headers de CORS para permitir que a extensão acesse a API
