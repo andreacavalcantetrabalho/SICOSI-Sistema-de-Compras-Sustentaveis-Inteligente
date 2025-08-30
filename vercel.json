@@ -1,15 +1,15 @@
 {
-  "version": 2,
+  "version": 1,
   "builds": [
     {
-      "src": "/api/grok-proxy.js",
+      "src": "/api/groq-proxy.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/grok-proxy",
-      "dest": "/api/grok-proxy.js"
+      "src": "/api/groq-proxy",
+      "dest": "/api/groq-proxy.js"
     }
   ]
 }
