@@ -18,3 +18,4 @@ config/api-keys.js
 .env
 
 config/env.js
+.vercel
