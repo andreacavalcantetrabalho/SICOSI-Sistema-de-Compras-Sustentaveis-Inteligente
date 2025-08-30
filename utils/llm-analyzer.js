@@ -2,7 +2,7 @@
 
 /**
  * LLM Analyzer - SICOSI
- * Análise de sustentabilidade usando Groq AI via proxy seguro
+ * Análise de sustentabilidade e busca de fornecedores usando Groq AI via proxy seguro
  */
 class SICOSILLMAnalyzer {
   constructor() {
@@ -18,10 +18,8 @@ class SICOSILLMAnalyzer {
       const settings = result.proxySettings || {};
 
       // <<< LÓGICA DE DETECÇÃO DE AMBIENTE >>>
-      // Verifica se a extensão foi instalada pela loja (produção) ou carregada localmente (desenvolvimento)
       const isProduction = !!chrome.runtime.getManifest().update_url;
 
-      // Verifica se o objeto de configuração global existe
       if (typeof window.SICOSI_CONFIG === "undefined") {
         console.error(
           "SICOSI ERRO CRÍTICO: O arquivo config/env.js não foi encontrado ou não foi carregado corretamente."
@@ -39,7 +37,6 @@ class SICOSILLMAnalyzer {
       // <<< FIM DA LÓGICA >>>
 
       this.analysisMode = settings.analysisMode || "auto";
-
       this.isInitialized = true;
       console.log(
         "🌱 SICOSI: LLM Analyzer pronto. Usando endpoint:",
@@ -68,11 +65,13 @@ class SICOSILLMAnalyzer {
 
     try {
       console.log("🤖 Enviando para análise Groq:", productInfo.description);
-
       const response = await fetch(this.proxyEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productInfo }),
+        body: JSON.stringify({
+          requestType: "analyze_product", // Especifica o tipo de requisição
+          productInfo
+        }),
       });
 
       if (!response.ok) {
@@ -104,6 +103,49 @@ class SICOSILLMAnalyzer {
     }
   }
 
+  /**
+   * Busca fornecedores reais para as alternativas sugeridas usando a LLM.
+   * @param {Array} alternatives - A lista de objetos de alternativas.
+   * @returns {Promise<Array>} A lista de alternativas enriquecida com informações de fornecedores.
+   */
+  async findRealSuppliers(alternatives) {
+    if (!this.proxyEndpoint || !this.proxyEndpoint.startsWith("http")) {
+      console.log("Busca por fornecedores pulada (modo offline).");
+      return alternatives.map((alt) => ({ ...alt, suppliers: [] }));
+    }
+
+    try {
+      console.log("🤖 Buscando fornecedores para alternativas via Groq...");
+
+      const response = await fetch(this.proxyEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requestType: "find_suppliers",
+          alternatives: alternatives.map((a) => a.name),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro HTTP ${response.status} ao buscar fornecedores.`);
+      }
+
+      const suppliersByAlternative = await response.json();
+
+      // Combina os resultados dos fornecedores com as alternativas originais
+      return alternatives.map((alt) => ({
+        ...alt,
+        suppliers: suppliersByAlternative[alt.name] || [],
+      }));
+    } catch (error) {
+      console.error(
+        "❌ Erro ao buscar fornecedores, retornando alternativas sem eles:",
+        error
+      );
+      return alternatives.map((alt) => ({ ...alt, suppliers: [] }));
+    }
+  }
+
   localFallbackAnalysis(productInfo) {
     const text = (
       productInfo.fullText ||
@@ -112,20 +154,13 @@ class SICOSILLMAnalyzer {
     ).toLowerCase();
 
     const sustainableTerms = [
-      "biodegradável",
-      "compostável",
-      "reciclado",
-      "fsc",
-      "bambu",
-      "bagaço",
+      "biodegradável", "compostável", "reciclado", "fsc", "bambu", "bagaço",
     ];
     const unsustainableTerms = ["plástico", "isopor", "descartável", "comum"];
 
     const hasSustainable = sustainableTerms.some((t) => text.includes(t));
     const hasUnsustainable = unsustainableTerms.some((t) => text.includes(t));
-
     const isSustainable = hasSustainable && !hasUnsustainable;
-
     const alternatives = this.getLocalAlternatives(productInfo.description);
 
     return {
@@ -145,7 +180,6 @@ class SICOSILLMAnalyzer {
   getLocalAlternatives(description) {
     const desc = description.toLowerCase();
     const alternatives = [];
-
     if (
       desc.includes("copo") &&
       (desc.includes("plástico") || desc.includes("descartável"))
@@ -157,7 +191,6 @@ class SICOSILLMAnalyzer {
         searchTerms: ["copo biodegradável", "copo bagaço"],
       });
     }
-
     if (desc.includes("papel") && !desc.includes("reciclado")) {
       alternatives.push({
         name: "Papel A4 100% reciclado",
@@ -166,7 +199,6 @@ class SICOSILLMAnalyzer {
         searchTerms: ["papel reciclado a4"],
       });
     }
-
     return alternatives.slice(0, 3);
   }
 
