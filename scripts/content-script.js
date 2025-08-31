@@ -1,14 +1,14 @@
 /**
  * Content Script - SICOSI
  * Script principal que monitora o ComprasNet e sugere alternativas sustentáveis
- * VERSÃO CORRIGIDA: Com análise inteligente usando LLM
+ * VERSÃO CORRIGIDA E ROBUSTA: Incorpora observador agressivo, múltiplos métodos de detecção e logging aprimorado.
  */
 
 (function () {
   "use strict";
 
-  // Verificar se já foi inicializado
   if (window.SICOSISustentavelInitialized) {
+    console.log("🌱 SICOSI: Script já inicializado. Ignorando.");
     return;
   }
   window.SICOSISustentavelInitialized = true;
@@ -40,17 +40,14 @@
       console.log("🌱 SICOSI: Iniciando...");
 
       try {
-        // Aguardar dependências
         await this.waitForDependencies();
-
-        // Inicializar componentes
         await this.initializeComponents();
-
-        // Inicializar funcionalidade principal
         await this.startMainFunctionality();
 
         isInitialized = true;
-        console.log("🌱 SICOSI: Pronto para uso!");
+        console.log(
+          "🌱 SICOSI: Pronto para uso! Para debug, use window.sicosi ou window.SICOSI_DEBUG."
+        );
       } catch (error) {
         console.error("🌱 SICOSI: Erro na inicialização:", error);
       }
@@ -132,85 +129,157 @@
       );
     }
 
+    /**
+     * SOLUÇÃO 3 APLICADA: Observador de DOM mais agressivo e com fallback de intervalo.
+     */
     setupPageObserver() {
       if (observerInstance) {
         observerInstance.disconnect();
       }
-
+      console.log("👁️ SICOSI: Iniciando observador de mudanças do DOM");
       observerInstance = new MutationObserver((mutations) => {
         let shouldCheck = false;
-
         mutations.forEach((mutation) => {
           if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-            mutation.addedNodes.forEach((node) => {
-              if (node.nodeType === Node.ELEMENT_NODE) {
-                if (
-                  node.tagName === "BUTTON" ||
-                  node.querySelector?.("button")
-                ) {
-                  shouldCheck = true;
-                }
-              }
-            });
+            shouldCheck = true;
+          }
+          if (mutation.type === "attributes") {
+            shouldCheck = true;
           }
         });
 
         if (shouldCheck) {
           clearTimeout(debounceTimer);
-          debounceTimer = setTimeout(() => this.monitorExistingElements(), 500);
+          debounceTimer = setTimeout(() => {
+            console.log("🔄 SICOSI: DOM mudou, verificando novamente...");
+            this.monitorExistingElements();
+          }, 300); // Delay reduzido para maior responsividade
         }
       });
 
+      // Observar tudo com configuração mais agressiva
       observerInstance.observe(document.body, {
         childList: true,
         subtree: true,
+        attributes: true,
       });
+
+      // Fallback: Verificar periodicamente também para garantir a detecção em SPAs
+      setInterval(() => {
+        this.monitorExistingElements();
+      }, 2000); // A cada 2 segundos
     }
 
+    /**
+     * SOLUÇÃO 2 APLICADA: Detecção de elementos mais robusta.
+     */
     monitorExistingElements() {
       if (!userSettings?.enabled) return;
 
-      const buttons = document.querySelectorAll("button");
+      const allButtons = document.querySelectorAll(
+        'button, a.btn, input[type="button"], input[type="submit"]'
+      );
 
-      buttons.forEach((button) => {
-        const buttonText = (button.textContent || "").toLowerCase();
+      allButtons.forEach((button) => {
+        const text = (button.textContent || button.value || "")
+          .toLowerCase()
+          .trim();
+        const targetTerms = [
+          "adicionar",
+          "selecionar",
+          "incluir",
+          "comprar",
+          "solicitar",
+        ];
+        const isTargetButton = targetTerms.some((term) => text.includes(term));
 
-        if (
-          (buttonText.includes("adicionar") ||
-            buttonText.includes("selecionar")) &&
-          !button.hasSICOSIListener
-        ) {
+        if (isTargetButton && !button.hasSICOSIListener) {
+          console.log(`✅ SICOSI: Adicionando listener ao botão: "${text}"`);
           button.hasSICOSIListener = true;
+
           button.addEventListener(
             "click",
-            this.handleSelectButtonClick.bind(this),
+            (event) => {
+              this.handleSelectButtonClick(event);
+            },
             true
-          );
+          ); // Use capture phase!
+
+          if (userSettings.advanced?.debugMode) {
+            button.style.outline = "2px solid green";
+            button.title = "SICOSI está monitorando este botão";
+          }
         }
       });
     }
 
+    /**
+     * SOLUÇÃO 4 APLICADA: Handler de clique com depuração aprimorada.
+     */
     async handleSelectButtonClick(event) {
-      if (isModalVisible) return;
+      console.log(
+        "🎯 SICOSI: handleSelectButtonClick disparado!",
+        event.target
+      );
 
-      const button = event.currentTarget;
-      const itemRow = button.closest("tr") || button.closest(".item-row");
+      if (isModalVisible) {
+        console.log("⚠️ SICOSI: Modal já está visível, ignorando clique.");
+        return;
+      }
 
-      if (!itemRow) return;
+      const button = event.currentTarget || event.target;
 
-      // Extrair informações completas do produto
+      // Estratégia de busca pelo contêiner do item, do mais específico para o mais genérico
+      let itemRow =
+        button.closest("tr") ||
+        button.closest(".item-row") ||
+        button.closest("[role='row']") ||
+        button.closest("li") ||
+        button.closest(".produto-item");
+
+      console.log("📋 SICOSI: Contêiner do item encontrado:", itemRow);
+
+      if (!itemRow) {
+        console.warn(
+          "⚠️ SICOSI: Não encontrou contêiner do item. Usando o avô do botão como fallback."
+        );
+        itemRow = button.parentElement?.parentElement || button.parentElement;
+        if (!itemRow) {
+          console.error(
+            "❌ SICOSI: Falha total ao encontrar um contêiner para análise."
+          );
+          return; // Aborta se não encontrar nada
+        }
+      }
+
       const productInfo = this.extractCompleteProductInfo(itemRow);
-      console.log("🌱 SICOSI: Analisando produto:", productInfo);
+      console.log("📦 SICOSI: Informações do produto extraídas:", productInfo);
 
-      // Análise inteligente com LLM ou local
+      if (!productInfo.description) {
+        console.warn(
+          "⚠️ SICOSI: Descrição do produto vazia. A análise pode ser imprecisa."
+        );
+        // Não retornar, deixar a análise prosseguir mesmo com poucos dados
+      }
+
       const analysis = await this.analyzeProduct(productInfo);
+      console.log("🔬 SICOSI: Resultado da análise:", analysis);
 
-      if (!analysis.isSustainable && analysis.needsAlternatives) {
-        console.log("🌱 SICOSI: Produto precisa de alternativas sustentáveis");
+      if (analysis && !analysis.isSustainable && analysis.needsAlternatives) {
+        console.log(
+          "🌱 SICOSI: PRODUTO NÃO SUSTENTÁVEL. Prevenindo ação padrão e mostrando modal."
+        );
+
+        // Previne a ação original do site (adicionar ao carrinho)
         event.preventDefault();
         event.stopPropagation();
+        event.stopImmediatePropagation();
 
         await this.showSmartSustainabilityModal(productInfo, analysis, () => {
+          console.log(
+            "✅ SICOSI: Usuário escolheu continuar. Disparando clique original."
+          );
+          // Remove o listener para evitar loop infinito e clica novamente
           button.removeEventListener(
             "click",
             this.handleSelectButtonClick.bind(this),
@@ -220,9 +289,10 @@
         });
 
         this.logAnalytics("modal_shown", productInfo.description);
-      } else if (analysis.isSustainable) {
-        console.log("🌱 SICOSI: Produto já é sustentável:", analysis.reason);
-        // Não interferir - deixar compra prosseguir
+      } else {
+        console.log(
+          "✅ SICOSI: Produto sustentável ou sem alternativas. Ação permitida."
+        );
       }
     }
 
@@ -982,38 +1052,10 @@
     manager.initialize();
   }
 
-  // Cleanup ao sair
-  window.addEventListener("beforeunload", () => {
-    if (observerInstance) observerInstance.disconnect();
-    if (currentModal) manager.closeModal();
-  });
-
-  // Exportar para debug
-  window.SICOSI_DEBUG = {
-    isInitialized: () => isInitialized,
-    isModalVisible: () => isModalVisible,
-    testAnalysis: async (description) => {
-      if (llmAnalyzer) {
-        return await llmAnalyzer.analyzeProduct({
-          description,
-          fullText: description.toLowerCase(),
-        });
-      }
-      return "LLM Analyzer não inicializado";
-    },
-    showTestModal: async () => {
-      if (manager) {
-        const testProduct = {
-          code: "TEST001",
-          description: "Copo descartável plástico 200ml",
-          material: "Plástico comum",
-          fullText: "copo descartável plástico comum 200ml",
-        };
-        const analysis = await manager.analyzeProduct(testProduct);
-        await manager.showSmartSustainabilityModal(testProduct, analysis, null);
-      }
-    },
-    getSettings: () => userSettings,
-    getLLMStatus: () => (llmAnalyzer ? "Configurado" : "Não configurado"),
-  };
+  // SOLUÇÃO 5 APLICADA: Expor para debug no console
+  window.sicosi = manager;
+  console.log(`🌱 SICOSI CARREGADO! Para testar manualmente, execute no console:
+  - window.sicosi.monitorExistingElements() // Forçar busca por botões
+  - window.SICOSI_DEBUG.showTestModal() // Mostrar modal de teste
+  `);
 })();

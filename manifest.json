@@ -24,6 +24,7 @@
         "*://cnetmobile.estaleiro.serpro.gov.br/*"
       ],
       "js": [
+        "config/env.js",
         "config/constants.js",
         "utils/storage-manager.js",
         "utils/dom-helpers.js",
