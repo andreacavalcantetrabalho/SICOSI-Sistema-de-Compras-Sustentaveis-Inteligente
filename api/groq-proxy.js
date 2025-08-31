@@ -1,9 +1,9 @@
 // api/groq-proxy.js
-// Vercel Function - Proxy seguro e multifuncional para a API da Groq (Groq Inc.)
+// Vercel Function - Proxy seguro para Groq API com prompts melhorados
 
 export default async function handler(request, response) {
   // Configura headers de CORS para permitir que a extensão acesse a API
-  response.setHeader("Access-Control-Allow-Origin", "*"); // Para desenvolvimento. Em produção, restrinja para o ID da sua extensão.
+  response.setHeader("Access-Control-Allow-Origin", "*");
   response.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   response.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
@@ -22,9 +22,7 @@ export default async function handler(request, response) {
     const groqApiKey = process.env.GROQ_API_KEY;
 
     if (!groqApiKey) {
-      console.error(
-        "GROQ_API_KEY não foi configurada no ambiente do servidor."
-      );
+      console.error("GROQ_API_KEY não foi configurada no ambiente do servidor.");
       return response
         .status(500)
         .json({ error: "API Key not configured on the server." });
@@ -34,38 +32,40 @@ export default async function handler(request, response) {
 
     // LÓGICA PARA ESCOLHER O PROMPT CORRETO
     if (requestType === "find_suppliers") {
-      // PROMPT PARA BUSCAR FORNECEDORES
-      if (
-        !alternatives ||
-        !Array.isArray(alternatives) ||
-        alternatives.length === 0
-      ) {
-        return response
-          .status(400)
-          .json({
-            error:
-              'O campo "alternatives" (array) é necessário para buscar fornecedores.',
-          });
+      // PROMPT MELHORADO - Fornecedores sem URLs inventadas
+      if (!alternatives || !Array.isArray(alternatives) || alternatives.length === 0) {
+        return response.status(400).json({
+          error: 'O campo "alternatives" (array) é necessário para buscar fornecedores.',
+        });
       }
 
       prompt = `
-        Aja como um assistente de pesquisa especializado em encontrar fornecedores no Brasil.
-        Para cada item na lista a seguir, encontre até 2 fornecedores brasileiros reais e seus websites.
-        Se não encontrar um fornecedor real, retorne um array vazio para o item.
+        Aja como um especialista em fornecedores sustentáveis do Brasil.
+        
+        IMPORTANTE: 
+        - NÃO invente URLs ou websites
+        - Só forneça nomes de empresas que você tem CERTEZA que existem
+        - Se não tiver certeza, retorne array vazio
+        - NÃO forneça links/websites pois você não pode verificar se estão corretos
+        
+        Para cada item na lista a seguir, sugira até 2 nomes de fornecedores brasileiros REAIS que vendem esses produtos.
+        Se não souber fornecedores reais, retorne array vazio.
+        
         Itens: ${alternatives.join(", ")}
 
-        Responda EXCLUSIVAMENTE em formato JSON, com o nome do item como chave. A estrutura deve ser:
+        Responda EXCLUSIVAMENTE em formato JSON:
         {
           "Nome da Alternativa 1": [
-            { "name": "Nome do Fornecedor 1", "website": "https://www.fornecedor1.com.br" },
-            { "name": "Nome do Fornecedor 2", "website": "https://www.fornecedor2.com.br" }
+            { "name": "Nome da Empresa Real 1", "website": "" },
+            { "name": "Nome da Empresa Real 2", "website": "" }
           ],
           "Nome da Alternativa 2": []
         }
+        
+        LEMBRE-SE: deixe "website" sempre vazio ("") para evitar links quebrados.
       `;
     } else {
-      // O padrão é 'analyze_product'
-      // PROMPT PARA ANÁLISE DE PRODUTO
+      // PROMPT PARA ANÁLISE DE PRODUTO - Melhorado
       if (!productInfo || !productInfo.description) {
         return response.status(400).json({
           error: "productInfo.description is required para 'analyze_product'",
@@ -73,38 +73,50 @@ export default async function handler(request, response) {
       }
 
       prompt = `
-        Aja como um especialista em compras públicas sustentáveis e análise de ciclo de vida de produtos. Sua missão é avaliar um item de licitação do governo brasileiro e fornecer alternativas ecológicas viáveis.
-        **Contexto:** O item está sendo cadastrado no sistema ComprasNet do Brasil. As alternativas devem ser práticas e encontráveis no mercado brasileiro.
-        **Análise do Item:**
-        - **Produto:** "${productInfo.description}"
-        - **Material Informado:** "${
-          productInfo.material || "Não especificado"
-        }"
-        - **Características Adicionais:** "${
-          productInfo.characteristics || "Nenhuma"
-        }"
-        **Sua Tarefa:**
-        Analise o item e responda EXCLUSIVAMENTE em formato JSON, seguindo rigorosamente a estrutura abaixo:
+        Você é um especialista em compras públicas sustentáveis do Brasil.
+        
+        ANALISE este item: "${productInfo.description}"
+        ${productInfo.material ? `Material: ${productInfo.material}` : ''}
+        
+        TAREFA: Determine se o produto é sustentável e sugira alternativas se necessário.
+        
+        CRITÉRIOS DE SUSTENTABILIDADE:
+        - Biodegradável/compostável = sustentável (score 7-10)
+        - Reciclado/reciclável = sustentável (score 6-8)
+        - Certificado (FSC, Energy Star) = sustentável (score 7-9)
+        - Plástico comum/descartável = não sustentável (score 1-4)
+        - Isopor/poliestireno = não sustentável (score 1-3)
+        
+        RESPONDA APENAS em JSON:
         {
           "isSustainable": boolean,
-          "reason": "uma breve justificativa em português explicando se o item é ou não sustentável (máximo 20 palavras)",
-          "sustainabilityScore": "um número de 1 a 10, onde 1 é muito poluente e 10 é totalmente sustentável",
+          "reason": "explicação breve em português (máx 20 palavras)",
+          "sustainabilityScore": número de 1 a 10,
           "alternatives": [
             {
-              "name": "Nome claro e comercial da alternativa 1",
-              "description": "Descrição curta da alternativa 1 para um comprador do governo",
-              "benefits": "O principal benefício ambiental da alternativa 1",
-              "searchTerms": ["termo de busca 1", "termo 2"]
+              "name": "Nome comercial da alternativa",
+              "description": "Descrição objetiva para comprador público",
+              "benefits": "Principal benefício ambiental",
+              "searchTerms": ["termo para buscar no catálogo", "outro termo"]
             }
           ]
         }
-        **Instruções Adicionais:**
-        - Se "isSustainable" for true (score >= 7), o array "alternatives" deve ser vazio ([]).
-        - Se "isSustainable" for false (score < 7), forneça de 2 a 3 alternativas no array.
+        
+        REGRAS:
+        - Se isSustainable = true (score >= 7): alternatives = []
+        - Se isSustainable = false: forneça 2-3 alternativas realistas
+        - searchTerms devem ser termos que funcionam em catálogos de compras
+        - NÃO invente marcas ou fornecedores específicos
+        - Foque em TIPOS de produtos, não marcas
+        
+        EXEMPLOS de boas alternativas:
+        - "Copo biodegradável PLA" (não "Copo EcoBrand")
+        - "Papel reciclado certificado" (não "Papel Suzano Reciclado")
+        - "Detergente biodegradável concentrado" (não "Detergente Ypê Eco")
       `;
     }
 
-    // A chamada para a API da Groq
+    // Chamada para a API da Groq
     const groqResponse = await fetch(
       "https://api.groq.com/openai/v1/chat/completions",
       {
@@ -114,9 +126,20 @@ export default async function handler(request, response) {
           Authorization: `Bearer ${groqApiKey}`,
         },
         body: JSON.stringify({
-          messages: [{ role: "user", content: prompt }],
+          messages: [
+            {
+              role: "system",
+              content: "Você é um assistente especializado em sustentabilidade. Sempre responda em JSON válido. NUNCA invente URLs ou websites que você não pode verificar."
+            },
+            {
+              role: "user",
+              content: prompt
+            }
+          ],
           model: "llama-3.3-70b-versatile",
           response_format: { type: "json_object" },
+          temperature: 0.3, // Reduzido para menos "criatividade" (menos alucinações)
+          max_tokens: 1000
         }),
       }
     );
@@ -124,35 +147,60 @@ export default async function handler(request, response) {
     if (!groqResponse.ok) {
       const errorBody = await groqResponse.text();
       console.error("Erro da API da Groq:", errorBody);
-      try {
-        const parsed = JSON.parse(errorBody);
-        if (parsed?.error?.code === "model_decommissioned") {
-          return response.status(200).json({
-            isSustainable: false,
-            reason:
-              "Modelo da Groq desativado. Troque para 'llama-3.3-70b-versatile' ou 'llama-3.1-8b-instant'.",
-            sustainabilityScore: 3,
-            alternatives: [],
-            _internal: {
-              suggestedModels: [
-                "llama-3.3-70b-versatile",
-                "llama-3.1-8b-instant",
-              ],
-            },
-          });
-        }
-      } catch {}
-      throw new Error(`Groq API responded with status: ${groqResponse.status}`);
+      
+      // Fallback para resposta genérica em caso de erro
+      return response.status(200).json({
+        isSustainable: false,
+        reason: "Análise indisponível temporariamente",
+        sustainabilityScore: 5,
+        alternatives: [
+          {
+            name: "Alternativa biodegradável",
+            description: "Busque por opções biodegradáveis ou compostáveis",
+            benefits: "Menor impacto ambiental",
+            searchTerms: ["biodegradável", "compostável", "ecológico"]
+          }
+        ]
+      });
     }
 
     const groqData = await groqResponse.json();
     const analysisResultText = groqData.choices[0]?.message?.content || "{}";
+    
+    // Parse e validação da resposta
+    let result;
+    try {
+      result = JSON.parse(analysisResultText);
+      
+      // Limpar websites dos fornecedores se existirem
+      if (requestType === "find_suppliers") {
+        Object.keys(result).forEach(key => {
+          if (Array.isArray(result[key])) {
+            result[key] = result[key].map(supplier => ({
+              ...supplier,
+              website: "" // Sempre remover websites para evitar links quebrados
+            }));
+          }
+        });
+      }
+      
+    } catch (parseError) {
+      console.error("Erro ao parsear resposta da IA:", parseError);
+      return response.status(200).json({
+        isSustainable: false,
+        reason: "Erro ao processar análise",
+        sustainabilityScore: 5,
+        alternatives: []
+      });
+    }
 
-    return response.status(200).json(JSON.parse(analysisResultText));
+    return response.status(200).json(result);
+    
   } catch (error) {
     console.error("Erro no proxy da Vercel:", error);
-    return response
-      .status(500)
-      .json({ error: "Failed to fetch analysis from Groq API." });
+    return response.status(500).json({ 
+      error: "Failed to fetch analysis from Groq API.",
+      details: error.message 
+    });
   }
 }

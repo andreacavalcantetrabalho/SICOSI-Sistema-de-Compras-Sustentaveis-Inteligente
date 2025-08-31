@@ -275,6 +275,12 @@ class PopupManager {
    * Atualiza a interface com os dados carregados
    */
   updateUI() {
+    // Definir a versão da extensão dinamicamente
+    const versionTextElement = document.getElementById('versionText');
+    if (versionTextElement) {
+      versionTextElement.textContent = `v${chrome.runtime.getManifest().version}`;
+    }
+
     // Status da extensão
     const isEnabled = this.settings.enabled;
     this.extensionToggle.checked = isEnabled;
