@@ -1,13 +1,36 @@
 /**
  * Storage Manager - SICOSI Sustentável
  * Gerencia armazenamento de dados da extensão usando Chrome Storage API
- * VERSÃO CORRIGIDA: Aguarda o carregamento das constantes antes de inicializar.
+ * VERSÃO CORRIGIDA: Não depende de constants para inicializar
  */
 
 class StorageManager {
   constructor() {
-    this.storageKeys = window.SICOSIConstants.CACHE_CONFIG.KEYS;
-    this.defaultExpiry = window.SICOSIConstants.CACHE_CONFIG.DEFAULT_EXPIRY;
+    // CORREÇÃO: Valores padrão seguros que não dependem de constants
+    this.storageKeys = {
+      SETTINGS: 'SICOSI-user-settings',
+      STATISTICS: 'SICOSI-statistics'
+    };
+    this.defaultExpiry = 24 * 60 * 60 * 1000; // 24 horas
+    
+    // Tentar atualizar com constants se disponível
+    this.tryUpdateFromConstants();
+  }
+
+  /**
+   * Tenta atualizar configurações se constants estiverem disponíveis
+   */
+  tryUpdateFromConstants() {
+    try {
+      if (window.SICOSIConstants?.CACHE_CONFIG?.KEYS) {
+        this.storageKeys = window.SICOSIConstants.CACHE_CONFIG.KEYS;
+      }
+      if (window.SICOSIConstants?.CACHE_CONFIG?.DEFAULT_EXPIRY) {
+        this.defaultExpiry = window.SICOSIConstants.CACHE_CONFIG.DEFAULT_EXPIRY;
+      }
+    } catch (error) {
+      // Continua com valores padrão
+    }
   }
 
   /**
@@ -39,17 +62,36 @@ class StorageManager {
       const stored = result[this.storageKeys.SETTINGS];
       
       if (stored && stored.data) {
-        // Mesclar com configurações padrão para garantir compatibilidade
+        // Mesclar com configurações padrão mínimas
         return {
-          ...window.SICOSIConstants.DEFAULT_SETTINGS,
+          enabled: true,
           ...stored.data
         };
       }
       
-      return window.SICOSIConstants.DEFAULT_SETTINGS;
+      // Retornar configurações padrão mínimas
+      return {
+        enabled: true,
+        categories: {
+          descartaveis: true,
+          papel: true,
+          limpeza: true,
+          equipamentos: true,
+          embalagens: true
+        },
+        notifications: {
+          modal: true,
+          sound: false
+        },
+        advanced: {
+          autoSearch: true,
+          externalSearch: true,
+          cacheEnabled: true
+        }
+      };
     } catch (error) {
       console.error('SICOSI Storage: Erro ao carregar configurações:', error);
-      return window.SICOSIConstants.DEFAULT_SETTINGS;
+      return { enabled: true };
     }
   }
 
@@ -174,21 +216,21 @@ class StorageManager {
       };
 
       // Carregar logs existentes
-      const result = await chrome.storage.local.get([window.SICOSIConstants.ANALYTICS_CONFIG.STORAGE_KEY]);
-      const logs = result[window.SICOSIConstants.ANALYTICS_CONFIG.STORAGE_KEY] || [];
+      const result = await chrome.storage.local.get(['SICOSI-logs']);
+      const logs = result['SICOSI-logs'] || [];
       
       // Adicionar novo log
       logs.push(logEntry);
 
-      // Manter apenas os logs mais recentes
-      const maxLogs = window.SICOSIConstants.ANALYTICS_CONFIG.MAX_LOGS;
+      // Manter apenas os logs mais recentes (máximo 100)
+      const maxLogs = 100;
       if (logs.length > maxLogs) {
         logs.splice(0, logs.length - maxLogs);
       }
 
       // Salvar logs atualizados
       await chrome.storage.local.set({
-        [window.SICOSIConstants.ANALYTICS_CONFIG.STORAGE_KEY]: logs
+        'SICOSI-logs': logs
       });
 
       // Atualizar estatísticas resumidas
@@ -211,11 +253,11 @@ class StorageManager {
     const updated = { ...current };
 
     switch (event) {
-      case window.SICOSIConstants.ANALYTICS_CONFIG.EVENTS.MODAL_SHOWN:
+      case 'modal_shown':
         updated.modalShown = (updated.modalShown || 0) + 1;
         break;
       
-      case window.SICOSIConstants.ANALYTICS_CONFIG.EVENTS.ALTERNATIVE_SELECTED:
+      case 'alternative_selected':
         updated.alternativesSelected = (updated.alternativesSelected || 0) + 1;
         
         // Calcular impacto estimado
@@ -224,25 +266,20 @@ class StorageManager {
           updated.categoriesUsed = updated.categoriesUsed || {};
           updated.categoriesUsed[category] = (updated.categoriesUsed[category] || 0) + 1;
           
-          // Estimar economia de CO2 e resíduos
-          const impactData = window.SICOSIConstants.impact_calculator || {};
-          if (impactData[category]) {
-            updated.impactMetrics = updated.impactMetrics || {};
-            updated.impactMetrics.estimatedCO2Saved = 
-              (updated.impactMetrics.estimatedCO2Saved || 0) + 
-              (impactData[category].co2_saved_per_unit || 0);
-            updated.impactMetrics.estimatedWasteSaved = 
-              (updated.impactMetrics.estimatedWasteSaved || 0) + 
-              (impactData[category].waste_reduction_grams || 0);
-          }
+          // Estimar economia de CO2 e resíduos (valores aproximados)
+          updated.impactMetrics = updated.impactMetrics || {};
+          updated.impactMetrics.estimatedCO2Saved = 
+            (updated.impactMetrics.estimatedCO2Saved || 0) + 0.05; // 50g por item
+          updated.impactMetrics.estimatedWasteSaved = 
+            (updated.impactMetrics.estimatedWasteSaved || 0) + 8; // 8g por item
         }
         break;
       
-      case window.SICOSIConstants.ANALYTICS_CONFIG.EVENTS.MODAL_DISMISSED:
+      case 'modal_dismissed':
         updated.modalsDismissed = (updated.modalsDismissed || 0) + 1;
         break;
       
-      case window.SICOSIConstants.ANALYTICS_CONFIG.EVENTS.SEARCH_PERFORMED:
+      case 'search_performed':
         updated.searchesPerformed = (updated.searchesPerformed || 0) + 1;
         break;
     }
@@ -257,8 +294,8 @@ class StorageManager {
    */
   async getAnalyticsLogs(limit = 50) {
     try {
-      const result = await chrome.storage.local.get([window.SICOSIConstants.ANALYTICS_CONFIG.STORAGE_KEY]);
-      const logs = result[window.SICOSIConstants.ANALYTICS_CONFIG.STORAGE_KEY] || [];
+      const result = await chrome.storage.local.get(['SICOSI-logs']);
+      const logs = result['SICOSI-logs'] || [];
       
       return logs.slice(-limit).reverse(); // Últimos logs, mais recentes primeiro
     } catch (error) {
@@ -392,7 +429,7 @@ class StorageManager {
 function initializeStorageManager() {
   if (window.SICOSIStorage) return; // Previne dupla inicialização
   window.SICOSIStorage = new StorageManager();
-  console.log('🌱 SICOSI Storage Manager inicializado com segurança.');
+  console.log('SICOSI Storage Manager inicializado com segurança.');
 
   // Limpar cache expirado a cada hora
   setInterval(() => {
@@ -400,9 +437,15 @@ function initializeStorageManager() {
   }, 60 * 60 * 1000);
 }
 
-// Lógica de espera:
+// Lógica de espera mais robusta
 if (window.SICOSIConstants) {
   initializeStorageManager();
 } else {
-  window.addEventListener('SICOSIConstantsReady', initializeStorageManager, { once: true });
+  // Tentar inicializar após 1 segundo mesmo sem constants
+  setTimeout(initializeStorageManager, 1000);
+  
+  // Também aguardar evento se disponível
+  if (window.addEventListener) {
+    window.addEventListener('SICOSIConstantsReady', initializeStorageManager, { once: true });
+  }
 }
