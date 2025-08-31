@@ -13,7 +13,12 @@
     "*://compras.gov.br/*",
     "*://*.compras.gov.br/*",
     "*://catalogo.compras.gov.br/*",
-    "*://cnetmobile.estaleiro.serpro.gov.br/*"
+    "*://cnetmobile.estaleiro.serpro.gov.br/*",
+    "*://comprasnet.gov.br/*",
+    "*://*.comprasnet.gov.br/*",
+    "*://*.gov.br/*",
+    "http://localhost:3000/*",
+    "https://seu-app.vercel.app/*"
   ],
   "content_scripts": [
     {

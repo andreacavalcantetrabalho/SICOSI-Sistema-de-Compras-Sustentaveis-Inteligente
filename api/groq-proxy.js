@@ -35,15 +35,24 @@ export default async function handler(request, response) {
     // LÓGICA PARA ESCOLHER O PROMPT CORRETO
     if (requestType === "find_suppliers") {
       // PROMPT PARA BUSCAR FORNECEDORES
-      if (!alternatives || !Array.isArray(alternatives) || alternatives.length === 0) {
-        return response.status(400).json({ error: 'O campo "alternatives" (array) é necessário para buscar fornecedores.' });
+      if (
+        !alternatives ||
+        !Array.isArray(alternatives) ||
+        alternatives.length === 0
+      ) {
+        return response
+          .status(400)
+          .json({
+            error:
+              'O campo "alternatives" (array) é necessário para buscar fornecedores.',
+          });
       }
-      
+
       prompt = `
         Aja como um assistente de pesquisa especializado em encontrar fornecedores no Brasil.
         Para cada item na lista a seguir, encontre até 2 fornecedores brasileiros reais e seus websites.
         Se não encontrar um fornecedor real, retorne um array vazio para o item.
-        Itens: ${alternatives.join(', ')}
+        Itens: ${alternatives.join(", ")}
 
         Responda EXCLUSIVAMENTE em formato JSON, com o nome do item como chave. A estrutura deve ser:
         {
@@ -54,8 +63,8 @@ export default async function handler(request, response) {
           "Nome da Alternativa 2": []
         }
       `;
-
-    } else { // O padrão é 'analyze_product'
+    } else {
+      // O padrão é 'analyze_product'
       // PROMPT PARA ANÁLISE DE PRODUTO
       if (!productInfo || !productInfo.description) {
         return response.status(400).json({
@@ -68,8 +77,12 @@ export default async function handler(request, response) {
         **Contexto:** O item está sendo cadastrado no sistema ComprasNet do Brasil. As alternativas devem ser práticas e encontráveis no mercado brasileiro.
         **Análise do Item:**
         - **Produto:** "${productInfo.description}"
-        - **Material Informado:** "${productInfo.material || "Não especificado"}"
-        - **Características Adicionais:** "${productInfo.characteristics || "Nenhuma"}"
+        - **Material Informado:** "${
+          productInfo.material || "Não especificado"
+        }"
+        - **Características Adicionais:** "${
+          productInfo.characteristics || "Nenhuma"
+        }"
         **Sua Tarefa:**
         Analise o item e responda EXCLUSIVAMENTE em formato JSON, seguindo rigorosamente a estrutura abaixo:
         {
@@ -92,22 +105,43 @@ export default async function handler(request, response) {
     }
 
     // A chamada para a API da Groq
-    const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${groqApiKey}`,
-      },
-      body: JSON.stringify({
-        messages: [{ role: "user", content: prompt }],
-        model: "llama3-8b-8192",
-        response_format: { type: "json_object" },
-      }),
-    });
+    const groqResponse = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${groqApiKey}`,
+        },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: prompt }],
+          model: "llama-3.3-70b-versatile",
+          response_format: { type: "json_object" },
+        }),
+      }
+    );
 
     if (!groqResponse.ok) {
       const errorBody = await groqResponse.text();
       console.error("Erro da API da Groq:", errorBody);
+      try {
+        const parsed = JSON.parse(errorBody);
+        if (parsed?.error?.code === "model_decommissioned") {
+          return response.status(200).json({
+            isSustainable: false,
+            reason:
+              "Modelo da Groq desativado. Troque para 'llama-3.3-70b-versatile' ou 'llama-3.1-8b-instant'.",
+            sustainabilityScore: 3,
+            alternatives: [],
+            _internal: {
+              suggestedModels: [
+                "llama-3.3-70b-versatile",
+                "llama-3.1-8b-instant",
+              ],
+            },
+          });
+        }
+      } catch {}
       throw new Error(`Groq API responded with status: ${groqResponse.status}`);
     }
 
@@ -115,7 +149,6 @@ export default async function handler(request, response) {
     const analysisResultText = groqData.choices[0]?.message?.content || "{}";
 
     return response.status(200).json(JSON.parse(analysisResultText));
-
   } catch (error) {
     console.error("Erro no proxy da Vercel:", error);
     return response

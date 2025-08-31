@@ -70,7 +70,7 @@ class SICOSILLMAnalyzer {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           requestType: "analyze_product", // Especifica o tipo de requisição
-          productInfo
+          productInfo,
         }),
       });
 
@@ -153,53 +153,87 @@ class SICOSILLMAnalyzer {
       ""
     ).toLowerCase();
 
+    // 1. Primeiro, verifica se o item JÁ É sustentável para não mostrar o modal desnecessariamente.
     const sustainableTerms = [
-      "biodegradável", "compostável", "reciclado", "fsc", "bambu", "bagaço",
+      "biodegradável",
+      "compostável",
+      "reciclado",
+      "fsc",
+      "bambu",
+      "bagaço",
+      "ecológico",
+      "sustentável",
     ];
-    const unsustainableTerms = ["plástico", "isopor", "descartável", "comum"];
+    const isAlreadySustainable = sustainableTerms.some((t) => text.includes(t));
 
-    const hasSustainable = sustainableTerms.some((t) => text.includes(t));
-    const hasUnsustainable = unsustainableTerms.some((t) => text.includes(t));
-    const isSustainable = hasSustainable && !hasUnsustainable;
+    if (isAlreadySustainable) {
+      return {
+        isSustainable: true,
+        sustainabilityScore: 8,
+        reason: "Produto já possui características sustentáveis.",
+        alternatives: [],
+        needsAlternatives: false,
+        analysisMethod: "local_fallback",
+      };
+    }
+
+    // 2. Se não for, busca alternativas na sua base de dados local.
     const alternatives = this.getLocalAlternatives(productInfo.description);
+    const needsAlternatives = alternatives.length > 0;
 
     return {
-      isSustainable,
-      sustainabilityScore: isSustainable ? 7 : 3,
-      reason: isSustainable
-        ? "Produto apresenta características sustentáveis"
-        : "Produto convencional - considere alternativas ecológicas",
+      isSustainable: !needsAlternatives,
+      sustainabilityScore: needsAlternatives ? 3 : 7,
+      reason: needsAlternatives
+        ? "Produto convencional. Considere alternativas mais ecológicas."
+        : "Não foram encontradas alternativas locais para este item.",
       alternatives,
-      needsAlternatives: !isSustainable && alternatives.length > 0,
+      needsAlternatives: needsAlternatives,
       analysisMethod: "local_fallback",
-      category: this.detectCategory(text),
       timestamp: Date.now(),
     };
   }
-
   getLocalAlternatives(description) {
-    const desc = description.toLowerCase();
-    const alternatives = [];
+    // Garante que as constantes e a base de dados foram carregadas
     if (
-      desc.includes("copo") &&
-      (desc.includes("plástico") || desc.includes("descartável"))
+      !window.SICOSICatalogAnalyzer ||
+      !window.SICOSICatalogAnalyzer.sustainableDatabase
     ) {
-      alternatives.push({
-        name: "Copo biodegradável de bagaço de cana",
-        description: "Feito de resíduo agrícola, decompõe em 90 dias",
-        benefits: "Zero plástico, compostável",
-        searchTerms: ["copo biodegradável", "copo bagaço"],
-      });
+      console.error(
+        "SICOSI ERRO: Base de dados de alternativas (sustainable-alternatives.json) não foi carregada no catalog-analyzer."
+      );
+      return [];
     }
-    if (desc.includes("papel") && !desc.includes("reciclado")) {
-      alternatives.push({
-        name: "Papel A4 100% reciclado",
-        description: "Papel de alta qualidade feito de aparas",
-        benefits: "Poupa árvores e água",
-        searchTerms: ["papel reciclado a4"],
-      });
+    const lowerDesc = description.toLowerCase();
+    const categories =
+      window.SICOSICatalogAnalyzer.sustainableDatabase.categories;
+    const foundAlternatives = [];
+
+    // Procura por palavras-chave em toda a base de dados
+    for (const categoryKey in categories) {
+      for (const productKey in categories[categoryKey]) {
+        const product = categories[categoryKey][productKey];
+        const hasKeyword = (product.keywords || []).some((kw) =>
+          lowerDesc.includes(kw.toLowerCase())
+        );
+
+        if (hasKeyword) {
+          // Mapeia os dados para o formato que o modal espera
+          (product.alternatives || []).forEach((altData) => {
+            foundAlternatives.push({
+              name: altData.name,
+              description: `Alternativa para ${productKey.replace(
+                /_/g,
+                " "
+              )}. ${altData.benefits.join(", ")}`,
+              benefits: (altData.benefits || []).join(". "),
+              searchTerms: altData.search_terms || [altData.name],
+            });
+          });
+        }
+      }
     }
-    return alternatives.slice(0, 3);
+    return foundAlternatives.slice(0, 3); // Retorna até 3 alternativas
   }
 
   detectCategory(text) {
