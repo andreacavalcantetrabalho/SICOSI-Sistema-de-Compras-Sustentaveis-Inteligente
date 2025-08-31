@@ -180,40 +180,46 @@ window.SICOSI_API_KEYS = {
 ```
 SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente/
 ├── 📄 manifest.json                     # Configuração da extensão
+├── 📄 vercel.json                       # Configuração do deploy Vercel
 ├── 📄 .gitignore                        # Ignora arquivos no Git
 ├── 📄 README.md                         # Documentação do projeto
 ├── 📁 .qodo/                            # Configurações de ambiente (extensão/IDE)
+├── 📁 api/                              # API proxy para IA (Groq)
+│   └── groq-proxy.js
 ├── 📁 assets/                           # Recursos visuais e sons
 │   ├── 📁 icons/                        # Ícones da extensão
 │   ├── 📁 images/                       # Imagens usadas
 │   └── 📁 sounds/                       # Sons usados
-├── 📁 scripts/
-│   ├── background.js                    # Buscas e APIs
-│   ├── content-script.js                # Lógica principal
-│   ├── popup.js                         # Interface do popup
+├── 📁 config/                           # Configurações da extensão
+│   ├── env.js                           # Endpoints (dev/prod)
+│   └── constants.js                     # Constantes globais
+├── 📁 database/                         # Bases de dados locais
+│   ├── keywords-mapping.json            # Palavras-chave
+│   ├── suppliers-database.json          # Base de fornecedores
+│   └── sustainable-alternatives.json    # Alternativas sustentáveis
+├── 📁 pages/                            # Páginas HTML da extensão
+│   ├── options.html                     # Página de configurações
+│   ├── popup.html                       # Popup da extensão
+│   └── welcome.html                     # Página de boas-vindas
+├── 📁 scripts/                          # Scripts principais
+│   ├── background.js                    # Service worker (eventos/background)
+│   ├── content-script.js                # Lógica principal (modal + análise)
+│   ├── popup.js                         # Script do popup
 │   ├── options.js                       # Script da página de opções
 │   └── welcome.js                       # Script da página de boas-vindas
-├── 📁 styles/
+├── 📁 styles/                           # Estilos CSS
 │   ├── common.css                       # Estilos compartilhados
 │   ├── content-modal.css                # Visual do modal
 │   ├── options.css                      # Estilos da página de opções
 │   └── popup.css                        # Estilos do popup
-├── 📁 pages/
-│   ├── options.html                     # Página de configurações
-│   ├── popup.html                       # Popup da extensão
-│   └── welcome.html                     # Página de boas-vindas
-├── 📁 database/
-│   ├── keywords-mapping.json            # Palavras-chave
-│   ├── suppliers-database.json          # Base de fornecedores
-│   └── sustainable-alternatives.json    # Alternativas sustentáveis
-└── 📁 utils/
+└── 📁 utils/                            # Funções utilitárias
     ├── api-client.js                    # Cliente de APIs externas
-    ├── data-converter.js                # Converte dados para uso interno
     ├── catalog-analyzer.js              # Análise do catálogo
-    ├── dom-helper.js                    # Funções auxiliares de DOM
-    ├── storage-manager.js               # Gerenciamento de dados
-    └── web-search.js                    # Buscas externas
-
+    ├── data-converter.js                # Conversão de dados
+    ├── dom-helpers.js                   # Funções auxiliares de DOM
+    ├── llm-analyzer.js                  # Integração com IA + fallback local
+    ├── storage-manager.js               # Gerenciamento de dados no Chrome Storage
+    └── web-search.js                    # Busca externa de alternativas
 ```
 
 ### 🔧 **Tecnologias**
@@ -357,7 +363,7 @@ Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](L
 ### 👨‍💻 **Equipe Principal**
 
 - **[@toticavalcanti](https://github.com/toticavalcanti)** - _Idealizador e Desenvolvedor Principal_
-- **Dea Cavalcanti** - _Product Owner e Especialista em Compras Públicas_
+- **Andréa Cavalcante** - _Product Owner e Especialista em Compras Públicas_
 
 ### 🙏 **Agradecimentos Especiais**
 
