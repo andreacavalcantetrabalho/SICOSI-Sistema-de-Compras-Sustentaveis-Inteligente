@@ -3,27 +3,25 @@
   "name": "SICOSI - Sistema de Compras Sustentáveis Inteligente",
   "version": "1.0.0",
   "description": "Sistema inteligente que promove compras públicas sustentáveis sugerindo alternativas ecológicas durante o cadastro de itens no ComprasNet",
-  
   "permissions": [
     "activeTab",
     "storage",
     "scripting",
     "alarms"
   ],
-  
   "host_permissions": [
     "*://compras.gov.br/*",
     "*://*.compras.gov.br/*",
     "*://catalogo.compras.gov.br/*",
     "*://cnetmobile.estaleiro.serpro.gov.br/*"
   ],
-  
   "content_scripts": [
     {
       "matches": [
         "*://compras.gov.br/*",
         "*://*.compras.gov.br/*",
-        "*://catalogo.compras.gov.br/*"
+        "*://catalogo.compras.gov.br/*",
+        "*://cnetmobile.estaleiro.serpro.gov.br/*"
       ],
       "js": [
         "config/constants.js",
@@ -43,11 +41,9 @@
       "run_at": "document_end"
     }
   ],
-  
   "background": {
     "service_worker": "scripts/background.js"
   },
-  
   "action": {
     "default_popup": "pages/popup.html",
     "default_title": "SICOSI",
@@ -57,15 +53,12 @@
       "128": "assets/icons/icon128.png"
     }
   },
-  
   "options_page": "pages/options.html",
-  
   "icons": {
     "16": "assets/icons/icon16.png",
     "48": "assets/icons/icon48.png",
     "128": "assets/icons/icon128.png"
   },
-  
   "web_accessible_resources": [
     {
       "resources": [
@@ -79,7 +72,6 @@
       ]
     }
   ],
-  
   "author": "Projeto SICOSI",
   "homepage_url": "https://github.com/toticavalcanti/SICOSI-Sistema-de-Compras-Sustentaveis-Inteligente"
 }
