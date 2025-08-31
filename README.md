@@ -30,7 +30,7 @@ Um "cutucão sustentável" **no momento certo** - quando o servidor já escolheu
 ### ✅ **Implementado**
 
 - 🤖 **Análise Inteligente**: Detecção aprimorada que identifica se um produto **JÁ É** sustentável (ex: "copo de bagaço de cana") e evita sugestões desnecessárias.
-- 💡 **Sugestões Dinâmicas**: Oferece alternativas contextuais baseadas em análise local ou via LLMs (Grok, GPT, Claude, etc.).
+- 💡 **Sugestões Dinâmicas**: Oferece alternativas contextuais baseadas em análise local ou via Groq, com arquitetura preparada para futuras integrações com outras LLMs como Grok, OpenAI, Claude.
 - 🌐 **Busca de Fornecedores Reais**: Integração opcional com Google Custom Search ou SerpAPI para encontrar fornecedores de produtos sustentáveis.
 - 📝 **Modal Aprimorado**: Interface mais clara e informativa com benefícios e nível de impacto.
 - ⚙️ **Configurações Flexíveis**: Funciona 100% offline com análise local, com a opção de adicionar chaves de API para turbinar a inteligência.
