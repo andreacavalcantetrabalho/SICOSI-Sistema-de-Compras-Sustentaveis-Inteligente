@@ -64,6 +64,39 @@ export default async function handler(request, response) {
         
         LEMBRE-SE: deixe "website" sempre vazio ("") para evitar links quebrados.
       `;
+    } else if (requestType === 'find_real_web_alternatives') {
+      const { product, searchTerms, category } = request.body;
+
+      prompt = `
+        Você é um especialista em encontrar produtos sustentáveis REAIS no Brasil.
+
+        Produto original: "${product}"
+        Categoria: ${category}
+        Termos de busca: ${searchTerms.join(', ')}
+
+        INSTRUÇÕES CRÍTICAS:
+        1. Liste APENAS produtos que EXISTEM e podem ser comprados HOJE
+        2. Forneça o nome REAL e COMPLETO do fornecedor/empresa
+        3. Indique onde comprar (Mercado Livre, site oficial, loja física)
+        4. NÃO invente produtos, marcas ou fornecedores
+        5. Se não souber com certeza, retorne array vazio
+
+        Responda APENAS em JSON:
+        {
+          "alternatives": [
+            {
+              "productName": "Nome exato do produto",
+              "supplier": "Nome real da empresa",
+              "whereToFind": "Mercado Livre/Site oficial/Loja",
+              "estimatedPrice": "R$ XX,XX se souber",
+              "searchQuery": "termo exato para buscar no Google"
+            }
+          ]
+        }
+
+        Se não encontrar produtos REAIS, retorne:
+        { "alternatives": [] }
+      `;
     } else {
       // PROMPT PARA ANÁLISE DE PRODUTO - Melhorado
       if (!productInfo || !productInfo.description) {

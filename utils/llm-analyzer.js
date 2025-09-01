@@ -103,6 +103,36 @@ class SICOSILLMAnalyzer {
     }
   }
 
+  async findWebAlternatives(params) {
+    const { product, searchTerms, category } = params;
+
+    if (!this.proxyEndpoint) {
+      console.log("Modo offline - sem busca web");
+      return [];
+    }
+
+    try {
+      const response = await fetch(this.proxyEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requestType: "find_real_web_alternatives",
+          product,
+          searchTerms,
+          category,
+        }),
+      });
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const data = await response.json();
+      return data.alternatives || [];
+    } catch (error) {
+      console.error("Erro ao buscar alternativas web:", error);
+      return [];
+    }
+  }
+
   /**
    * Busca fornecedores reais para as alternativas sugeridas usando a LLM.
    * @param {Array} alternatives - A lista de objetos de alternativas.
