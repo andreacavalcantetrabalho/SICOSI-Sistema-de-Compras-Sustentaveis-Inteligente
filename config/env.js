@@ -9,6 +9,6 @@ window.SICOSI_CONFIG = {
     }
     
     // Produção - URL FIXA do deploy na Vercel
-    return 'https://sicosi-sistema-de-compras-sustentaveis-inteligente-7ing5niv4.vercel.app/api/groq-proxy';
+    return 'https://sicosi-sistema-de-compras-sustentav.vercel.app/api/groq-proxy';
   }
 };
